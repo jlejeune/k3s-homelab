@@ -7,13 +7,13 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: "${EMAIL}"
+    email: "${SECRET_EMAIL}"
     privateKeySecretRef:
       name: letsencrypt-production
     solvers:
       - dns01:
           webhook:
-            groupName: "${DOMAIN}"
+            groupName: "${SECRET_DOMAIN}"
             solverName: ovh
             config:
               endpoint: ovh-eu
@@ -24,4 +24,4 @@ spec:
               consumerKey: 0d1bbe46335ebb66d5e2959d7a15640f
         selector:
           dnsZones:
-            - "${DOMAIN}"
+            - "${SECRET_DOMAIN}"

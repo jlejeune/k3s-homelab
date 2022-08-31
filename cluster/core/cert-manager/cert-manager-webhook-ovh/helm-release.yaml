@@ -15,4 +15,4 @@ spec:
         name: cert-manager-webhook-ovh-charts
         namespace: flux-system
   values:
-    groupName: "${DOMAIN}"
+    groupName: "${SECRET_DOMAIN}"
