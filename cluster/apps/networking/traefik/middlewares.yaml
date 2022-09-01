@@ -1,0 +1,11 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: photos-redirectregex
+  namespace: networking
+spec:
+  redirectRegex:
+    regex: "^https://photos.${SECRET_DOMAIN}/(.*)"
+    replacement: "https://photos.${SECRET_DOMAIN}/photo/${1}"
+    permanent: true
