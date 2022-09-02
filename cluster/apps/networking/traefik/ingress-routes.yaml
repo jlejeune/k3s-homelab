@@ -2,6 +2,29 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
+  name: nas
+  namespace: networking
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`nas.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: security-header
+          namespace: networking
+      services:
+        - kind: Service
+          name: nas
+          namespace: networking
+          port: 443
+          scheme: https
+  tls:
+    secretName: "${SECRET_DOMAIN}-tls"
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
   name: photos
   namespace: networking
 spec:
@@ -16,14 +39,42 @@ spec:
           namespace: networking
           port: 443
           scheme: https
+      middlewares:
+        - name: security-header
+          namespace: networking
     - kind: Rule
-      match: Host(`photos.${SECRET_DOMAIN}`)
+      match: "Host(`photos.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
       middlewares:
         - name: photos-redirectregex
+          namespace: networking
+        - name: security-header
           namespace: networking
       services:
         - kind: Service
           name: photos
+          namespace: networking
+          port: 443
+          scheme: https
+  tls:
+    secretName: "${SECRET_DOMAIN}-tls"
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: webdav
+  namespace: networking
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`webdav.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: security-header
+          namespace: networking
+      services:
+        - kind: Service
+          name: webdav
           namespace: networking
           port: 443
           scheme: https

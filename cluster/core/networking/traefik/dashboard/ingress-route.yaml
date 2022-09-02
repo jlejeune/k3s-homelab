@@ -1,23 +1,22 @@
 ---
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
 metadata:
   name: traefik-dashboard
   namespace: networking
-  annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
 spec:
-  ingressClassName: traefik
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`traefik.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      services:
+        - kind: Service
+          name: traefik
+          namespace: networking
+          port: 9000
+      middlewares:
+        - name: security-header
+          namespace: networking
   tls:
-    - secretName: "${SECRET_DOMAIN}-tls"
-  rules:
-    - host: traefik.${SECRET_DOMAIN}
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: traefik
-                port:
-                  number: 9000
+    secretName: "${SECRET_DOMAIN}-tls"
