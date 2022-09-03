@@ -22,5 +22,5 @@
   become: yes
   tasks:
     - ansible.builtin.command: >-
-        kubectl label nodes {{ item }} kubernetes.io/role=worker --overwrite
+        kubectl label nodes {{ item }} kubernetes.io/role=worker node-role.kubernetes.io/worker=true --overwrite
       with_items: "{{ groups.k3s_workers }}"

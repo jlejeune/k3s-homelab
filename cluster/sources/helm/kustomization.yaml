@@ -6,5 +6,6 @@ resources:
   - botkube-charts.yaml
   - jetstack-charts.yaml
   - metallb-charts.yaml
+  - node-feature-discovery-charts.yaml
   - nfs-subdir-external-provisioner-charts.yaml
   - traefik-charts.yaml

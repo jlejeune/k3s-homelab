@@ -5,4 +5,5 @@ resources:
   - cert-manager
   - monitoring
   - networking
+  - node-feature-discovery
   - storage
