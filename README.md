@@ -1,11 +1,11 @@
 # jlejeune.home-ansible
 
-These ansible playbooks configure a fresh deployment of a k3s cluster on 3 rapsberry pi 4.
+These ansible playbooks configure a fresh deployment of a k3s cluster on 4 rapsberry pi 4.
 
 ## Prerequisites
 Hardware:
 * a workstation to run ansible commands
-* 3 x raspberry pi 4 (4GB ram)
+* 4 x raspberry pi 4 (4GB ram)
 
 Configure the workstation:
 * Install ansible
@@ -55,6 +55,8 @@ all:
           ansible_host: <TEMPORARY_WORKER1_IP>
         <WORKER2_NAME>:
           ansible_host: <TEMPORARY_WORKER2_IP>
+        <WORKER3_NAME>:
+          ansible_host: <TEMPORARY_WORKER3_IP>
     k3s_cluster:
       children:
         k3s_master:
@@ -109,6 +111,27 @@ ansible-playbook playbooks/install-k3s.yml
 #### Uninstall
 ```sh
 ansible-playbook playbooks/uninstall-k3s.yml
+```
+
+#### Add a new worker
+
+Edit hosts.yaml inventory file to add the name and the temporary IP of your new worker.
+
+Run these commands:
+```sh
+ansible-playbook playbooks/bootstrap.yml -e 'ansible_user=pi' --ask-pass -l <NEW_WORKER_NAME>
+ansible <NEW_WORKER_NAME> -a "/sbin/shutdown -r now -b"
+```
+
+After reboot, update the inventory file with your final worker IP and run this command to finalize bootstrap:
+```sh
+ansible-playbook playbooks/bootstrap.yml -l <NEW_WORKER_NAME>
+```
+
+Get you k3s master token from your master node in that file:
+/var/lib/rancher/k3s/server/token and run that command:
+```sh
+ansible-playbook playbooks/add-k3s-worker.yml -e "host=<NEW_WORKER_NAME>" -e "token=<YOUR_TOKEN>"
 ```
 
 ### flux

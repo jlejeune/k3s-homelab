@@ -1,10 +1,4 @@
 ---
-- name: Remove the user 'pi'
-  ansible.builtin.user:
-    name: pi
-    state: absent
-    remove: yes
-
 - name: Create users accounts
   ansible.builtin.user:
     name: "{{ item.username }}"
@@ -72,3 +66,9 @@
     group: "{{ item.group }}"
     remote_src: yes
   with_items: "{{ users }}"
+
+- name: Remove the user 'pi'
+  ansible.builtin.user:
+    name: pi
+    state: absent
+    remove: yes

@@ -1,0 +1,38 @@
+---
+- name: Download k3s
+  hosts: "{{ host }}"
+  become: yes
+  roles:
+    - k3s
+
+- name: Configure k3s workers
+  hosts: "{{ host }}"
+  become: yes
+  roles:
+    - k3s/worker
+
+- name: Define token in k3s-node service config file
+  hosts: "{{ host }}"
+  become: yes
+  tasks:
+    - ansible.builtin.replace:
+        path: /etc/systemd/system/k3s-node.service
+        regexp: "TOKEN"
+        replace: "{{ token }}"
+
+- name: Restart k3s-node service
+  hosts: "{{ host }}"
+  become: yes
+  tasks:
+    - ansible.builtin.systemd:
+        state: restarted
+        daemon_reload: yes
+        name: k3s-node
+
+- name: Define k3s workers role
+  hosts: k3s_master
+  become: yes
+  tasks:
+    - ansible.builtin.command: >-
+        kubectl label nodes {{ item }} kubernetes.io/role=worker node-role.kubernetes.io/worker=true --overwrite
+      with_items: "{{ host }}"
