@@ -1,3 +1,5 @@
 ---
 system_hostname: gimli
 ip_address: 192.168.1.13/24
+usb_disk_name: sda
+usb_disk_uuid: 84858870-4aa4-476a-ad34-6c7b740727a3

@@ -1,3 +1,5 @@
 ---
 system_hostname: pippin
 ip_address: 192.168.1.12/24
+usb_disk_name: sda
+usb_disk_uuid: e954c439-41c3-4634-952b-a46578cb754c

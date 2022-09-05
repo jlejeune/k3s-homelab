@@ -134,6 +134,34 @@ Get you k3s master token from your master node in that file:
 ansible-playbook playbooks/add-k3s-worker.yml -e "host=<NEW_WORKER_NAME>" -e "token=<YOUR_TOKEN>"
 ```
 
+### Longhorn
+
+In my case, I use three usb sticks of 64GB plugged on my three worker nodes.
+
+#### Identify the disks
+```sh
+ansible k3s_workers -a "lsblk -f"  # to get usb_disk_name value
+```
+Fill your hosts_vars usb_disk_name value in inventory.
+
+#### Wipe the disks and format them
+```sh
+ansible k3s_workers -b -m shell -a "wipefs -a /dev/{{ usb_disk_name }}"
+ansible k3s_workers -b -m filesystem -a "fstype=ext4 dev=/dev/{{ usb_disk_name }}"
+```
+
+#### Identify the disks UUID
+```sh
+ansible k3s_workers -b -m shell -a "blkid -s UUID -o value /dev/{{ usb_disk_name }}"  # to get external_usb_uuid
+```
+
+Fill your hosts_vars usb_disk_uuid value in inventory.
+
+#### Mount the disks
+```sh
+ansible k3s_workers -b -m ansible.posix.mount -a "path=/storage src=UUID={{ usb_disk_uuid }} fstype=ext4 state=mounted"
+```
+
 ### flux
 #### Sync on a dev branch
 ```sh

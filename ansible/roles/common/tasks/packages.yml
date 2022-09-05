@@ -14,6 +14,8 @@
     - manpages
     - mosh
     - net-tools
+    - nfs-common
+    - open-iscsi
     - openssl
     - pciutils
     - postfix
@@ -26,5 +28,6 @@
     - tzdata
     - ufw
     - unzip
+    - util-linux
     - vim
     - zsh

@@ -5,6 +5,7 @@ namespace: flux-system
 resources:
   - botkube-charts.yaml
   - jetstack-charts.yaml
+  - longhorn-charts.yaml
   - metallb-charts.yaml
   - node-feature-discovery-charts.yaml
   - nfs-subdir-external-provisioner-charts.yaml

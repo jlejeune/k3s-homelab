@@ -1,3 +1,5 @@
 ---
 system_hostname: merry
 ip_address: 192.168.1.11/24
+usb_disk_name: sda
+usb_disk_uuid: 4f031bdc-3f4a-43e6-83ba-c50d99444890
