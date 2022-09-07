@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: flux-system
 resources:
   - botkube-charts.yaml
+  - grafana-charts.yaml
   - jetstack-charts.yaml
   - longhorn-charts.yaml
   - metallb-charts.yaml
