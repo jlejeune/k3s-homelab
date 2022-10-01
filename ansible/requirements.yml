@@ -8,5 +8,3 @@ collections:
     version: 1.4.0
   - name: ansible.utils
     version: 2.6.1
-roles:
-  - name: gantsign.oh-my-zsh

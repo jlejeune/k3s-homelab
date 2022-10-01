@@ -88,7 +88,6 @@ ansible-playbook playbooks/install-k3s.yml
  * Setup a secure SSH configuration
  * Configure /boot/config.txt
  * Run raspi-config
- * Install and configure oh-my-zsh
 
 ### k3s
 

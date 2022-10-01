@@ -19,52 +19,19 @@
     key: "{{ lookup('file', 'files/'+ item.username + '.key.pub') }}"
   with_items: "{{ users }}"
 
-- name: Install oh-my-zsh
-  ansible.builtin.include_role:
-    name: gantsign.oh-my-zsh
-
-- name: Install oh-my-zsh powerlevel9k theme
+- name: Get my dotfiles config
   ansible.builtin.git:
-    repo: "https://github.com/bhilburn/powerlevel9k.git"
-    dest: "/home/{{ item.username }}/.oh-my-zsh/custom/themes/powerlevel9k"
-    update: no
+    repo: "https://github.com/jlejeune/dotbot.git"
+    dest: "/home/{{ item.username }}/dotbot"
+    update: yes
   become: yes
   become_user: "{{ item.username }}"
   with_items: "{{ users }}"
 
-- name: Install oh-my-zsh zsh-autosuggestions plugin
-  ansible.builtin.git:
-    repo: "https://github.com/zsh-users/zsh-autosuggestions.git"
-    dest: "/home/{{ item.username }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
-    update: no
+- name: Install my dotfiles
+  ansible.builtin.command: "/home/{{ item.username }}/dotbot/install"
   become: yes
   become_user: "{{ item.username }}"
-  with_items: "{{ users }}"
-
-- name: Install oh-my-zsh zsh-syntax-highlighting plugin
-  ansible.builtin.git:
-    repo: "https://github.com/zsh-users/zsh-syntax-highlighting.git"
-    dest: "/home/{{ item.username }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
-    update: no
-  become: yes
-  become_user: "{{ item.username }}"
-  with_items: "{{ users }}"
-
-- name: Clone my own dotzsh github repository
-  ansible.builtin.git:
-    repo: "https://github.com/jlejeune/dotzsh.git"
-    dest: "/home/{{ item.username }}/.oh-my-zsh/custom/dotzsh"
-  become: yes
-  become_user: "{{ item.username }}"
-  with_items: "{{ users }}"
-
-- name: Install my custom zsh config
-  ansible.builtin.copy:
-    src: "/home/{{ item.username }}/.oh-my-zsh/custom/dotzsh/"
-    dest: "/home/{{ item.username }}/.oh-my-zsh/custom/"
-    owner: "{{ item.username }}"
-    group: "{{ item.group }}"
-    remote_src: yes
   with_items: "{{ users }}"
 
 - name: Remove the user 'pi'
