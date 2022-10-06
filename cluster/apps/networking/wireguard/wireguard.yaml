@@ -1,0 +1,72 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wireguard
+  namespace: networking
+  labels:
+    app.kubernetes.io/instance: wireguard
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: wireguard
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: wireguard
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: wireguard
+          image: linuxserver/wireguard:latest
+          securityContext:
+            privileged: true
+            capabilities:
+              add:
+                - NET_ADMIN
+#                - SYS_MODULE
+          ports:
+            - containerPort: 51820
+              protocol: UDP
+          env:
+            - name: LOG_LEVEL
+              value: info
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "150m"
+            limits:
+              memory: "128Mi"
+          volumeMounts:
+            - name: wireguard-config
+              mountPath: /config/wg0.conf
+              subPath: wg0.conf
+              readOnly: true
+      volumes:
+        - name: wireguard-config
+          secret:
+            secretName: wireguard-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wireguard
+  namespace: networking
+  annotations:
+    metallb.universe.tf/allow-shared-ip: "${LB_WIREGUARD_ADDRESS}"
+spec:
+  selector:
+    app.kubernetes.io/instance: wireguard
+  type: LoadBalancer
+  spec:
+    loadBalancerIP: "${LB_WIREGUARD_ADDRESS}"
+    externalTrafficPolicy: Local
+  ports:
+    - name: 51820-tcp
+      port: 51820
+      targetPort: 51820
+      protocol: UDP
