@@ -1,0 +1,113 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mealie
+  namespace: recipe
+  labels:
+    app.kubernetes.io/instance: mealie
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: mealie
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: mealie
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: mealie
+          image: hkotel/mealie:v0.5.6
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DB_TYPE
+              value: sqlite
+            - name: RECIPE_DISABLE_COMMENTS
+              value: "true"
+            - name: AUTO_BACKUP_ENABLED
+              value: "true"
+            - name: API_DOCS
+              value: "false"
+          envFrom:
+            - secretRef:
+                name: mealie
+          ports:
+            - containerPort: 80
+              name: http
+          readinessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /api/debug/version
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 5
+            timeoutSeconds: 10
+          resources:
+            limits:
+              cpu: 400m
+              memory: 500Mi
+            requests:
+              cpu: 54m
+              memory: 150Mi
+          volumeMounts:
+            - name: mealie-data
+              mountPath: /app/data
+      volumes:
+        - name: mealie-data
+          persistentVolumeClaim:
+            claimName: mealie-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: mealie
+  name: mealie
+  namespace: recipe
+spec:
+  selector:
+    app.kubernetes.io/instance: mealie
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: mealie
+  namespace: recipe
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`mealie.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: security-header
+          namespace: networking
+      services:
+        - kind: Service
+          name: mealie
+          namespace: recipe
+          port: 80
+          scheme: http
+  tls:
+    secretName: "${SECRET_DOMAIN}-tls"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app.kubernetes.io/instance: mealie
+  name: mealie-data
+  namespace: recipe
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: longhorn
