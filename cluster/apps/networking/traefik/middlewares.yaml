@@ -9,3 +9,15 @@ spec:
     regex: "^https://photos.${SECRET_DOMAIN}/(.*)"
     replacement: "https://photos.${SECRET_DOMAIN}/photo/${1}"
     permanent: true
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: nextcloud-redirectregex
+  namespace: networking
+spec:
+  redirectRegex:
+    regex: "https://(.*)/.well-known/(?:card|cal)dav"
+    replacement: "https://$${1}/remote.php/dav"
+    permanent: true
+---

@@ -15,7 +15,6 @@ spec:
     stsSeconds: 31536000
     forceSTSHeader: true
     referrerPolicy: same-origin
-    customResponseHeaders:
-      permissions-Policy: vibrate=(self), geolocation=(self), midi=(self), notifications=(self), push=(self), microphone=(), $
-      X-Permitted-Cross-Domain-Policies: none
-      expect-ct: max-age=604800, report-uri="https://oak.ct.letsencrypt.org/2021"
+    customFrameOptionsValue: "SAMEORIGIN"
+    customRequestHeaders:
+      X-Forwarded-Proto: https
