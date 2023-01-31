@@ -1,0 +1,113 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: plik
+  namespace: plik
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+  selector:
+    app.kubernetes.io/instance: plik
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: plik-pvc
+  namespace: plik
+spec:
+  storageClassName: longhorn
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plik
+  namespace: plik
+  labels:
+    app.kubernetes.io/instance: plik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: plik
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: plik
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: plik
+          image: rootgg/plik:1.3.6
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          volumeMounts:
+            - name: plik-vol
+              mountPath: /data
+            - name: plik-config
+              mountPath: /home/plik/server/plikd.cfg
+              subPath: plikd.cfg
+      volumes:
+        - name: plik-vol
+          persistentVolumeClaim:
+            claimName: plik-pvc
+        - name: plik-config
+          secret:
+            secretName: plik-config
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: plik-http
+  namespace: plik
+spec:
+  entryPoints:
+    - web
+  routes:
+    - kind: Rule
+      match: "Host(`plik.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: redirect-https
+          namespace: networking
+      services:
+        - kind: Service
+          name: plik
+          namespace: plik
+          port: 8080
+          scheme: http
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: plik-https
+  namespace: plik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`plik.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: security-header
+          namespace: networking
+      services:
+        - kind: Service
+          name: plik
+          namespace: plik
+          port: 8080
+          scheme: http
+  tls:
+    secretName: "${SECRET_DOMAIN}-tls"
+---

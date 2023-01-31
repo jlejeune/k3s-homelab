@@ -1,31 +1,31 @@
 ---
 - name: Download plik binary amd64
   get_url:
-    # url: "https://github.com/root-gg/plik/releases/download/{{ plik_version }}/plik-{{ plik_version }}-linux-arm64.tar.gz"
-    url: "https://plik.arno.ovh/clients/linux-arm/plik"
-    # dest: /tmp
-    dest: /usr/local/bin
+    url: "https://github.com/root-gg/plik/releases/download/{{ plik_version }}/plik-{{ plik_version }}-linux-arm64.tar.gz"
+    dest: /tmp
 
-# - name: Extract plik archive
-#   ansible.builtin.unarchive:
-#     src: "/tmp/plik-{{ plik_version }}-linux-arm64.tar.gz"
-#     dest: /tmp
-#     remote_src: yes
+- name: Extract plik archive
+  ansible.builtin.unarchive:
+    src: "/tmp/plik-{{ plik_version }}-linux-arm64.tar.gz"
+    dest: /tmp
+    remote_src: yes
 
-# - name: Move plik binary to /usr/local/bin/ folder
-#   command: mv /tmp/plik-{{ plik_version }}-linux-arm64/clients/linux-arm/plik /usr/local/bin/plik
+- name: Move plik binary to /usr/local/bin/ folder
+  command: mv /tmp/plik-{{ plik_version }}-linux-arm64/clients/linux-arm/plik /usr/local/bin/plik
 
-- name: Change plik ownership, group and mode
-  ansible.builtin.file:
-    path: /usr/local/bin/plik
-    owner: root
-    group: root
-    mode: '0755'
-
-- name: Copy plikrc config file
+- name: Copy plikrc config file for root user
   ansible.builtin.template:
     src: plikrc.j2
     dest: /root/.plikrc
     owner: root
     group: root
-    mode: '0644'
+    mode: '0600'
+
+- name: Copy plikrc config file for all users
+  ansible.builtin.template:
+    src: plikrc.j2
+    dest: "/home/{{ item.username }}/.plikrc"
+    owner: "{{ item.username }}"
+    group: "{{ item.group }}"
+    mode: '0600'
+  with_items: "{{ users }}"
