@@ -4,3 +4,6 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - wikijs.yaml
+  - wikijs.secret.sops.yaml
+  - wikijs-db.yaml
+  - wikijs-db.secret.sops.yaml

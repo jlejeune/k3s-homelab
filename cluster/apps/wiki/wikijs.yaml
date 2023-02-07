@@ -1,5 +1,17 @@
 ---
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wikijs
+  namespace: wiki
+data:
+  DB_TYPE: postgres
+  DB_NAME: wikijs
+  DB_USER: wikijs
+  DB_HOST: wikijs-db
+  DB_PORT: "5432"
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: wikijs
@@ -12,18 +24,40 @@ spec:
     app.kubernetes.io/instance: wikijs
 ---
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: wikijs-pv
+  namespace: wiki
+spec:
+  storageClassName: longhorn
+  persistentVolumeReclaimPolicy: Retain
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  csi:
+    driver: driver.longhorn.io
+    fsType: ext4
+    volumeAttributes:
+      numberOfReplicas: '2'
+      staleReplicaTimeout: '2880'
+    volumeHandle: wikijs-pv  # we have to create it manually on longhorn UI first
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: wikijs-pvc
   namespace: wiki
 spec:
   storageClassName: longhorn
+  volumeName: wikijs-pv
   volumeMode: Filesystem
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
+      storage: 1Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -45,6 +79,13 @@ spec:
         app.kubernetes.io/instance: wikijs
     spec:
       restartPolicy: Always
+      initContainers:
+        - name: change-ownership-wikijs-datadir
+          image: busybox
+          command: ["/bin/chown", "-R", "1000:1000", "/wiki/data"]
+          volumeMounts:
+            - name: wikijs-data
+              mountPath: /wiki/data
       containers:
         - name: wikijs
           image: requarks/wiki:2
@@ -52,10 +93,13 @@ spec:
           env:
             - name: TZ
               value: "${TZ}"
-            - name: DB_TYPE
-              value: sqlite
-            - name: DB_FILEPATH
-              value: "/wiki/data/wikijs.sqlite"
+          envFrom:
+            - secretRef:
+                name: wikijs
+                optional: false
+            - configMapRef:
+                name: wikijs
+                optional: false
           volumeMounts:
             - name: wikijs-data
               mountPath: /wiki/data

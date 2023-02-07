@@ -1,0 +1,102 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wikijs-db
+  namespace: wiki
+data:
+  PGDATA: "/var/lib/postgresql/data/pgdata"
+  POSTGRES_DB: wikijs
+  POSTGRES_USER: wikijs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wikijs-db
+  namespace: wiki
+spec:
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+  selector:
+    app.kubernetes.io/instance: wikijs-db
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: wikijs-db-pv
+  namespace: wiki
+spec:
+  storageClassName: longhorn
+  persistentVolumeReclaimPolicy: Retain
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  csi:
+    driver: driver.longhorn.io
+    fsType: ext4
+    volumeAttributes:
+      numberOfReplicas: '2'
+      staleReplicaTimeout: '2880'
+    volumeHandle: wikijs-db-pv  # we have to create it manually on longhorn UI first
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wikijs-db-pvc
+  namespace: wiki
+spec:
+  storageClassName: longhorn
+  volumeName: wikijs-db-pv
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/instance: wikijs-db
+  name: wikijs-db
+  namespace: wiki
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: wikijs-db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: wikijs-db
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: wikijs-db
+          image: postgres:15.1-bullseye
+          imagePullPolicy: "IfNotPresent"
+          envFrom:
+            - secretRef:
+                name: wikijs-db
+                optional: false
+            - configMapRef:
+                name: wikijs-db
+                optional: false
+          ports:
+            - containerPort: 5432
+              name: wikijs-db
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: wikijs-db-vol
+      volumes:
+        - name: wikijs-db-vol
+          persistentVolumeClaim:
+            claimName: wikijs-db-pvc
