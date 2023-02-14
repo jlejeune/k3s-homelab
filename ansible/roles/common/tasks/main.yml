@@ -40,3 +40,9 @@
     apply:
       tags: plik
   tags: plik
+
+- include_tasks:
+    file: fail2ban.yml
+    apply:
+      tags: fail2ban
+  tags: fail2ban
