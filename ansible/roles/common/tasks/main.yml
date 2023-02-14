@@ -36,7 +36,7 @@
   tags: user
 
 - include_tasks:
-    file: download-plik.yml
+    file: plik.yml
     apply:
-      tags: download-plik
-  tags: download-plik
+      tags: plik
+  tags: plik
