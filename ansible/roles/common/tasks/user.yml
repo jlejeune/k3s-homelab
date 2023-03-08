@@ -12,13 +12,6 @@
     update_password: on_create
   with_items: "{{ users }}"
 
-- name: Set authorized key taken from file
-  ansible.posix.authorized_key:
-    user: "{{ item.username }}"
-    state: present
-    key: "{{ lookup('file', 'files/'+ item.username + '.key.pub') }}"
-  with_items: "{{ users }}"
-
 - name: Get my dotfiles config
   ansible.builtin.git:
     repo: "https://github.com/jlejeune/dotbot.git"

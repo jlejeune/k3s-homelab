@@ -46,3 +46,9 @@
     apply:
       tags: fail2ban
   tags: fail2ban
+
+- include_tasks:
+    file: ssh.yml
+    apply:
+      tags: ssh
+  tags: ssh
