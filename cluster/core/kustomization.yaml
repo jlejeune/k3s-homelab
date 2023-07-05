@@ -7,3 +7,4 @@ resources:
   - networking
   - node-feature-discovery
   - storage
+  - system-upgrade
