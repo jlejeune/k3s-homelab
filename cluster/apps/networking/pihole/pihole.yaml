@@ -47,7 +47,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: pihole
-          image: pihole/pihole:2023.02.1
+          image: pihole/pihole:2023.05.2
           envFrom:
             - configMapRef:
                 name: pihole
