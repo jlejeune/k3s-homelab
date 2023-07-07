@@ -1,0 +1,29 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    "docker:enableMajor",
+    ":disableRateLimiting",
+    ":dependencyDashboard",
+    ":automergeDisabled",
+    "github>jlejeune/jlejeune.home-ansible//.github/renovate/commitMessage.json5",
+    "github>jlejeune/jlejeune.home-ansible//.github/renovate/labels.json5",
+  ],
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Renovate Dashboard 🤖",
+  "suppressNotifications": ["prIgnoreNotification"],
+  "rebaseWhen": "conflicted",
+  "schedule": ["every saturday"],
+  "flux": {
+    "fileMatch": ["cluster/.+\\.ya?ml$"]
+  },
+  "helm-values": {
+    "fileMatch": ["cluster/.+\\.ya?ml$"]
+  },
+  "kubernetes": {
+    "fileMatch": [
+      "ansible/.+\\.(ya?ml(\\.j2)?|j2)$",
+      "cluster/.+\\.ya?ml$"
+    ]
+  }
+}
