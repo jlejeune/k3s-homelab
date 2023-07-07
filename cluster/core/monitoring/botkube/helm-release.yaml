@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: botkube
-      version: v0.12.4
+      version: v0.18.0
       sourceRef:
         kind: HelmRepository
         name: botkube-charts
@@ -17,26 +17,26 @@ spec:
       interval: 5m
   values:
     communications:
-      discord:
-        enabled: true
+      default-group:
+        discord:
+          enabled: true
     serviceMonitor:
       enabled: false  # prometheus is not deployed for now
-    config:
-      settings:
-        clustername: k3s
+    settings:
+      clusterName: k3s
   valuesFrom:
     - kind: Secret
       name: botkube
       valuesKey: discord_token
-      targetPath: communications.discord.token
+      targetPath: communications.default-group.discord.token
       optional: false
     - kind: Secret
       name: botkube
       valuesKey: discord_bot_id
-      targetPath: communications.discord.botid
+      targetPath: communications.default-group.discord.botID
       optional: false
     - kind: Secret
       name: botkube
       valuesKey: discord_channel
-      targetPath: communications.discord.channel
+      targetPath: communications.default-group.discord.channels.default.id
       optional: false
