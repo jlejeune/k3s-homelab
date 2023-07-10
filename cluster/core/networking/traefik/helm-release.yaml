@@ -25,7 +25,7 @@ spec:
       kind: Deployment
       replicas: 1
     podSecurityPolicy:
-      enabled: true
+      enabled: false
     service:
       enabled: true
       type: LoadBalancer
@@ -63,17 +63,16 @@ spec:
     ports:
       traefik:
         expose: true
+    entryPoints:
       web:
-        address: 80
+        address: ":80"
         http:
           redirections:
             entryPoint:
               to: websecure
               scheme: https
       websecure:
-        tls:
-          enabled: true
-          options: default
+        address: ":443"
     tlsOptions:
       default:
         minVersion: VersionTLS12
@@ -89,8 +88,6 @@ spec:
         curvePreferences:
           - secp521r1
           - secp384r1
-    pilot:
-      enabled: false
     experimental:
       plugins:
         enabled: false

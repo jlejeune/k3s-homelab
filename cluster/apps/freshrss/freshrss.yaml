@@ -67,28 +67,7 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: freshrss-http
-  namespace: freshrss
-spec:
-  entryPoints:
-    - web
-  routes:
-    - kind: Rule
-      match: "Host(`rss.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: redirect-https
-          namespace: networking
-      services:
-        - kind: Service
-          name: freshrss
-          namespace: freshrss
-          port: 80
-          scheme: http
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: freshrss-https
+  name: freshrss
   namespace: freshrss
 spec:
   entryPoints:
@@ -107,4 +86,3 @@ spec:
           scheme: http
   tls:
     secretName: "${SECRET_DOMAIN}-tls"
----

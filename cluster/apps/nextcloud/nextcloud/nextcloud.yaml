@@ -111,28 +111,7 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: nextcloud-http
-  namespace: nextcloud
-spec:
-  entryPoints:
-    - web
-  routes:
-    - kind: Rule
-      match: "Host(`nextcloud.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: redirect-https
-          namespace: networking
-      services:
-        - kind: Service
-          name: nextcloud
-          namespace: nextcloud
-          port: 80
-          scheme: http
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: nextcloud-https
+  name: nextcloud
   namespace: nextcloud
 spec:
   entryPoints:
@@ -153,4 +132,3 @@ spec:
           scheme: http
   tls:
     secretName: "${SECRET_DOMAIN}-tls"
----

@@ -70,28 +70,7 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: plik-http
-  namespace: plik
-spec:
-  entryPoints:
-    - web
-  routes:
-    - kind: Rule
-      match: "Host(`plik.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: redirect-https
-          namespace: networking
-      services:
-        - kind: Service
-          name: plik
-          namespace: plik
-          port: 8080
-          scheme: http
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: plik-https
+  name: plik
   namespace: plik
 spec:
   entryPoints:
@@ -110,4 +89,3 @@ spec:
           scheme: http
   tls:
     secretName: "${SECRET_DOMAIN}-tls"
----

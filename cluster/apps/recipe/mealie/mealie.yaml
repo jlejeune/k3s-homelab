@@ -77,28 +77,7 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: mealie-http
-  namespace: recipe
-spec:
-  entryPoints:
-    - web
-  routes:
-    - kind: Rule
-      match: "Host(`mealie.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: redirect-https
-          namespace: networking
-      services:
-        - kind: Service
-          name: mealie
-          namespace: recipe
-          port: 80
-          scheme: http
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: mealie-https
+  name: mealie
   namespace: recipe
 spec:
   entryPoints:

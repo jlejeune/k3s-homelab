@@ -55,28 +55,7 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: joplin-http
-  namespace: joplin
-spec:
-  entryPoints:
-    - web
-  routes:
-    - kind: Rule
-      match: "Host(`joplin.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: redirect-https
-          namespace: networking
-      services:
-        - kind: Service
-          name: joplin
-          namespace: joplin
-          port: 22300
-          scheme: http
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: joplin-https
+  name: joplin
   namespace: joplin
 spec:
   entryPoints:
@@ -95,4 +74,3 @@ spec:
           scheme: http
   tls:
     secretName: "${SECRET_DOMAIN}-tls"
----

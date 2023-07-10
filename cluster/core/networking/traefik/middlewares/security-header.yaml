@@ -7,7 +7,6 @@ metadata:
 spec:
   headers:
     frameDeny: true
-    sslRedirect: true
     browserXssFilter: true
     contentTypeNosniff: true
     stsIncludeSubdomains: true
