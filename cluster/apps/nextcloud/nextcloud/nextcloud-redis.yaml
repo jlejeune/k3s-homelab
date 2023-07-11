@@ -44,7 +44,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: nextcloud-redis
-          image: redis:7.0.8
+          image: redis:7.0.12
           command:
             - redis-server
             - "/redis-master/redis.conf"
