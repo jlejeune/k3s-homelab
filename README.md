@@ -116,6 +116,8 @@ ansible-playbook playbooks/uninstall-k3s.yml
 
 Edit hosts.yaml inventory file to add the name and the temporary IP of your new worker.
 
+Create a new file in inventory/host_vars folder matching the hostname of your new worker and fill it with the correct values.
+
 Run these commands:
 ```sh
 ansible-playbook playbooks/bootstrap.yml -e 'ansible_user=pi' --ask-pass -l <NEW_WORKER_NAME>
