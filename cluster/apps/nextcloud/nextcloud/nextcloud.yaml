@@ -11,6 +11,7 @@ data:
   REDIS_HOST: nextcloud-redis
   SMTP_PORT: "587"
   SMTP_SECURE: tls
+  PHP_MEMORY_LIMIT: "512M"
 ---
 apiVersion: v1
 kind: Service
