@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: node-feature-discovery
-      version: 0.13.3
+      version: 0.14.0
       sourceRef:
         kind: HelmRepository
         name: node-feature-discovery-charts
@@ -21,11 +21,8 @@ spec:
     remediation:
       retries: 5
   values:
-    nodeFeatureRule:
-      createCRD: false
+    enableNodeFeatureApi: true
     worker:
-      annotations:
-        configmap.reloader.stakater.com/reload: node-feature-discovery-worker-conf
       nodeSelector:
         node-role.kubernetes.io/worker: "true"
       config:
