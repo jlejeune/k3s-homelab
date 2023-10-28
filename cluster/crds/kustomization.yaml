@@ -5,3 +5,4 @@ resources:
   - cert-manager
   - kube-prometheus-stack
   - node-feature-discovery
+  - traefik

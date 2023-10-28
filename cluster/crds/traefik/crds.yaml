@@ -8,7 +8,7 @@ spec:
   interval: 60m
   url: https://github.com/traefik/traefik-helm-chart.git
   ref:
-    tag: 10.33.0
+    tag: v25.0.0
   ignore: |
     # exclude all
     /*
@@ -29,28 +29,31 @@ spec:
   healthChecks:
     - apiVersion: apiextensions.k8s.io/v1
       kind: CustomResourceDefinition
-      name: ingressroutes.traefik.containo.us
+      name: ingressroutes.traefik.io
     - apiVersion: apiextensions.k8s.io/v1
       kind: CustomResourceDefinition
-      name: ingressroutetcps.traefik.containo.us
+      name: ingressroutetcps.traefik.io
     - apiVersion: apiextensions.k8s.io/v1
       kind: CustomResourceDefinition
-      name: ingressrouteudps.traefik.containo.us
+      name: ingressrouteudps.traefik.io
     - apiVersion: apiextensions.k8s.io/v1
       kind: CustomResourceDefinition
-      name: middlewares.traefik.containo.us
+      name: middlewares.traefik.io
     - apiVersion: apiextensions.k8s.io/v1
       kind: CustomResourceDefinition
-      name: middlewaretcps.traefik.containo.us
+      name: middlewaretcps.traefik.io
     - apiVersion: apiextensions.k8s.io/v1
       kind: CustomResourceDefinition
-      name: serverstransports.traefik.containo.us
+      name: serverstransports.traefik.io
     - apiVersion: apiextensions.k8s.io/v1
       kind: CustomResourceDefinition
-      name: tlsoptions.traefik.containo.us
+      name: serverstransporttcps.traefik.io
     - apiVersion: apiextensions.k8s.io/v1
       kind: CustomResourceDefinition
-      name: tlsstores.traefik.containo.us
+      name: tlsoptions.traefik.io
     - apiVersion: apiextensions.k8s.io/v1
       kind: CustomResourceDefinition
-      name: traefikservices.traefik.containo.us
+      name: tlsstores.traefik.io
+    - apiVersion: apiextensions.k8s.io/v1
+      kind: CustomResourceDefinition
+      name: traefikservices.traefik.io
