@@ -83,7 +83,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: joplin-db
-          image: postgres:15.4
+          image: postgres:15.5
           imagePullPolicy: IfNotPresent
           envFrom:
             - secretRef:
