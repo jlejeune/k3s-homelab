@@ -173,3 +173,8 @@ ansible-playbook playbooks/patch-flux-branch.yml --extra-vars "branch=dev"
 ```sh
 ansible-playbook playbooks/revert-flux-branch.yml
 ```
+
+#### Upgrade flux
+```sh
+ansible-playbook playbooks/upgrade-flux.yml
+```
