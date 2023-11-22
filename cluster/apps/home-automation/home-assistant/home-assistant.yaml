@@ -1,0 +1,126 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: home-assistant
+  namespace: home-automation
+spec:
+  ports:
+    - name: home-assistant
+      port: 80
+      targetPort: 8123
+  selector:
+    app.kubernetes.io/instance: home-assistant
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: home-assistant
+  namespace: home-automation
+  labels:
+    app.kubernetes.io/instance: home-assistant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: home-assistant
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: home-assistant
+    spec:
+      containers:
+        - name: home-assistant
+          image: homeassistant/home-assistant:2023.11
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TZ
+              value: "${TZ}"
+          resources:
+            requests:
+              memory: "256Mi"
+            limits:
+              memory: "512Mi"
+          ports:
+            - containerPort: 8123
+          volumeMounts:
+            - mountPath: /config
+              name: home-assistant-vol
+            - mountPath: /config/configuration.yaml
+              subPath: configuration.yaml
+              name: configmap-file
+            #- mountPath: /dev/ttyUSB1
+            #  name: zigbee
+          securityContext:
+            privileged: true
+            capabilities:
+              add:
+                - NET_ADMIN
+                - NET_RAW
+                - SYS_ADMIN
+      hostNetwork: true
+      volumes:
+        - name: home-assistant-vol
+          persistentVolumeClaim:
+            claimName: home-assistant-pvc
+        - name: configmap-file
+          configMap:
+            name: home-assistant-configmap
+        #- name: zigbee
+        #  hostPath:
+        #    path: /dev/ttyACM0
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: home-assistant-configmap
+  namespace: home-automation
+data:
+  known_devices.yaml: |
+  automations.yaml: |
+  configuration.yaml: |-
+    default_config:
+    http:
+      use_x_forwarded_for: true
+      trusted_proxies:
+        - 127.0.0.1
+        - 192.168.1.0/24
+      ip_ban_enabled: true
+      login_attempts_threshold: 5
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: home-assistant-pvc
+  namespace: home-automation
+spec:
+  storageClassName: longhorn
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: home-assistant
+  namespace: home-automation
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`ha.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: security-header
+          namespace: networking
+      services:
+        - kind: Service
+          name: home-assistant
+          namespace: home-automation
+          port: 80
+          scheme: http
+  tls:
+    secretName: "${SECRET_DOMAIN}-tls"
