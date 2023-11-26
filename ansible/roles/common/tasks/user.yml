@@ -15,14 +15,14 @@
 - name: Get my dotfiles config
   ansible.builtin.git:
     repo: "https://github.com/jlejeune/dotbot.git"
-    dest: "/home/{{ item.username }}/dotbot"
+    dest: "/home/{{ item.username }}/.dotbot"
     update: yes
   become: yes
   become_user: "{{ item.username }}"
   with_items: "{{ users }}"
 
 - name: Install my dotfiles
-  ansible.builtin.command: "/home/{{ item.username }}/dotbot/install"
+  ansible.builtin.command: "/home/{{ item.username }}/.dotbot/install"
   become: yes
   become_user: "{{ item.username }}"
   with_items: "{{ users }}"
