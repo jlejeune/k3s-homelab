@@ -24,6 +24,8 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/instance: home-assistant
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -49,8 +51,8 @@ spec:
             - mountPath: /config/configuration.yaml
               subPath: configuration.yaml
               name: configmap-file
-            #- mountPath: /dev/ttyUSB1
-            #  name: zigbee
+            - mountPath: /dev/ttyUSB0
+              name: zigbee
           securityContext:
             privileged: true
             capabilities:
@@ -66,9 +68,11 @@ spec:
         - name: configmap-file
           configMap:
             name: home-assistant-configmap
-        #- name: zigbee
-        #  hostPath:
-        #    path: /dev/ttyACM0
+        - name: zigbee
+          hostPath:
+            path: /dev/ttyUSB0
+      nodeSelector:
+        feature.node.kubernetes.io/custom-zigbee: "true"
 ---
 kind: ConfigMap
 apiVersion: v1
