@@ -29,7 +29,6 @@ spec:
         core:
           sources:
             - custom
-            - pci
             - usb
         sources:
           usb:
@@ -48,6 +47,6 @@ spec:
             - name: zigbee
               matchOn:
                 - usbId:
-                    class: ["02"]
+                    class: ["ff"]
                     vendor: ["10c4"]
                     device: ["ea60"]
