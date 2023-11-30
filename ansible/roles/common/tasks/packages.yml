@@ -1,15 +1,18 @@
 ---
 - name: Update packages
-  apt: update_cache=yes upgrade=dist
+  ansible.builtin.apt:
+    update_cache: yes
+    upgrade: dist
 
 - name: Install common packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ item }}"
     state: present
   with_items:
     - apt-transport-https
     - ca-certificates
     - htop
+    - git
     - lnav
     - manpages
     - mosh
@@ -31,3 +34,29 @@
     - util-linux
     - vim
     - zsh
+
+- name: Uninstall useless packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - ifupdown
+    - dhcpcd5
+    - isc-dhcp-client
+    - isc-dhcp-common
+    - rsyslog
+    - raspberrypi-net-mods
+    - openresolv
+
+- name: Put networks packages on hold
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  with_items:
+    - ifupdown
+    - dhcpcd5
+    - isc-dhcp-client
+    - isc-dhcp-common
+    - rsyslog
+    - raspberrypi-net-mods
+    - openresolv

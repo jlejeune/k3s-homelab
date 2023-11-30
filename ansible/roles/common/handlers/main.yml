@@ -1,4 +1,9 @@
 ---
+- name: systemd-networkd
+  service:
+    name: systemd-networkd
+    state: restarted
+
 - name: restart sshd
   service:
     name: ssh

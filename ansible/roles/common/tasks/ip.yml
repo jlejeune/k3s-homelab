@@ -1,15 +1,40 @@
 ---
-- name: Configure static IP in /etc/dhcpcd.conf
-  become: yes
+- name: Rename network interface based on its MAC address
+  template:
+    src: "eth0.link.j2"
+    dest: "/etc/systemd/network/01-eth0.link"
+    owner: root
+    group: root
+    mode: 0644
+  notify: systemd-networkd
+
+- name: Configure main wired network interface
+  template:
+    src: "wired.network.j2"
+    dest: "/etc/systemd/network/10-wired.network"
+    owner: root
+    group: root
+    mode: 0644
+  notify: systemd-networkd
+
+- name: Configure DNS servers
   lineinfile:
-    dest: /etc/dhcpcd.conf
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
+    path: /etc/resolv.conf
+    line: "{{ item.key }} {{ item.value }}"
     state: present
   with_items:
-    - { regexp: "^interface eth[0-9]$", line: "interface eth0" }
-    - { regexp: "^static ip_address", line: "static ip_address={{ ip_address }}" }
-    - { regexp: "^static routers", line: "static routers={{ ip_gateway }}" }
-    - { regexp: "^static domain_name_servers", line: "static domain_name_servers={{ ip_dns }}" }
-    - { regexp: "^static domain_search", line: "static domain_search={{ domain_search }}" }
-  notify: reboot
+    - { key: "nameserver", value: "{{ ip_dns }}" }
+    - { key: "search", value: "{{ domain_search }}" }
+  notify: systemd-networkd
+
+- name: Disable and stop networking service
+  ansible.builtin.systemd:
+    name: networking
+    enabled: no
+    state: stopped
+
+- name: Enable systemd-networkd service
+  ansible.builtin.systemd:
+    name: systemd-networkd
+    enabled: yes
+    state: started
