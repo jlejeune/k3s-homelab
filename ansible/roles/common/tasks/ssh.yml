@@ -1,4 +1,13 @@
 ---
+- name: Add .ssh directories
+  file:
+    path: "/home/{{ item.username }}/.ssh"
+    state: directory
+    mode: 0700
+    owner: "{{ item.username }}"
+    group: "{{ item.group  }}"
+  with_items: "{{ users }}"
+
 - name: Set authorized keys
   ansible.posix.authorized_key:
     user: "{{ item.username }}"
