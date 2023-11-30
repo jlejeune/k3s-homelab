@@ -12,20 +12,24 @@
     update_password: on_create
   with_items: "{{ users }}"
 
-- name: Get my dotfiles config
+- name: Get my dotfiles config for me and for root user
   ansible.builtin.git:
     repo: "https://github.com/jlejeune/dotbot.git"
-    dest: "/home/{{ item.username }}/.dotbot"
+    dest: "{{ item.home }}/.dotbot"
     update: yes
   become: yes
   become_user: "{{ item.username }}"
-  with_items: "{{ users }}"
+  with_items:
+    - { username: "jlejeune", home: "/home/jlejeune" }
+    - { username: "root", home: "/root" }
 
-- name: Install my dotfiles
-  ansible.builtin.command: "/home/{{ item.username }}/.dotbot/install"
+- name: Install my dotfiles for me and for root user
+  ansible.builtin.command: "{{ item.home }}/.dotbot/install"
   become: yes
   become_user: "{{ item.username }}"
-  with_items: "{{ users }}"
+  with_items:
+    - { username: "jlejeune", home: "/home/jlejeune" }
+    - { username: "root", home: "/root" }
 
 - name: Remove the user 'pi'
   ansible.builtin.user:
