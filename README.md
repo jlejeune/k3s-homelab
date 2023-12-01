@@ -129,7 +129,7 @@ After reboot, update the inventory file with your final worker IP and run this c
 ansible-playbook playbooks/bootstrap.yml -l <NEW_WORKER_NAME>
 ```
 
-Get you k3s master token from your master node in that file:
+Get your k3s master token from your master node in that file:
 /var/lib/rancher/k3s/server/token and run that command:
 ```sh
 ansible-playbook playbooks/add-k3s-worker.yml -e "host=<NEW_WORKER_NAME>" -e "token=<YOUR_TOKEN>"

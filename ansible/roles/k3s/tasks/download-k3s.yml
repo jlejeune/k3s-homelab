@@ -4,9 +4,19 @@
     path: /usr/local/bin/k3s
     state: absent
 
+- name: Set k3s url for arm64
+  set_fact:
+    k3s_url: "https://github.com/rancher/k3s/releases/download/{{ k3s_version }}/k3s-arm64"
+  when: ansible_architecture == 'aarch64'
+
+- name: Set k3s url for amd64
+  set_fact:
+    k3s_url: "https://github.com/rancher/k3s/releases/download/{{ k3s_version }}/k3s"
+  when: ansible_architecture != 'aarch64'
+
 - name: Download k3s binary
   ansible.builtin.get_url:
-    url: "https://github.com/rancher/k3s/releases/download/{{ k3s_version }}/k3s-arm64"
+    url: "{{ k3s_url }}"
     dest: /usr/local/bin/k3s
     owner: root
     group: root

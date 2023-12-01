@@ -22,6 +22,7 @@
     apply:
       tags: raspi-config
   tags: raspi-config
+  when: ansible_architecture == 'aarch64'
 
 - include_tasks:
     file: ip.yml

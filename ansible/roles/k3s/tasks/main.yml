@@ -4,3 +4,4 @@
 
 - include_tasks:
     file: configure-cgroup.yml
+  when: ansible_architecture == 'aarch64'

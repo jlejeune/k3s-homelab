@@ -33,7 +33,7 @@
     enabled: no
     state: stopped
 
-- name: Enable systemd-networkd service
+- name: Enable and start systemd-networkd service
   ansible.builtin.systemd:
     name: systemd-networkd
     enabled: yes
