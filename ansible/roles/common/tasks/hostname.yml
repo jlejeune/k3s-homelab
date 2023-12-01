@@ -7,5 +7,5 @@
   lineinfile:
     dest: /etc/hosts
     regexp: '^127\.0\.1\.1'
-    line: "127.0.1.1{{'\t'}}{{ system_hostname }}"
+    line: "127.0.1.1{{'\t'}}{{ system_hostname }}.{{ domain_search }}{{'\t'}}{{ system_hostname }}"
     state: present
