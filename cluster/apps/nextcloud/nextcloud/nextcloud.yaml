@@ -108,6 +108,16 @@ spec:
         - name: nextcloud-vol
           persistentVolumeClaim:
             claimName: nextcloud-pvc
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
