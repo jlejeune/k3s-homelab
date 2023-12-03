@@ -1,0 +1,14 @@
+---
+- name: Download plik binary arm64
+  get_url:
+    url: "https://github.com/root-gg/plik/releases/download/{{ plik_version }}/plik-{{ plik_version }}-linux-arm64.tar.gz"
+    dest: /tmp
+
+- name: Extract plik archive
+  ansible.builtin.unarchive:
+    src: "/tmp/plik-{{ plik_version }}-linux-arm64.tar.gz"
+    dest: /tmp
+    remote_src: yes
+
+- name: Move plik binary to /usr/local/bin/ folder
+  command: mv /tmp/plik-{{ plik_version }}-linux-arm64/clients/linux-arm/plik /usr/local/bin/plik
