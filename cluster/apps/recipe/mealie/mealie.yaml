@@ -11,6 +11,8 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/instance: mealie
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
