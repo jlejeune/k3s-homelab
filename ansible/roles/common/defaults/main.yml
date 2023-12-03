@@ -12,4 +12,4 @@ boot_config:
   - "hdmi_cvt=800 480 60 6"
   - "hdmi_drive=1"
   - "config_hdmi_boost=5"
-plik_version: "1.3.7"
+plik_version: "1.3.8"
