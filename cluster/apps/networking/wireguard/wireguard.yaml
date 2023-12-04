@@ -21,19 +21,19 @@ spec:
       restartPolicy: Always
       containers:
         - name: wireguard
-          image: linuxserver/wireguard:latest
+          image: linuxserver/wireguard:1.0.20210914
           securityContext:
             privileged: true
             capabilities:
               add:
                 - NET_ADMIN
-#                - SYS_MODULE
+                - SYS_MODULE
           ports:
             - containerPort: 51820
               protocol: UDP
           env:
-            - name: LOG_LEVEL
-              value: info
+            - name: TZ
+              value: "${TZ}"
           resources:
             requests:
               memory: "64Mi"
@@ -44,11 +44,16 @@ spec:
             - name: wireguard-config
               mountPath: /config/wg0.conf
               subPath: wg0.conf
-              readOnly: true
+            - name: host-volumes
+              mountPath: /lib/modules
       volumes:
         - name: wireguard-config
           secret:
             secretName: wireguard-config
+        - name: host-volumes
+          hostPath:
+            path: /lib/modules
+            type: Directory
 
 ---
 apiVersion: v1
@@ -57,16 +62,12 @@ metadata:
   name: wireguard
   namespace: networking
   annotations:
-    metallb.universe.tf/allow-shared-ip: "${LB_WIREGUARD_ADDRESS}"
+    metallb.universe.tf/loadBalancerIPs: ${LB_WIREGUARD_ADDRESS}
 spec:
   selector:
     app.kubernetes.io/instance: wireguard
   type: LoadBalancer
-  spec:
-    loadBalancerIP: "${LB_WIREGUARD_ADDRESS}"
-    externalTrafficPolicy: Local
   ports:
-    - name: 51820-tcp
-      port: 51820
+    - port: 51820
       targetPort: 51820
       protocol: UDP
