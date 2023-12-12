@@ -25,42 +25,6 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: photos
-  namespace: networking
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - kind: Rule
-      match: "Host(`photos.${SECRET_DOMAIN}`) && PathPrefix(`/photo`)"
-      services:
-        - kind: Service
-          name: photos
-          namespace: networking
-          port: 443
-          scheme: https
-      middlewares:
-        - name: security-header
-          namespace: networking
-    - kind: Rule
-      match: "Host(`photos.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: photos-redirectregex
-          namespace: networking
-        - name: security-header
-          namespace: networking
-      services:
-        - kind: Service
-          name: photos
-          namespace: networking
-          port: 443
-          scheme: https
-  tls:
-    secretName: "${SECRET_DOMAIN}-tls"
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
   name: webdav
   namespace: networking
 spec:
