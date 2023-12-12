@@ -1,0 +1,20 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: immich
+  namespace: immich
+  labels:
+    app.kubernetes.io/instance: immich
+data:
+  DB_HOSTNAME: "immich-db"
+  DB_USERNAME: "immich"
+  DB_DATABASE_NAME: "immich"
+  ENABLE_MAPBOX: "true"
+  NODE_ENV: "production"
+  REDIS_HOSTNAME: "immich-redis"
+  REDIS_PASSWORD: ""
+  DISABLE_REVERSE_GEOCODING: "false"
+  REVERSE_GEOCODING_PRECISION: "2"
+  PUBLIC_LOGIN_PAGE_MESSAGE: ""
+  TYPESENSE_HOST: "immich-typesense"

@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - freshrss
   - home-automation
+  - immich
   - joplin
   - networking
   - nextcloud
