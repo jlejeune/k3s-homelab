@@ -20,7 +20,6 @@ metadata:
 data:
   redis-config: |
     maxmemory 500mb
-    maxmemory-policy allkeys-lru
 ---
 apiVersion: apps/v1
 kind: Deployment
