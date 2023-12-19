@@ -1,0 +1,15 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: forwardbasicauth-authelia
+  namespace: networking
+spec:
+  forwardAuth:
+    address: http://authelia.authelia.svc.cluster.local/api/verify?auth=basic
+    trustForwardHeader: true
+    authResponseHeaders:
+      - Remote-User
+      - Remote-Name
+      - Remote-Email
+      - Remote-Groups

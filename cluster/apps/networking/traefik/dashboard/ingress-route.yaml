@@ -16,6 +16,8 @@ spec:
           namespace: networking
           port: 9000
       middlewares:
+        - name: forwardauth-authelia
+          namespace: networking
         - name: security-header
           namespace: networking
   tls:

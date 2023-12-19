@@ -11,6 +11,8 @@ spec:
     - kind: Rule
       match: "Host(`longhorn.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
       middlewares:
+        - name: forwardauth-authelia
+          namespace: networking
         - name: security-header
           namespace: networking
       services:
