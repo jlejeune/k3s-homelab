@@ -10,3 +10,4 @@ resources:
   - nextcloud
   - plik
   - recipe
+  - smtp-relay
