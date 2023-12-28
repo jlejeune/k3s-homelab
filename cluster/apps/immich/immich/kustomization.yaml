@@ -10,4 +10,3 @@ resources:
   - immich-redis.yaml
   - immich.secret.sops.yaml
   - immich-server.yaml
-  - immich-typesense.yaml

@@ -39,7 +39,7 @@ spec:
               sleep 2 ; done
       containers:
         - name: immich-microservice
-          image: altran1502/immich-server:v1.90.0
+          image: altran1502/immich-server:v1.91.4
           command:
             - /bin/sh
           args:
@@ -52,11 +52,6 @@ spec:
                 secretKeyRef:
                   name: immich
                   key: DB_PASSWORD
-            - name: TYPESENSE_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: immich
-                  key: TYPESENSE_API_KEY
           envFrom:
             - configMapRef:
                 name: immich
