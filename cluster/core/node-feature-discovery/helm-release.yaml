@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: node-feature-discovery
-      version: 0.14.3
+      version: 0.15.0
       sourceRef:
         kind: HelmRepository
         name: node-feature-discovery-charts
@@ -45,8 +45,11 @@ spec:
               - device
           custom:
             - name: zigbee
-              matchOn:
-                - usbId:
-                    class: ["ff"]
-                    vendor: ["10c4"]
-                    device: ["ea60"]
+              labels:
+                custom-zigbee: "true"
+              matchFeatures:
+                - feature: usb.device
+                  matchExpressions:
+                    class: {op: In, value: ["ff"]}
+                    vendor: {op: In, value: ["10c4"]}
+                    device: {op: In, value: ["ea60"]}
