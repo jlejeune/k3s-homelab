@@ -84,7 +84,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: nextcloud
-          image: nextcloud:27.1.5
+          image: nextcloud:28.0.1
           imagePullPolicy: IfNotPresent
           env:
             - name: TZ
