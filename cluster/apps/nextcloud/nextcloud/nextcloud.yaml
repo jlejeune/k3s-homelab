@@ -12,6 +12,39 @@ data:
   SMTP_PORT: "587"
   SMTP_SECURE: tls
   PHP_MEMORY_LIMIT: "512M"
+  OVERWRITEPROTOCOL: "https"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nextcloud-custom-script
+  namespace: nextcloud
+data:
+  custom-script.sh: |
+    #!/bin/sh
+
+    apt-get update
+
+    apt-get install -y --no-install-recommends \
+        ffmpeg \
+        ghostscript \
+        libmagickcore-6.q16-6-extra \
+        procps \
+        smbclient \
+        supervisor
+
+    apt-get install -y --no-install-recommends \
+        libbz2-dev \
+        libc-client-dev \
+        libkrb5-dev \
+        libsmbclient-dev
+
+    docker-php-ext-configure imap --with-kerberos --with-imap-ssl
+    docker-php-ext-install \
+        bz2 \
+        imap
+    pecl install smbclient
+    docker-php-ext-enable smbclient
 ---
 apiVersion: v1
 kind: Service
@@ -91,6 +124,10 @@ spec:
               value: "${TZ}"
             - name: NEXTCLOUD_TRUSTED_DOMAINS
               value: "nextcloud.${SECRET_DOMAIN}"
+            - name: OVERWRITEHOST
+              value: "nextcloud.${SECRET_DOMAIN}:443"
+            - name: OVERWRITECLIURL
+              value: "https://nextcloud.${SECRET_DOMAIN}"
           envFrom:
             - secretRef:
                 name: nextcloud
@@ -101,6 +138,22 @@ spec:
           ports:
             - containerPort: 80
               name: http
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "/custom-script.sh"]
+          volumeMounts:
+            - mountPath: /var/www/html
+              name: nextcloud-vol
+            - mountPath: /custom-script.sh
+              name: custom-script
+              readOnly: true
+              subPath: custom-script.sh
+        - name: nextcloud-cron
+          image: nextcloud:28.0.1
+          imagePullPolicy: IfNotPresent
+          command:
+            - /cron.sh
           volumeMounts:
             - mountPath: /var/www/html
               name: nextcloud-vol
@@ -108,6 +161,13 @@ spec:
         - name: nextcloud-vol
           persistentVolumeClaim:
             claimName: nextcloud-pvc
+        - name: custom-script
+          configMap:
+            name: nextcloud-custom-script
+            defaultMode: 0744
+            items:
+              - key: custom-script.sh
+                path: custom-script.sh
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
