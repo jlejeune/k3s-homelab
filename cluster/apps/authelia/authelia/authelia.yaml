@@ -76,6 +76,10 @@ spec:
               value: /secrets/STORAGE_ENCRYPTION_KEY
             - name: AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE
               value: /secrets/STORAGE_PASSWORD
+            - name: AUTHELIA_IDENTITY_PROVIDERS_OIDC_ISSUER_PRIVATE_KEY_FILE
+              value: /secrets/IDENTITY_PROVIDERS_OIDC_ISSUER_PRIVATE_KEY_FILE
+            - name: AUTHELIA_IDENTITY_PROVIDERS_OIDC_HMAC_SECRET_FILE
+              value: /secrets/IDENTITY_PROVIDERS_OIDC_HMAC_SECRET_FILE
           startupProbe:
             failureThreshold: 6
             httpGet:
@@ -139,6 +143,10 @@ spec:
                 path: STORAGE_PASSWORD
               - key: LDAP_PASSWORD
                 path: LDAP_PASSWORD
+              - key: IDENTITY_PROVIDERS_OIDC_ISSUER_PRIVATE_KEY_FILE
+                path: IDENTITY_PROVIDERS_OIDC_ISSUER_PRIVATE_KEY_FILE
+              - key: IDENTITY_PROVIDERS_OIDC_HMAC_SECRET_FILE
+                path: IDENTITY_PROVIDERS_OIDC_HMAC_SECRET_FILE
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -188,6 +196,23 @@ data:
       attestation_conveyance_preference: indirect
       user_verification: preferred
       timeout: 60s
+    identity_providers:
+      oidc:
+        clients:
+          - id: immich
+            description: Immich
+            secret: "${SECRET_IMMICH_OAUTH_CLIENT_SECRET}"
+            authorization_policy: one_factor
+            pre_configured_consent_duration: 1w
+            scopes:
+              - openid
+              - profile
+              - email
+            redirect_uris:
+              - https://photos.${SECRET_DOMAIN}/auth/login
+              - https://photos.${SECRET_DOMAIN}/user-settings
+              - app.immich:/
+            userinfo_signing_algorithm: none
     authentication_backend:
       password_reset:
         disable: false
