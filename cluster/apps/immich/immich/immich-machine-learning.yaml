@@ -83,7 +83,7 @@ spec:
           emptyDir: {}
         - name: library
           persistentVolumeClaim:
-            claimName: immich-library
+            claimName: immich-library-pvc
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

@@ -61,13 +61,23 @@ spec:
               mountPath: /geodata-cache
             - name: library
               mountPath: /usr/src/app/upload
+            - name: jlejeune-library
+              mountPath: /usr/src/app/upload/library/jlejeune
+            - name: aconvert-library
+              mountPath: /usr/src/app/upload/library/aconvert
           resources: {}
       volumes:
         - name: geodata-cache
           emptyDir: {}
         - name: library
           persistentVolumeClaim:
-            claimName: immich-library
+            claimName: immich-library-pvc
+        - name: jlejeune-library
+          persistentVolumeClaim:
+            claimName: immich-jlejeune-library-pvc
+        - name: aconvert-library
+          persistentVolumeClaim:
+            claimName: immich-aconvert-library-pvc
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
