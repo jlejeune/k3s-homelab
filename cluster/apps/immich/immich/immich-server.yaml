@@ -143,6 +143,10 @@ spec:
           image: altran1502/immich-server:v1.91.4
           imagePullPolicy: IfNotPresent
           env:
+            - name: PUID
+              value: "1024"
+            - name: PGID
+              value: "100"
             - name: NODE_ENV
               value: "production"
             - name: DB_PASSWORD
