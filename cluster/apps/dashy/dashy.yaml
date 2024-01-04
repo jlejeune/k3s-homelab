@@ -1,0 +1,136 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dashy
+  namespace: dashy
+  labels:
+    app.kubernetes.io/instance: dashy
+data:
+  conf.yml: |-
+    pageInfo:
+      title: Jlejeune Homelab
+    sections:
+      - name: Media & Entertainment
+        icon: fas fa-browser
+        items:
+          - title: Nextcloud
+            icon: hl-Nextcloud
+            url: https://nextcloud.${SECRET_DOMAIN}
+          - title: FreshRSS
+            icon: hl-freshrss
+            url: https://rss.${SECRET_DOMAIN}
+          - title: Mealie
+            icon: hl-mealie
+            url: https://mealie.${SECRET_DOMAIN}
+          - title: Synology
+            icon: far fa-hdd
+            url: https://nas.${SECRET_DOMAIN}
+      - name: Home automation
+        icon: fas fa-home
+        items:
+          - title: Home-Assistant
+            icon: hl-home-assistant
+            url: https://ha.${SECRET_DOMAIN}
+      - name: Authentication
+        icon: fas fa-lock
+        items:
+          - title: Authelia
+            icon: hl-Authelia
+            url: https://auth.${SECRET_DOMAIN}
+      - name: Kubernetes
+        icon: hl-kubernetes-dashboard
+        items:
+          - title: Traefik
+            icon: hl-traefik
+            url: https://traefik.${SECRET_DOMAIN}
+          - title: Longhorn
+            icon: hl-longhorn
+            url: https://longhorn.${SECRET_DOMAIN}
+      - name: Monitoring
+        icon: far fa-chart-line
+        items:
+          - title: Grafana
+            icon: hl-grafana
+            url: https://grafana.${SECRET_DOMAIN}
+      - name: Networking
+        icon: fas fa-network-wired
+        items:
+          - title: Pi-hole
+            icon: hl-pi-hole
+            url: https://pihole.${SECRET_DOMAIN}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashy
+  namespace: dashy
+  labels:
+    app.kubernetes.io/instance: dashy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: dashy
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: dashy
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: dashy
+          image: lissy93/dashy:2.1.1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: port
+              value: "80"
+          ports:
+            - containerPort: 80
+              name: http
+          volumeMounts:
+            - name: dashy-config
+              mountPath: /app/public
+      volumes:
+        - name: dashy-config
+          configMap:
+            name: dashy
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dashy
+  namespace: dashy
+spec:
+  selector:
+    app.kubernetes.io/instance: dashy
+  ports:
+    - name: http
+      port: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: dashy
+  namespace: dashy
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`home.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: forwardauth-authelia
+          namespace: networking
+        - name: security-header
+          namespace: networking
+      services:
+        - kind: Service
+          name: dashy
+          namespace: dashy
+          port: 80
+          scheme: http
+  tls:
+    secretName: "${SECRET_DOMAIN}-tls"
