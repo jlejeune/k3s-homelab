@@ -49,7 +49,7 @@ spec:
     spec:
       containers:
         - name: smtp
-          image: loganmarchione/docker-postfixrelay:1.4.1
+          image: loganmarchione/docker-postfixrelay:1.4.2
           # image: juanluisbaptiste/postfix:1.7.1
           ports:
             - containerPort: 25
