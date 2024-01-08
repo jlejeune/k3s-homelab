@@ -14,15 +14,18 @@ data:
       - name: Media & Entertainment
         icon: fas fa-browser
         items:
-          - title: Nextcloud
-            icon: hl-Nextcloud
-            url: https://nextcloud.${SECRET_DOMAIN}
           - title: FreshRSS
             icon: hl-freshrss
             url: https://rss.${SECRET_DOMAIN}
+          - title: Immich
+            icon: hl-immich
+            url: https://photos.${SECRET_DOMAIN}
           - title: Mealie
             icon: hl-mealie
             url: https://mealie.${SECRET_DOMAIN}
+          - title: Nextcloud
+            icon: hl-Nextcloud
+            url: https://nextcloud.${SECRET_DOMAIN}
           - title: Synology
             icon: far fa-hdd
             url: https://nas.${SECRET_DOMAIN}
@@ -41,12 +44,12 @@ data:
       - name: Kubernetes
         icon: hl-kubernetes-dashboard
         items:
-          - title: Traefik
-            icon: hl-traefik
-            url: https://traefik.${SECRET_DOMAIN}
           - title: Longhorn
             icon: hl-longhorn
             url: https://longhorn.${SECRET_DOMAIN}
+          - title: Traefik
+            icon: hl-traefik
+            url: https://traefik.${SECRET_DOMAIN}
       - name: Monitoring
         icon: far fa-chart-line
         items:
