@@ -70,8 +70,6 @@ spec:
               value: /secrets/JWT_TOKEN
             - name: AUTHELIA_SESSION_SECRET_FILE
               value: /secrets/SESSION_ENCRYPTION_KEY
-            - name: AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE
-              value: /secrets/LDAP_PASSWORD
             - name: AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE
               value: /secrets/STORAGE_ENCRYPTION_KEY
             - name: AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE
@@ -141,8 +139,6 @@ spec:
                 path: STORAGE_ENCRYPTION_KEY
               - key: STORAGE_PASSWORD
                 path: STORAGE_PASSWORD
-              - key: LDAP_PASSWORD
-                path: LDAP_PASSWORD
               - key: IDENTITY_PROVIDERS_OIDC_ISSUER_PRIVATE_KEY_FILE
                 path: IDENTITY_PROVIDERS_OIDC_ISSUER_PRIVATE_KEY_FILE
               - key: IDENTITY_PROVIDERS_OIDC_HMAC_SECRET_FILE
@@ -235,6 +231,7 @@ data:
         permit_unauthenticated_bind: false
         permit_feature_detection_failure: false
         user: ${SECRET_LDAP_ADMIN_BIND_DN}
+        password: ${SECRET_LDAP_ADMIN_QUERY_PASSWORD}
         users_filter: (&({username_attribute}={input})(objectClass=person))
         groups_filter: (&(member={dn})(objectclass=posixGroup))
         group_name_attribute: cn

@@ -24,14 +24,55 @@ spec:
           image: hkotel/mealie:v0.5.6
           imagePullPolicy: IfNotPresent
           env:
-            - name: DB_TYPE
-              value: sqlite
+            - name: DEBUG
+              value: "true"
+            - name: TZ
+              value: "${TZ}"
             - name: RECIPE_DISABLE_COMMENTS
               value: "true"
+            - name: RECIPE_PUBLIC
+              value: "false"
+            - name: RECIPE_SHOW_NUTRITION
+              value: "false"
             - name: AUTO_BACKUP_ENABLED
               value: "true"
             - name: API_DOCS
               value: "false"
+            - name: ALLOW_SIGNUP
+              value: "false"
+            - name: DEFAULT_GROUP
+              value: "Users"
+            - name: SMTP_HOST
+              value: "${LB_SMTP_RELAY_ADDRESS}"
+            - name: SMTP_PORT
+              value: "25"
+            - name: SMTP_AUTH_STRATEGY
+              value: "NONE"
+            - name: SMTP_FROM_NAME
+              value: "Jlejeune Mealie Server"
+            - name: SMTP_FROM_EMAIL
+              value: "${SECRET_MEALIE_FROM_EMAIL}"
+            - name: LDAP_AUTH_ENABLED
+              value: "true"
+            - name: LDAP_SERVER_URL
+              value: ldap://${NAS_ADDRESS}
+            - name: LDAP_TLS_INSECURE
+              value: "true"
+            # NOTE: Use new LDAP env variables the day mealie app is upgraded to 1.0
+            #- name: LDAP_BASE_DN
+            #  value: "dc=jlejeune,dc=home"
+            #- name: LDAP_USER_FILTER
+            #  value: "($(uid=*)((memberof=cn=external users,cn=groups,dc=jlejeune,dc=home)(memberof=cn=internal users,cn=groups,dc=jlejeune,dc=home))"
+            - name: LDAP_ADMIN_FILTER
+              value: "(memberof=cn=administrators,cn=groups,dc=jlejeune,dc=home)"
+            - name: LDAP_BIND_TEMPLATE
+              value: "uid={},cn=users,dc=jlejeune,dc=home"
+            - name: LDAP_ID_ATTRIBUTE
+              value: "uid"
+            - name: LDAP_NAME_ATTRIBUTE
+              value: "name"
+            - name: LDAP_MAIL_ATTRIBUTE
+              value: "mail"
           envFrom:
             - secretRef:
                 name: mealie
@@ -46,13 +87,6 @@ spec:
               scheme: HTTP
             initialDelaySeconds: 5
             timeoutSeconds: 10
-          resources:
-            limits:
-              cpu: 400m
-              memory: 500Mi
-            requests:
-              cpu: 54m
-              memory: 150Mi
           volumeMounts:
             - name: mealie-data
               mountPath: /app/data
