@@ -53,6 +53,22 @@ spec:
               value: "Jlejeune Joplin Server"
             - name: MAILER_NOREPLY_EMAIL
               value: "${SECRET_JOPLIN_NOREPLY_EMAIL}"
+            - name: LDAP_1_ENABLED
+              value: "true"
+            - name: LDAP_1_USER_AUTO_CREATION
+              value: "true"
+            - name: LDAP_1_HOST
+              value: "ldap://${NAS_ADDRESS}"
+            - name: LDAP_1_MAIL_ATTRIBUTE
+              value: "mail"
+            - name: LDAP_1_FULLNAME_ATTRIBUTE
+              value: "gecos"
+            - name: LDAP_1_BASE_DN
+              value: "dc=jlejeune,dc=home"
+            - name: LDAP_1_BIND_DN
+              value: "${SECRET_LDAP_ADMIN_BIND_DN}"
+            - name: LDAP_1_BIND_PW
+              value: "${SECRET_LDAP_ADMIN_QUERY_PASSWORD}"
           envFrom:
             - secretRef:
                 name: joplin-db
