@@ -20,6 +20,9 @@ data:
           - title: Immich
             icon: hl-immich
             url: https://photos.${SECRET_DOMAIN}
+          - title: Joplin
+            icon: hl-joplin
+            url: https://joplin.${SECRET_DOMAIN}
           - title: Mealie
             icon: hl-mealie
             url: https://mealie.${SECRET_DOMAIN}
