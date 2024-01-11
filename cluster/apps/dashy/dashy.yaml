@@ -20,6 +20,9 @@ data:
           - title: Immich
             icon: hl-immich
             url: https://photos.${SECRET_DOMAIN}
+          - title: Jellyfin
+            icon: hl-jellyfin
+            url: https://videos.${SECRET_DOMAIN}
           - title: Joplin
             icon: hl-joplin
             url: https://joplin.${SECRET_DOMAIN}

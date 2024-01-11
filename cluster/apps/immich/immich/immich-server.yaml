@@ -12,7 +12,7 @@ spec:
     - ReadWriteMany
   nfs:
     path: /volume1/k3s/nfs_volumes/immich/jlejeune
-    server: 192.168.1.50
+    server: ${NAS_ADDRESS}
   claimRef:
     name: immich-jlejeune-library-pvc
     namespace: immich
@@ -45,7 +45,7 @@ spec:
     - ReadWriteMany
   nfs:
     path: /volume1/k3s/nfs_volumes/immich/aconvert
-    server: 192.168.1.50
+    server: ${NAS_ADDRESS}
   claimRef:
     name: immich-aconvert-library-pvc
     namespace: immich
@@ -78,7 +78,7 @@ spec:
     - ReadWriteMany
   nfs:
     path: /volume1/k3s/nfs_volumes/immich/immich-library
-    server: 192.168.1.50
+    server: ${NAS_ADDRESS}
   claimRef:
     name: immich-library-pvc
     namespace: immich
