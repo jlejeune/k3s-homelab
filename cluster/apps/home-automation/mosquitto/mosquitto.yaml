@@ -1,0 +1,151 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mosquitto
+  namespace: home-automation
+  labels:
+    app.kubernetes.io/instance: mosquitto
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: mosquitto
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: mosquitto
+    spec:
+      containers:
+        - name: mosquitto
+          image: eclipse-mosquitto:2.0.18
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8883
+              name: mqtts
+              protocol: TCP
+            - containerPort: 9002
+              name: mqttwebsocket
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /mosquitto/config/
+              name: config
+            - mountPath: /mosquitto/certs/
+              name: certs
+            - mountPath: /mosquitto/data/
+              name: data
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 9002
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 9002
+            timeoutSeconds: 1
+      volumes:
+        - name: config
+          configMap:
+            name: mosquitto
+        - name: certs
+          secret:
+            secretName: mosquitto-certs
+        - name: data
+          persistentVolumeClaim:
+            claimName: mosquitto-data-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mosquitto-data-pvc
+  namespace: home-automation
+spec:
+  storageClassName: longhorn
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mqtt-tls
+  namespace: home-automation
+  labels:
+    app.kubernetes.io/instance: mosquitto
+spec:
+  ports:
+    - port: 8883
+      protocol: TCP
+      targetPort: mqtts
+      name: mqtts
+  selector:
+    app.kubernetes.io/instance: mosquitto
+  type: ClusterIP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mosquitto
+  namespace: home-automation
+data:
+  mosquitto.conf: |
+    user mosquitto
+
+    # Persistence configuration
+    persistence true
+    persistence_location /mosquitto/data/
+
+    # Logging
+    log_dest stderr
+    log_dest stdout
+    log_type error
+    log_type warning
+    log_type notice
+    log_type information
+    log_type subscribe
+    log_timestamp true
+
+    # Listeners
+    listener 8883
+    protocol mqtt
+    #cafile /etc/mosquitto/ca.crt
+    cafile /etc/ssl/certs/ca-certificates.crt
+    certfile /mosquitto/certs/tls.crt
+    keyfile /mosquitto/certs/tls.key
+    require_certificate false
+
+    listener 9002
+    protocol websockets
+    #cafile /etc/mosquitto/ca.crt
+    cafile /etc/ssl/certs/ca-certificates.crt
+    certfile /mosquitto/certs/tls.crt
+    keyfile /mosquitto/certs/tls.key
+
+    # Security
+    #password_file /mosquitto/passwd/mosquitto.passwd
+    #acl_file /mosquitto/acl/mosquitto.acl
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: mosquitto
+  namespace: home-automation
+spec:
+  dnsNames:
+    - mqtt.${SECRET_DOMAIN}
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-production
+  secretName: mosquitto-certs
