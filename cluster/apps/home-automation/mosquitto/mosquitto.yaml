@@ -23,8 +23,8 @@ spec:
           image: eclipse-mosquitto:2.0.18
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8883
-              name: mqtts
+            - containerPort: 1883
+              name: mqtt
               protocol: TCP
             - containerPort: 9002
               name: mqttwebsocket
@@ -80,19 +80,19 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mqtt-tls
+  name: mosquitto
   namespace: home-automation
-  labels:
-    app.kubernetes.io/instance: mosquitto
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: ${LB_MQTT_ADDRESS}
 spec:
+  type: LoadBalancer
   ports:
-    - port: 8883
+    - port: 1883
       protocol: TCP
-      targetPort: mqtts
-      name: mqtts
+      targetPort: mqtt
+      name: mqtt
   selector:
     app.kubernetes.io/instance: mosquitto
-  type: ClusterIP
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -101,41 +101,38 @@ metadata:
   namespace: home-automation
 data:
   mosquitto.conf: |
-    user mosquitto
-
     # Persistence configuration
     persistence true
     persistence_location /mosquitto/data/
 
     # Logging
-    log_dest stderr
-    log_dest stdout
     log_type error
     log_type warning
     log_type notice
     log_type information
-    log_type subscribe
+    log_dest stdout
     log_timestamp true
+    log_timestamp_format %Y-%m-%dT%H:%M:%S
 
     # Listeners
-    listener 8883
+    listener 1883
     protocol mqtt
-    #cafile /etc/mosquitto/ca.crt
-    cafile /etc/ssl/certs/ca-certificates.crt
     certfile /mosquitto/certs/tls.crt
     keyfile /mosquitto/certs/tls.key
-    require_certificate false
 
     listener 9002
     protocol websockets
-    #cafile /etc/mosquitto/ca.crt
-    cafile /etc/ssl/certs/ca-certificates.crt
     certfile /mosquitto/certs/tls.crt
     keyfile /mosquitto/certs/tls.key
 
     # Security
-    #password_file /mosquitto/passwd/mosquitto.passwd
-    #acl_file /mosquitto/acl/mosquitto.acl
+    password_file /mosquitto/config/mosquitto.passwd
+    acl_file /mosquitto/config/mosquitto.acl
+  mosquitto.passwd: |
+    mosquitto:$7$101$qhRjwnzNmRpTP54v$mMEma60H9AZtN9S0rUpuvfk54aj37BNw5aOI7snFqhg3MX8vypz3rq8+AcnOzikXw3GV7FYUdqmdXkl46U608g==
+  mosquitto.acl: |
+    user mosquitto
+    topic readwrite #
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
