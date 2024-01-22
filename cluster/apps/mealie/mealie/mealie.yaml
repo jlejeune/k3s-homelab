@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mealie
-  namespace: recipe
+  namespace: mealie
   labels:
     app.kubernetes.io/instance: mealie
 spec:
@@ -21,7 +21,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: mealie
-          image: hkotel/mealie:v0.5.6
+          image: hkotel/mealie:v1.0.0
           imagePullPolicy: IfNotPresent
           env:
             - name: DEBUG
@@ -36,6 +36,8 @@ spec:
               value: "false"
             - name: AUTO_BACKUP_ENABLED
               value: "true"
+            - name: BASE_URL
+              value: "https://mealie.${SECRET_DOMAIN}"
             - name: API_DOCS
               value: "false"
             - name: ALLOW_SIGNUP
@@ -58,42 +60,35 @@ spec:
               value: ldap://${NAS_ADDRESS}
             - name: LDAP_TLS_INSECURE
               value: "true"
-            # NOTE: Use new LDAP env variables the day mealie app is upgraded to 1.0
-            #- name: LDAP_BASE_DN
-            #  value: "dc=jlejeune,dc=home"
-            #- name: LDAP_USER_FILTER
-            #  value: "($(uid=*)((memberof=cn=external users,cn=groups,dc=jlejeune,dc=home)(memberof=cn=internal users,cn=groups,dc=jlejeune,dc=home))"
+            - name: LDAP_BASE_DN
+              value: "cn=users,dc=jlejeune,dc=home"
+            - name: LDAP_USER_FILTER
+              value: "(|(memberof=cn=external users,cn=groups,dc=jlejeune,dc=home)(memberof=cn=internal users,cn=groups,dc=jlejeune,dc=home))"
             - name: LDAP_ADMIN_FILTER
               value: "(memberof=cn=administrators,cn=groups,dc=jlejeune,dc=home)"
-            - name: LDAP_BIND_TEMPLATE
-              value: "uid={},cn=users,dc=jlejeune,dc=home"
+            - name: LDAP_QUERY_BIND
+              value: "${SECRET_LDAP_ADMIN_BIND_DN}"
+            - name: LDAP_QUERY_PASSWORD
+              value: "${SECRET_LDAP_ADMIN_QUERY_PASSWORD}"
             - name: LDAP_ID_ATTRIBUTE
               value: "uid"
             - name: LDAP_NAME_ATTRIBUTE
-              value: "name"
+              value: "gecos"
             - name: LDAP_MAIL_ATTRIBUTE
               value: "mail"
           envFrom:
             - secretRef:
                 name: mealie
           ports:
-            - containerPort: 80
+            - containerPort: 9000
               name: http
-          readinessProbe:
-            failureThreshold: 5
-            httpGet:
-              path: /api/debug/version
-              port: http
-              scheme: HTTP
-            initialDelaySeconds: 5
-            timeoutSeconds: 10
           volumeMounts:
             - name: mealie-data
               mountPath: /app/data
       volumes:
         - name: mealie-data
           persistentVolumeClaim:
-            claimName: mealie-data
+            claimName: mealie-data-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -101,20 +96,20 @@ metadata:
   labels:
     app.kubernetes.io/instance: mealie
   name: mealie
-  namespace: recipe
+  namespace: mealie
 spec:
   selector:
     app.kubernetes.io/instance: mealie
   ports:
     - name: http
-      port: 80
+      port: 9000
       targetPort: http
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: mealie
-  namespace: recipe
+  namespace: mealie
 spec:
   entryPoints:
     - websecure
@@ -122,15 +117,13 @@ spec:
     - kind: Rule
       match: "Host(`mealie.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
       middlewares:
-        - name: forwardauth-authelia
-          namespace: networking
         - name: security-header
           namespace: networking
       services:
         - kind: Service
           name: mealie
-          namespace: recipe
-          port: 80
+          namespace: mealie
+          port: 9000
           scheme: http
   tls:
     secretName: "${SECRET_DOMAIN}-tls"
@@ -140,12 +133,35 @@ kind: PersistentVolumeClaim
 metadata:
   labels:
     app.kubernetes.io/instance: mealie
-  name: mealie-data
-  namespace: recipe
+  name: mealie-data-pvc
+  namespace: mealie
 spec:
+  storageClassName: longhorn
+  volumeName: mealie-data-pv
+  volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mealie-data-pv
+  namespace: mealie
+spec:
   storageClassName: longhorn
+  persistentVolumeReclaimPolicy: Retain
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  csi:
+    driver: driver.longhorn.io
+    fsType: ext4
+    volumeAttributes:
+      numberOfReplicas: '2'
+      staleReplicaTimeout: '2880'
+    volumeHandle: mealie-data-pv  # we have to create it manually on longhorn UI first

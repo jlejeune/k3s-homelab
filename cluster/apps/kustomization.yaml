@@ -9,8 +9,8 @@ resources:
   - immich
   - jellyfin
   - joplin
+  - mealie
   - networking
   - nextcloud
   - plik
-  - recipe
   - smtp-relay
