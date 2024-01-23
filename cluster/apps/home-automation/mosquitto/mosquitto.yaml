@@ -23,8 +23,8 @@ spec:
           image: eclipse-mosquitto:2.0.18
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 1883
-              name: mqtt
+            - containerPort: 8883
+              name: mqtts
               protocol: TCP
             - containerPort: 9002
               name: mqttwebsocket
@@ -87,10 +87,10 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-    - port: 1883
+    - port: 8883
       protocol: TCP
-      targetPort: mqtt
-      name: mqtt
+      targetPort: mqtts
+      name: mqtts
   selector:
     app.kubernetes.io/instance: mosquitto
 ---
@@ -115,7 +115,7 @@ data:
     log_timestamp_format %Y-%m-%dT%H:%M:%S
 
     # Listeners
-    listener 1883
+    listener 8883
     protocol mqtt
     certfile /mosquitto/certs/tls.crt
     keyfile /mosquitto/certs/tls.key
@@ -129,7 +129,8 @@ data:
     password_file /mosquitto/config/mosquitto.passwd
     acl_file /mosquitto/config/mosquitto.acl
   mosquitto.passwd: |
-    mosquitto:$7$101$qhRjwnzNmRpTP54v$mMEma60H9AZtN9S0rUpuvfk54aj37BNw5aOI7snFqhg3MX8vypz3rq8+AcnOzikXw3GV7FYUdqmdXkl46U608g==
+    homeassistant:$7$101$qhRjwnzNmRpTP54v$mMEma60H9AZtN9S0rUpuvfk54aj37BNw5aOI7snFqhg3MX8vypz3rq8+AcnOzikXw3GV7FYUdqmdXkl46U608g==
+    owntracks:$7$101$9oq3A9AHNJRkCsK5$gLzN3cV9k+97iIVWjylc0EgUKz9aQYp+tZ+SOWJigz0I2C6S3Yv1Lb2wkunFmM5mtUiFgUDD5lGuCwzdmrDWXg==
   mosquitto.acl: |
     user mosquitto
     topic readwrite #
