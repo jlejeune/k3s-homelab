@@ -326,6 +326,8 @@ data:
         - domain: nas.${SECRET_DOMAIN}
           policy: bypass
 
-        - domain: mealie.${SECRET_DOMAIN}
+        - domain: ha.${SECRET_DOMAIN}
           policy: bypass
+          networks:
+            - home
     ...
