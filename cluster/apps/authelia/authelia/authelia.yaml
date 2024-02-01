@@ -333,4 +333,9 @@ data:
 
         - domain: owntracks.${SECRET_DOMAIN}
           policy: one_factor
+
+        - domain: zigbee2mqtt.${SECRET_DOMAIN}
+          policy: one_factor
+          networks:
+            - home
     ...

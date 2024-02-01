@@ -131,11 +131,15 @@ data:
   mosquitto.passwd: |
     homeassistant:$7$101$qhRjwnzNmRpTP54v$mMEma60H9AZtN9S0rUpuvfk54aj37BNw5aOI7snFqhg3MX8vypz3rq8+AcnOzikXw3GV7FYUdqmdXkl46U608g==
     owntracks:$7$101$9oq3A9AHNJRkCsK5$gLzN3cV9k+97iIVWjylc0EgUKz9aQYp+tZ+SOWJigz0I2C6S3Yv1Lb2wkunFmM5mtUiFgUDD5lGuCwzdmrDWXg==
+    zigbee2mqtt:$7$101$QKN5Ghmr4QaiXn5A$KB42itqcWqjjghNpkhlZLsEHRo5Yu28Z9HGmQNvu+dMs/Ra/e+zk3XwQyawsdthUYVFhdt29KnMRNMUGpwrXxA==
   mosquitto.acl: |
     user homeassistant
     topic readwrite #
 
     user owntracks
+    topic readwrite #
+
+    user zigbee2mqtt
     topic readwrite #
 ---
 apiVersion: cert-manager.io/v1
