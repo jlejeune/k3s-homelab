@@ -43,6 +43,8 @@ spec:
               value: debug
             - name: ZIGBEE2MQTT_CONFIG_ADVANCED_LOG_OUTPUT
               value: '["console"]'
+            - name: ZIGBEE2MQTT_CONFIG_ADVANCED_CHANNEL
+              value: "15"
             - name: ZIGBEE2MQTT_CONFIG_HOMEASSISTANT
               value: "true"
             - name: ZIGBEE2MQTT_CONFIG_MQTT_INCLUDE_DEVICE_INFORMATION
