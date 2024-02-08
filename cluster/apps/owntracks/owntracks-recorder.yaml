@@ -48,7 +48,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: owntracks-recorder
-          image: owntracks/recorder:0.9.6
+          image: owntracks/recorder:0.9.7
           imagePullPolicy: IfNotPresent
           env:
             - name: TZ
