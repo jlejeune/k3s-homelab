@@ -5,7 +5,7 @@ metadata:
   name: server
   namespace: system-upgrade
 spec:
-  version: "v1.27.3+k3s1"
+  version: "v1.29.1+k3s2"
   serviceAccountName: system-upgrade
   concurrency: 1
   cordon: true
