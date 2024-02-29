@@ -83,7 +83,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: immich-db
-          image: tensorchord/pgvecto-rs:pg15-v0.1.11
+          image: tensorchord/pgvecto-rs:pg15-v0.2.0
           imagePullPolicy: IfNotPresent
           envFrom:
             - secretRef:
