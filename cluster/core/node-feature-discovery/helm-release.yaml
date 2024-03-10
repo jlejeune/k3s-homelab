@@ -53,3 +53,12 @@ spec:
                     class: {op: In, value: ["ff"]}
                     vendor: {op: In, value: ["10c4"]}
                     device: {op: In, value: ["ea60"]}
+            - name: bluetooth
+              labels:
+                custom-bluetooth: "true"
+              matchFeatures:
+                - feature: usb.device
+                  matchExpressions:
+                    class: {op: In, value: ["ff"]}
+                    vendor: {op: In, value: ["0bda"]}
+                    device: {op: In, value: ["0129"]}

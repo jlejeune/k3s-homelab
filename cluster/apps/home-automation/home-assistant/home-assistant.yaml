@@ -40,9 +40,9 @@ spec:
               value: "${TZ}"
           resources:
             requests:
-              memory: "256Mi"
-            limits:
               memory: "512Mi"
+            limits:
+              memory: "1Gi"
           ports:
             - containerPort: 8123
           volumeMounts:
@@ -51,6 +51,9 @@ spec:
             - mountPath: /config/configuration.yaml
               subPath: configuration.yaml
               name: configmap-file
+            - mountPath: /run/dbus
+              name: dbus
+              readOnly: true
           securityContext:
             privileged: true
             capabilities:
@@ -66,6 +69,12 @@ spec:
         - name: configmap-file
           configMap:
             name: home-assistant-configmap
+        - name: dbus
+          hostPath:
+            path: /run/dbus
+            type: Directory
+      nodeSelector:
+        feature.node.kubernetes.io/custom-bluetooth: "true"
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -97,6 +106,18 @@ data:
     owntracks:
       max_gps_accuracy: 200
       mqtt_topic: "owntracks/#"
+    bluetooth:
+#    device_tracker:
+      #- platform: bluetooth_le_tracker
+      #  consider_home: 300
+      #  interval_seconds: 60
+      #  new_device_defaults:
+      #    track_new_devices: true
+      #- platform: bluetooth_tracker
+      #  consider_home: 300
+      #  interval_seconds: 60
+      #  new_device_defaults:
+      #    track_new_devices: true
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
