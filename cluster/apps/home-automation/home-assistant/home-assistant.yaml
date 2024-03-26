@@ -48,9 +48,6 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: home-assistant-vol
-            - mountPath: /config/configuration.yaml
-              subPath: configuration.yaml
-              name: configmap-file
             - mountPath: /run/dbus
               name: dbus
               readOnly: true
@@ -66,9 +63,6 @@ spec:
         - name: home-assistant-vol
           persistentVolumeClaim:
             claimName: home-assistant-pvc
-        - name: configmap-file
-          configMap:
-            name: home-assistant-configmap
         - name: dbus
           hostPath:
             path: /run/dbus
@@ -85,39 +79,6 @@ spec:
                     operator: In
                     values:
                       - amd64
----
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: home-assistant-configmap
-  namespace: home-automation
-data:
-  known_devices.yaml: |
-  automations.yaml: |
-  configuration.yaml: |-
-    default_config:
-    http:
-      use_x_forwarded_for: true
-      trusted_proxies:
-        - 127.0.0.1
-        - 192.168.1.0/24
-      ip_ban_enabled: true
-      login_attempts_threshold: 5
-    owntracks:
-      max_gps_accuracy: 200
-      mqtt_topic: "owntracks/#"
-    bluetooth:
-#    device_tracker:
-      #- platform: bluetooth_le_tracker
-      #  consider_home: 300
-      #  interval_seconds: 60
-      #  new_device_defaults:
-      #    track_new_devices: true
-      #- platform: bluetooth_tracker
-      #  consider_home: 300
-      #  interval_seconds: 60
-      #  new_device_defaults:
-      #    track_new_devices: true
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
