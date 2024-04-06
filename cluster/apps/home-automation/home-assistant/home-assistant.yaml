@@ -67,8 +67,6 @@ spec:
           hostPath:
             path: /run/dbus
             type: Directory
-      nodeSelector:
-        feature.node.kubernetes.io/custom-bluetooth: "true"
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
