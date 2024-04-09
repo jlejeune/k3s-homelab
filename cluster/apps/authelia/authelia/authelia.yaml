@@ -329,6 +329,11 @@ data:
         - domain: ha.${SECRET_DOMAIN}
           policy: bypass
 
+        - domain: ha-code.${SECRET_DOMAIN}
+          policy: bypass
+          networks:
+            - home
+
         - domain: owntracks.${SECRET_DOMAIN}
           policy: one_factor
 

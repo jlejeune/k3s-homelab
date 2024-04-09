@@ -1,0 +1,99 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: code-server-pvc
+  namespace: home-automation
+spec:
+  storageClassName: longhorn
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: code-server
+  namespace: home-automation
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: code-server
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: code-server
+    spec:
+      containers:
+        - name: code-server
+          image: lscr.io/linuxserver/code-server:4.23.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TZ
+              value: "${TZ}"
+          ports:
+            - containerPort: 8443
+          volumeMounts:
+            - name: home-assistant
+              mountPath: /config/workspace
+            - name: config
+              mountPath: /config
+      volumes:
+        - name: home-assistant
+          persistentVolumeClaim:
+            claimName: home-assistant-pvc
+        - name: config
+          persistentVolumeClaim:
+            claimName: code-server-pvc
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values: ["home-assistant"]
+              topologyKey: kubernetes.io/hostname
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: code-server
+  namespace: home-automation
+spec:
+  ports:
+    - name: http
+      targetPort: 8443
+      port: 8443
+      protocol: TCP
+  selector:
+    app.kubernetes.io/instance: code-server
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: code-server
+  namespace: home-automation
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`ha-code.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: forwardauth-authelia
+          namespace: networking
+      services:
+        - kind: Service
+          name: code-server
+          namespace: home-automation
+          port: 8443
+          scheme: http
+  tls:
+    secretName: "${SECRET_DOMAIN}-tls"
