@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: traefik
-      version: 25.0.0
+      version: 28.0.0
       sourceRef:
         kind: HelmRepository
         name: traefik-charts
@@ -35,15 +35,9 @@ spec:
         metallb.universe.tf/loadBalancerIP: "${LB_TRAEFIK_ADDRESS}"
     logs:
       general:
-        format: json
         level: INFO
       access:
         enabled: true
-        format: json
-    ingressClass:
-      enabled: true
-      isDefaultClass: true
-      fallbackApiVersion: v1
     ingressRoute:
       dashboard:
         enabled: false
@@ -58,17 +52,15 @@ spec:
       - "--providers.kubernetescrd.allowCrossNamespace=true"
     ports:
       traefik:
-        expose: true
-    entryPoints:
+        expose:
+          default: true
       web:
-        address: ":80"
-        http:
-          redirections:
-            entryPoint:
-              to: websecure
-              scheme: https
+        port: 80
+        redirectTo:
+          port: websecure
       websecure:
-        address: ":443"
+        # asDefault: true
+        port: 443
     tlsOptions:
       default:
         minVersion: VersionTLS12
@@ -84,9 +76,6 @@ spec:
         curvePreferences:
           - secp521r1
           - secp384r1
-    experimental:
-      plugins:
-        enabled: false
     resources:
       requests:
         memory: 200Mi
