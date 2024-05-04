@@ -39,7 +39,7 @@ spec:
               sleep 2 ; done
       containers:
         - name: immich-microservice
-          image: altran1502/immich-server:v1.102.3
+          image: altran1502/immich-server:v1.103.1
           command:
             - /bin/sh
           args:
