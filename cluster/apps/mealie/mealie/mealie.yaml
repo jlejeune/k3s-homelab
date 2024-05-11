@@ -21,7 +21,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: mealie
-          image: hkotel/mealie:v1.5.1
+          image: hkotel/mealie:v1.6.0
           imagePullPolicy: IfNotPresent
           env:
             - name: DEBUG
