@@ -35,7 +35,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: jellyfin
-          image: docker.io/jellyfin/jellyfin:10.8.13
+          image: docker.io/jellyfin/jellyfin:10.9.1
           ports:
             - containerPort: 8096
               name: http
