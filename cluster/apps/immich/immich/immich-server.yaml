@@ -140,7 +140,7 @@ spec:
               sleep 2 ; done
       containers:
         - name: immich
-          image: altran1502/immich-server:v1.105.1
+          image: altran1502/immich-server:v1.106.4
           imagePullPolicy: IfNotPresent
           env:
             - name: PUID
@@ -160,10 +160,6 @@ spec:
                 optional: false
           ports:
             - containerPort: 3001
-          command:
-            - /bin/sh
-          args:
-            - ./start-server.sh
           volumeMounts:
             - name: geocoding-dump
               mountPath: /usr/src/app/.reverse-geocoding-dump

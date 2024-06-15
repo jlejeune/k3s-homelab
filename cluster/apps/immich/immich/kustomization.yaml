@@ -6,7 +6,6 @@ resources:
   - immich-db.yaml
   - immich-config.yaml
   - immich-machine-learning.yaml
-  - immich-microservice.yaml
   - immich-redis.yaml
   - immich.secret.sops.yaml
   - immich-server.yaml
