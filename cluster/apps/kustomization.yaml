@@ -12,6 +12,5 @@ resources:
   - mealie
   - networking
   - nextcloud
-  - owntracks
   - plik
   - smtp-relay
