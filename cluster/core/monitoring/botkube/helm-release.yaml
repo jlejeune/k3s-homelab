@@ -5,7 +5,7 @@ metadata:
   name: botkube
   namespace: monitoring
 spec:
-  interval: 5m
+  interval: 60m
   chart:
     spec:
       chart: botkube
@@ -14,7 +14,7 @@ spec:
         kind: HelmRepository
         name: botkube-charts
         namespace: flux-system
-      interval: 5m
+      interval: 60m
   values:
     communications:
       default-group:

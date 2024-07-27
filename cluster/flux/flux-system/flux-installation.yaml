@@ -5,7 +5,7 @@ metadata:
   name: flux-installation
   namespace: flux-system
 spec:
-  interval: 10m
+  interval: 60m
   ref:
     tag: "v2.3.0"
   url: https://github.com/fluxcd/flux2
@@ -21,7 +21,7 @@ metadata:
   name: flux-installation
   namespace: flux-system
 spec:
-  interval: 10m
+  interval: 60m
   path: ./manifests/install
   prune: true
   wait: true

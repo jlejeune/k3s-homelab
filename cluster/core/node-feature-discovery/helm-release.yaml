@@ -5,7 +5,7 @@ metadata:
   name: node-feature-discovery
   namespace: node-feature-discovery
 spec:
-  interval: 15m
+  interval: 60m
   chart:
     spec:
       chart: node-feature-discovery
