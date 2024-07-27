@@ -4,3 +4,4 @@ kind: Kustomization
 namespace: flux-system
 resources:
   - cert-manager-webhook-ovh-charts.yaml
+  - weave-gitops-charts.yaml
