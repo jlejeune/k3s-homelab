@@ -48,6 +48,7 @@ spec:
     additionalArguments:
       - "--providers.kubernetesingress.ingressendpoint.ip=${LB_TRAEFIK_ADDRESS}"
       - "--providers.kubernetesingress.allowexternalnameservices=true"
+#      - "--providers.kubernetesingress.publishedservice.enabled=true"
       - "--providers.kubernetescrd.allowexternalnameservices=true"
       - "--providers.kubernetescrd.allowCrossNamespace=true"
     ports:
