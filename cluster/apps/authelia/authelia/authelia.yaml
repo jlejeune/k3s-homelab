@@ -13,29 +13,6 @@ spec:
   selector:
     app.kubernetes.io/instance: authelia
 ---
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: authelia
-  namespace: authelia
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - kind: Rule
-      match: "Host(`auth.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: security-header
-          namespace: networking
-      services:
-        - kind: Service
-          name: authelia
-          namespace: authelia
-          port: 80
-          scheme: http
-  tls:
-    secretName: "${SECRET_DOMAIN}-tls"
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:

@@ -66,26 +66,3 @@ spec:
         - name: plik-config
           secret:
             secretName: plik-config
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: plik
-  namespace: plik
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - kind: Rule
-      match: "Host(`plik.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: security-header
-          namespace: networking
-      services:
-        - kind: Service
-          name: plik
-          namespace: plik
-          port: 8080
-          scheme: http
-  tls:
-    secretName: "${SECRET_DOMAIN}-tls"

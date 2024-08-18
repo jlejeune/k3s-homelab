@@ -79,26 +79,3 @@ spec:
           ports:
             - containerPort: 22300
               name: joplin-port
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: joplin
-  namespace: joplin
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - kind: Rule
-      match: "Host(`joplin.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: security-header
-          namespace: networking
-      services:
-        - kind: Service
-          name: joplin
-          namespace: joplin
-          port: 22300
-          scheme: http
-  tls:
-    secretName: "${SECRET_DOMAIN}-tls"

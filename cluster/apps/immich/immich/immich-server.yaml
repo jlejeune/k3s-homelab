@@ -208,26 +208,3 @@ spec:
       protocol: TCP
   selector:
     app.kubernetes.io/instance: immich
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: immich
-  namespace: immich
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - kind: Rule
-      match: "Host(`photos.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: security-header
-          namespace: networking
-      services:
-        - kind: Service
-          name: immich-server
-          namespace: immich
-          port: 80
-          scheme: http
-  tls:
-    secretName: "${SECRET_DOMAIN}-tls"

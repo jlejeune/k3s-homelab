@@ -63,26 +63,3 @@ spec:
         - name: freshrss-vol
           persistentVolumeClaim:
             claimName: freshrss-pvc
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: freshrss
-  namespace: freshrss
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - kind: Rule
-      match: "Host(`rss.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: security-header
-          namespace: networking
-      services:
-        - kind: Service
-          name: freshrss
-          namespace: freshrss
-          port: 80
-          scheme: http
-  tls:
-    secretName: "${SECRET_DOMAIN}-tls"

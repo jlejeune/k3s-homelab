@@ -101,25 +101,3 @@ spec:
     - port: 8096
   selector:
     app.kubernetes.io/instance: jellyfin
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: jellyfin
-  namespace: jellyfin
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - kind: Rule
-      match: "Host(`videos.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: security-header
-          namespace: networking
-      services:
-        - kind: Service
-          name: jellyfin
-          namespace: jellyfin
-          port: 8096
-  tls:
-    secretName: "${SECRET_DOMAIN}-tls"

@@ -125,31 +125,6 @@ spec:
   selector:
     app.kubernetes.io/instance: zigbee2mqtt
 ---
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: zigbee2mqtt
-  namespace: home-automation
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - kind: Rule
-      match: "Host(`zigbee2mqtt.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: forwardauth-authelia
-          namespace: networking
-        - name: security-header
-          namespace: networking
-      services:
-        - kind: Service
-          name: zigbee2mqtt
-          namespace: home-automation
-          port: 8080
-          scheme: http
-  tls:
-    secretName: "${SECRET_DOMAIN}-tls"
----
 apiVersion: v1
 kind: ConfigMap
 metadata:

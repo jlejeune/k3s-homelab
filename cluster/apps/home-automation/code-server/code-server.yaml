@@ -74,26 +74,3 @@ spec:
       protocol: TCP
   selector:
     app.kubernetes.io/instance: code-server
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: code-server
-  namespace: home-automation
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - kind: Rule
-      match: "Host(`ha-code.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: forwardauth-authelia
-          namespace: networking
-      services:
-        - kind: Service
-          name: code-server
-          namespace: home-automation
-          port: 8443
-          scheme: http
-  tls:
-    secretName: "${SECRET_DOMAIN}-tls"

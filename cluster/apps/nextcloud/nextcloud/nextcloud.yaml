@@ -178,28 +178,3 @@ spec:
                     operator: In
                     values:
                       - amd64
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: nextcloud
-  namespace: nextcloud
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - kind: Rule
-      match: "Host(`nextcloud.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: nextcloud-redirectregex
-          namespace: networking
-        - name: security-header
-          namespace: networking
-      services:
-        - kind: Service
-          name: nextcloud
-          namespace: nextcloud
-          port: 80
-          scheme: http
-  tls:
-    secretName: "${SECRET_DOMAIN}-tls"

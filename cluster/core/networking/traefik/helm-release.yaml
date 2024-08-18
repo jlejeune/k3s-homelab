@@ -48,11 +48,11 @@ spec:
     additionalArguments:
       - "--providers.kubernetesingress.ingressendpoint.ip=${LB_TRAEFIK_ADDRESS}"
       - "--providers.kubernetesingress.allowexternalnameservices=true"
-#      - "--providers.kubernetesingress.publishedservice.enabled=true"
       - "--providers.kubernetescrd.allowexternalnameservices=true"
       - "--providers.kubernetescrd.allowCrossNamespace=true"
     ports:
       traefik:
+        port: 9000
         expose:
           default: true
       web:
@@ -62,6 +62,11 @@ spec:
       websecure:
         # asDefault: true
         port: 443
+      wireguard:
+        port: 51820
+        protocol: UDP
+        expose:
+          default: true
     tlsOptions:
       default:
         minVersion: VersionTLS12
