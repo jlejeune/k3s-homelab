@@ -4,6 +4,8 @@ kind: ConfigMap
 metadata:
   name: authelia-db
   namespace: authelia
+  annotations:
+    reloader.stakater.com/match: "true"
 data:
   PGDATA: "/var/lib/postgresql/data/pgdata"
   POSTGRES_DATABASE: authelia
@@ -64,10 +66,12 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  labels:
-    app.kubernetes.io/instance: authelia-db
   name: authelia-db
   namespace: authelia
+  labels:
+    app.kubernetes.io/instance: authelia-db
+  annotations:
+    reloader.stakater.com/search: "true"
 spec:
   replicas: 1
   selector:

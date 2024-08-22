@@ -6,6 +6,8 @@ metadata:
   namespace: home-automation
   labels:
     app.kubernetes.io/instance: mosquitto
+  annotations:
+    reloader.stakater.com/search: "true"
 spec:
   replicas: 1
   selector:
@@ -99,6 +101,8 @@ kind: ConfigMap
 metadata:
   name: mosquitto
   namespace: home-automation
+  annotations:
+    reloader.stakater.com/match: "true"
 data:
   mosquitto.conf: |
     # Persistence configuration

@@ -4,6 +4,8 @@ kind: ConfigMap
 metadata:
   name: nextcloud
   namespace: nextcloud
+  annotations:
+    reloader.stakater.com/match: "true"
 data:
   MYSQL_DATABASE: nextcloud
   MYSQL_USER: nextcloud
@@ -102,6 +104,8 @@ metadata:
   namespace: nextcloud
   labels:
     app.kubernetes.io/instance: nextcloud
+  annotations:
+    reloader.stakater.com/search: "true"
 spec:
   replicas: 1
   selector:

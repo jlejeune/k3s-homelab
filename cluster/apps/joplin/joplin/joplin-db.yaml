@@ -4,6 +4,8 @@ kind: ConfigMap
 metadata:
   name: joplin-db
   namespace: joplin
+  annotations:
+    reloader.stakater.com/match: "true"
 data:
   PGDATA: "/var/lib/postgresql/data/pgdata"
   POSTGRES_DATABASE: joplin
@@ -64,10 +66,12 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  labels:
-    app.kubernetes.io/instance: joplin-db
   name: joplin-db
   namespace: joplin
+  labels:
+    app.kubernetes.io/instance: joplin-db
+  annotations:
+    reloader.stakater.com/search: "true"
 spec:
   replicas: 1
   selector:

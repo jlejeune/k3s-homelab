@@ -105,6 +105,8 @@ metadata:
   namespace: immich
   labels:
     app.kubernetes.io/instance: immich
+  annotations:
+    reloader.stakater.com/search: "true"
 spec:
   replicas: 1
   selector:

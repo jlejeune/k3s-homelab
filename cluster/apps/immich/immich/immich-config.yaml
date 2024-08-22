@@ -6,6 +6,8 @@ metadata:
   namespace: immich
   labels:
     app.kubernetes.io/instance: immich
+  annotations:
+    reloader.stakater.com/match: "true"
 data:
   DB_HOSTNAME: "immich-db"
   DB_USERNAME: "immich"

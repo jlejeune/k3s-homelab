@@ -17,6 +17,8 @@ kind: ConfigMap
 metadata:
   name: nextcloud-redis-config
   namespace: nextcloud
+  annotations:
+    reloader.stakater.com/match: "true"
 data:
   redis-config: |
     maxmemory 500mb
@@ -29,6 +31,8 @@ metadata:
   namespace: nextcloud
   labels:
     app.kubernetes.io/instance: nextcloud-redis
+  annotations:
+    reloader.stakater.com/search: "true"
 spec:
   replicas: 1
   selector:

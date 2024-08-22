@@ -17,6 +17,8 @@ kind: ConfigMap
 metadata:
   name: authelia-redis-config
   namespace: authelia
+  annotations:
+    reloader.stakater.com/match: "true"
 data:
   redis-config: |
     maxmemory 500mb
@@ -28,6 +30,8 @@ metadata:
   namespace: authelia
   labels:
     app.kubernetes.io/instance: authelia-redis
+  annotations:
+    reloader.stakater.com/search: "true"
 spec:
   replicas: 1
   selector:

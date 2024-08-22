@@ -4,6 +4,8 @@ kind: ConfigMap
 metadata:
   name: pihole
   namespace: networking
+  annotations:
+    reloader.stakater.com/match: "true"
 data:
   TZ: "${TZ}"
   ADMIN_EMAIL: "${SECRET_EMAIL}"
@@ -32,6 +34,8 @@ metadata:
   namespace: networking
   labels:
     app.kubernetes.io/instance: pihole
+  annotations:
+    reloader.stakater.com/search: "true"
 spec:
   replicas: 1
   selector:
