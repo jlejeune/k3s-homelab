@@ -7,5 +7,6 @@ resources:
   - monitoring
   - networking
   - node-feature-discovery
+  - reloader
   - storage
   - system-upgrade
