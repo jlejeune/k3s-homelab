@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - cert-manager
   - flux-system
+  - kubernetes-dashboard
   - monitoring
   - networking
   - node-feature-discovery

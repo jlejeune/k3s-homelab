@@ -549,3 +549,27 @@ spec:
           scheme: http
   tls:
     secretName: "${SECRET_DOMAIN}-tls"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: k3s-dashboard
+  namespace: networking
+  annotations:
+    external-dns.alpha.kubernetes.io/target: ${LB_TRAEFIK_ADDRESS}
+    kubernetes.io/ingress.class: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`k3s-dashboard.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: security-header
+          namespace: networking
+      services:
+        - name: kubernetes-dashboard
+          namespace: kubernetes-dashboard
+          port: 443
+  tls:
+    secretName: "${SECRET_DOMAIN}-tls"
