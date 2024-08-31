@@ -189,7 +189,7 @@ data:
             redirect_uris:
               - https://photos.${SECRET_DOMAIN}/auth/login
               - https://photos.${SECRET_DOMAIN}/user-settings
-              - app.immich:/
+              - app.immich:///oauth-callback
             userinfo_signing_algorithm: none
     authentication_backend:
       password_reset:
