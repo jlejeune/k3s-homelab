@@ -121,7 +121,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: nextcloud
-          image: nextcloud:29.0.5
+          image: nextcloud:29.0.6
           imagePullPolicy: IfNotPresent
           env:
             - name: TZ
@@ -154,7 +154,7 @@ spec:
               readOnly: true
               subPath: custom-script.sh
         - name: nextcloud-cron
-          image: nextcloud:29.0.5
+          image: nextcloud:29.0.6
           imagePullPolicy: IfNotPresent
           command:
             - /cron.sh
