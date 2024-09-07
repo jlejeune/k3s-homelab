@@ -48,7 +48,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: freshrss
-          image: lscr.io/linuxserver/freshrss:1.24.2
+          image: lscr.io/linuxserver/freshrss:1.24.3
           imagePullPolicy: IfNotPresent
           env:
             - name: TZ
