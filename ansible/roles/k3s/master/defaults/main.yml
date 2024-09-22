@@ -6,7 +6,7 @@ k3s_master_extra_args: "--disable servicelb --disable=traefik"
 k3s_master_ip: "{{ hostvars[groups['k3s_master'][0]]['ansible_host'] | default(groups['k3s_master'][0]) }}"
 
 # k9s
-k9s_version: v0.31.8
+k9s_version: v0.32.5
 
 # helm
 helm_version: v3.9.3
