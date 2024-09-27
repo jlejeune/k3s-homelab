@@ -142,7 +142,7 @@ spec:
               sleep 2 ; done
       containers:
         - name: immich
-          image: altran1502/immich-server:v1.113.1
+          image: altran1502/immich-server:v1.116.2
           imagePullPolicy: IfNotPresent
           env:
             - name: PUID
