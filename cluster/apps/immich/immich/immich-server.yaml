@@ -142,7 +142,7 @@ spec:
               sleep 2 ; done
       containers:
         - name: immich
-          image: altran1502/immich-server:v1.117.0
+          image: altran1502/immich-server:v1.119.1
           imagePullPolicy: IfNotPresent
           env:
             - name: PUID
@@ -161,7 +161,7 @@ spec:
                 name: immich
                 optional: false
           ports:
-            - containerPort: 3001
+            - containerPort: 2283
           volumeMounts:
             - name: geocoding-dump
               mountPath: /usr/src/app/.reverse-geocoding-dump
@@ -206,7 +206,7 @@ metadata:
 spec:
   ports:
     - port: 80
-      targetPort: 3001
+      targetPort: 2283
       protocol: TCP
   selector:
     app.kubernetes.io/instance: immich
