@@ -31,8 +31,8 @@ spec:
         loadBalancerIP: "${LB_TRAEFIK_ADDRESS}"
         externalTrafficPolicy: Local
       annotations:
-        metallb.universe.tf/allow-shared-ip: "traefik"
-        metallb.universe.tf/loadBalancerIP: "${LB_TRAEFIK_ADDRESS}"
+        metallb.io/allow-shared-ip: "traefik"
+        metallb.io/loadBalancerIP: "${LB_TRAEFIK_ADDRESS}"
     logs:
       general:
         level: INFO

@@ -81,7 +81,7 @@ metadata:
   name: pihole-dns-tcp
   namespace: networking
   annotations:
-    metallb.universe.tf/allow-shared-ip: pihole
+    metallb.io/allow-shared-ip: pihole
 spec:
   selector:
     app.kubernetes.io/instance: pihole
@@ -100,7 +100,7 @@ metadata:
   name: pihole-dns-udp
   namespace: networking
   annotations:
-    metallb.universe.tf/allow-shared-ip: pihole
+    metallb.io/allow-shared-ip: pihole
 spec:
   selector:
     app.kubernetes.io/instance: pihole

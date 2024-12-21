@@ -85,7 +85,7 @@ metadata:
   name: mosquitto
   namespace: home-automation
   annotations:
-    metallb.universe.tf/loadBalancerIPs: ${LB_MQTT_ADDRESS}
+    metallb.io/loadBalancerIPs: ${LB_MQTT_ADDRESS}
 spec:
   type: LoadBalancer
   ports:

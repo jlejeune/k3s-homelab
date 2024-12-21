@@ -5,7 +5,7 @@ metadata:
   name: smtp-relay
   namespace: smtp-relay
   annotations:
-    metallb.universe.tf/loadBalancerIPs: ${LB_SMTP_RELAY_ADDRESS}
+    metallb.io/loadBalancerIPs: ${LB_SMTP_RELAY_ADDRESS}
 spec:
   type: LoadBalancer
   ports:
