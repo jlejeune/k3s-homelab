@@ -381,7 +381,7 @@ spec:
         - kind: Service
           name: traefik
           namespace: networking
-          port: 9000
+          port: 8080
       middlewares:
         - name: forwardauth-authelia
           namespace: networking

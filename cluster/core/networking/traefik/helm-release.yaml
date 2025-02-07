@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: traefik
-      version: 32.1.1
+      version: 34.3.0
       sourceRef:
         kind: HelmRepository
         name: traefik-charts
@@ -52,16 +52,15 @@ spec:
       - "--providers.kubernetescrd.allowCrossNamespace=true"
     ports:
       traefik:
-        port: 9000
         expose:
           default: true
       web:
-        port: 80
-        redirectTo:
-          port: websecure
-      websecure:
+        redirections:
+          entryPoint:
+            to: websecure
+            scheme: https
+            permanent: true
         # asDefault: true
-        port: 443
       wireguard:
         port: 51820
         protocol: UDP
