@@ -1,0 +1,44 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama
+  namespace: home-automation
+  labels:
+    app.kubernetes.io/instance: ollama
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: ollama
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: ollama
+    spec:
+      containers:
+        - name: ollama
+          image: ollama/ollama:0.5.8
+          ports:
+            - name: http
+              containerPort: 11434
+              protocol: TCP
+      nodeSelector:
+        feature.node.kubernetes.io/custom-zigbee: "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama
+  namespace: home-automation
+  annotations:
+    metallb.io/loadBalancerIPs: ${LB_OLLAMA_ADDRESS}
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/instance: ollama
+  ports:
+    - port: 11434
+      name: ollama
+      targetPort: 11434
+      protocol: TCP

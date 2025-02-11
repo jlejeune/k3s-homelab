@@ -7,4 +7,5 @@ resources:
   - home-assistant
   - mosquitto
   - namespace.yaml
+  - ollama
   - zigbee2mqtt
