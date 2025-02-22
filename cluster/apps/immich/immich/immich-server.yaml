@@ -122,7 +122,7 @@ spec:
       restartPolicy: Always
       initContainers:
         - name: postgresql-isready
-          image: postgres:15.11
+          image: postgres:15.12
           env:
             - name: POSTGRES_USER
               valueFrom:
