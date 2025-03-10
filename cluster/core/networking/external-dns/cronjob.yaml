@@ -34,6 +34,7 @@ metadata:
   namespace: networking
 spec:
   schedule: "0 */12 * * *"
+  suspend: true
   jobTemplate:
     spec:
       template:
