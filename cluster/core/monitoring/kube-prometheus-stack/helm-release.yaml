@@ -26,22 +26,35 @@ spec:
     remediation:
       retries: 3
   values:
+    node-exporter:
+      serviceMonitor:
+        relabelings:
+          - sourceLabels: [__meta_kubernetes_pod_node_name]
+            separator: ;
+            regex: ^(.*)$
+            targetLabel: nodename
+            replacement: $1
+            action: replace
+          - sourceLabels: [nodename]
+            targetLabel: instance
+            regex: "([^:]+)(:[0-9]+)?"
+            replacement: "${1}"
     fullnameOverride: prometheus
     defaultRules:
-      enabled: true
       rules:
         kubeProxy: false
     alertmanager:
-      enabled: false
+      enabled: true
     grafana:
       enabled: false
       forceDeployDashboards: true
     kube-state-metrics:
       fullnameOverride: kube-state-metrics
+      releaseLabel: true
     kubeApiServer:
-      enabled: false
+      enabled: true
     kubeControllerManager:
-      enabled: false
+      enabled: true
     kubeEtcd:
       enabled: false
     kubeProxy:
@@ -49,7 +62,7 @@ spec:
     kubeScheduler:
       enabled: false
     kubelet:
-      enabled: false
+      enabled: true
     nameOverride: ""
     prometheus:
       ingress:
@@ -72,17 +85,17 @@ spec:
               storageClassName: longhorn
         walCompression: true
       thanosService:
-        enabled: false
+        enabled: true
       thanosServiceMonitor:
-        enabled: false
+        enabled: true
     prometheus-node-exporter:
       fullnameOverride: node-exporter
     prometheusOperator:
       prometheusConfigReloaderImage:
         resources:
           limits:
+            cpu: 500m
+            memory: 200Mi
+          requests:
             cpu: 200m
             memory: 100Mi
-          requests:
-            cpu: 100m
-            memory: 50Mi
