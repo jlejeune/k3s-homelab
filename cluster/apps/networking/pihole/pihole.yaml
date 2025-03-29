@@ -82,11 +82,11 @@ metadata:
   namespace: networking
   annotations:
     metallb.io/allow-shared-ip: pihole
+    metallb.io/loadBalancerIPs: "${LB_PIHOLE_ADDRESS}"
 spec:
   selector:
     app.kubernetes.io/instance: pihole
   type: LoadBalancer
-  loadBalancerIP: "${LB_PIHOLE_ADDRESS}"
   externalTrafficPolicy: Local
   ports:
     - name: dns-tcp
@@ -101,11 +101,11 @@ metadata:
   namespace: networking
   annotations:
     metallb.io/allow-shared-ip: pihole
+    metallb.io/loadBalancerIPs: "${LB_PIHOLE_ADDRESS}"
 spec:
   selector:
     app.kubernetes.io/instance: pihole
   type: LoadBalancer
-  loadBalancerIP: "${LB_PIHOLE_ADDRESS}"
   externalTrafficPolicy: Local
   ports:
     - name: dns-udp
