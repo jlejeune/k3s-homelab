@@ -18,6 +18,12 @@
   tags: configure-k3s
 
 - include_tasks:
+    file: deploy-kube-vip.yml
+    apply:
+      tags: deploy-kube-vip
+  tags: deploy-kube-vip
+
+- include_tasks:
     file: configure-flux.yml
     apply:
       tags: configure-flux

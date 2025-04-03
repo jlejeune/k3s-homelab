@@ -24,7 +24,6 @@
     state: present
   with_items:
     - { key: "nameserver", value: "{{ ip_dns }}" }
-    - { key: "search", value: "{{ domain_search }}" }
   notify: systemd-networkd
 
 - name: Disable and stop networking service

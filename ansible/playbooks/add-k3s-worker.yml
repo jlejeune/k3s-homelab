@@ -11,26 +11,26 @@
   roles:
     - k3s/worker
 
-- name: Define token in k3s-node service config file
+- name: Define token in k3s service config file
   hosts: "{{ host }}"
   become: yes
   tasks:
     - ansible.builtin.replace:
-        path: /etc/systemd/system/k3s-node.service
+        path: /etc/systemd/system/k3s.service
         regexp: "TOKEN"
         replace: "{{ token }}"
 
-- name: Restart k3s-node service
+- name: Restart k3s service
   hosts: "{{ host }}"
   become: yes
   tasks:
     - ansible.builtin.systemd:
         state: restarted
         daemon_reload: yes
-        name: k3s-node
+        name: k3s
 
 - name: Define k3s workers role
-  hosts: k3s_master
+  hosts: k3s_masters
   become: yes
   tasks:
     - ansible.builtin.command: >-

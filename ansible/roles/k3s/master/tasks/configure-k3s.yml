@@ -56,12 +56,15 @@
     remote_src: yes
     mode: "u=rw,g=,o="
 
-- name: Replace https://localhost:6443 by https://master-ip:6443
+- name: Configure kubectl cluster to {{ endpoint_url }}
   command: >-
     k3s kubectl config set-cluster default
-      --server=https://{{ k3s_master_ip }}:6443
+      --server={{ endpoint_url }}
       --kubeconfig /root/.kube/config
   changed_when: true
+  vars:
+    endpoint_url: >-
+      https://{{ k3s_master_vip }}:6443
 
 - name: Create kubectl symlink
   file:

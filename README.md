@@ -45,21 +45,21 @@ nmap command to do so and fill your inventory/hosts.yml file with the temporary 
 ---
 all:
   children:
-    k3s_master:
+    k3s_masters:
       hosts:
-        <MASTER_NAME>:
+        <MASTER1_NAME>:
           ansible_host: <TEMPORARY_MASTER_IP>
+        <MASTER2_NAME>:
+          ansible_host: <TEMPORARY_WORKER2_IP>
+        <MASTER3_NAME>:
+          ansible_host: <TEMPORARY_WORKER3_IP>
     k3s_workers:
       hosts:
         <WORKER1_NAME>:
           ansible_host: <TEMPORARY_WORKER1_IP>
-        <WORKER2_NAME>:
-          ansible_host: <TEMPORARY_WORKER2_IP>
-        <WORKER3_NAME>:
-          ansible_host: <TEMPORARY_WORKER3_IP>
     k3s_cluster:
       children:
-        k3s_master:
+        k3s_masters:
           hosts:
         k3s_workers:
           hosts:
@@ -93,7 +93,8 @@ ansible-playbook playbooks/install-k3s.yml
 
  * Download k3s binary
  * Configure k3s service on both nodes
- * Install and configure flux v2 to deploy other kubernetes components from a repository
+ * Deploy kube-vip on master nodes
+ * Install and configure flux v2 on first master node
 
 ## Ansible playbooks
 
@@ -110,6 +111,19 @@ ansible-playbook playbooks/install-k3s.yml
 #### Uninstall
 ```sh
 ansible-playbook playbooks/uninstall-k3s.yml
+```
+
+#### Promote a worker node to master
+
+Edit hosts.yaml inventory file to move the name of your worker to the masters list.
+
+Run these commands:
+```sh
+kubectl cordon <NODE>
+kubectl drain --force --ignore-daemonsets --delete-emptydir-data --grace-period=10 <NODE>
+kubectl delete nodes/<NODE>
+ansible-playbook --limit <NODE> playbooks/uninstall-k3s.yml
+ansible-playbook --limit <NODE> playbooks/install-k3s.yml
 ```
 
 #### Add a new worker

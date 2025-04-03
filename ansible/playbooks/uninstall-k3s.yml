@@ -1,12 +1,7 @@
 ---
-- hosts: k3s_workers
-  become: yes
+- hosts: k3s_cluster
   tasks:
-  - name: Uninstall k3s
-    shell: /usr/local/bin/k3s-agent-uninstall.sh
-
-- hosts: k3s_master
-  become: yes
-  tasks:
-  - name: Uninstall k3s
-    shell: /usr/local/bin/k3s-uninstall.sh
+    - name: Uninstall k3s
+      include_role:
+        name: k3s
+        tasks_from: uninstall-k3s.yml

@@ -5,8 +5,8 @@
   roles:
     - k3s
 
-- name: Configure k3s master
-  hosts: k3s_master
+- name: Configure k3s masters
+  hosts: k3s_masters
   become: yes
   roles:
     - k3s/master
@@ -18,9 +18,10 @@
     - k3s/worker
 
 - name: Define k3s workers role
-  hosts: k3s_master
+  hosts: k3s_masters
   become: yes
   tasks:
     - ansible.builtin.command: >-
         kubectl label nodes {{ item }} kubernetes.io/role=worker node-role.kubernetes.io/worker=true --overwrite
       with_items: "{{ groups.k3s_workers }}"
+      when: ansible_hostname == hostvars[groups['k3s_masters'][0]]['ansible_hostname']

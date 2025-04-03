@@ -7,6 +7,7 @@
     group: root
     mode: 0755
     recurse: yes
+  when: ansible_hostname == hostvars[groups['k3s_masters'][0]]['ansible_hostname']
 
 - name: Install workstation age-key
   ansible.builtin.copy:
@@ -15,6 +16,7 @@
     owner: root
     group: root
     mode: 0600
+  when: ansible_hostname == hostvars[groups['k3s_masters'][0]]['ansible_hostname']
 
 - name: Copy cluster config
   ansible.builtin.copy:
@@ -23,6 +25,7 @@
     owner: root
     group: root
     mode: 0755
+  when: ansible_hostname == hostvars[groups['k3s_masters'][0]]['ansible_hostname']
 
 - name: Install sops config file
   ansible.builtin.copy:
@@ -31,19 +34,23 @@
     owner: root
     group: root
     mode: 0600
+  when: ansible_hostname == hostvars[groups['k3s_masters'][0]]['ansible_hostname']
 
 - name: Delete sops if already present
   ansible.builtin.file:
     path: /usr/local/bin/sops
     state: absent
+  when: ansible_hostname == hostvars[groups['k3s_masters'][0]]['ansible_hostname']
 
 - name: Download sops binary
   ansible.builtin.get_url:
     url: "https://github.com/mozilla/sops/releases/download/{{ sops_version }}/sops-{{ sops_version }}.linux.arm64"
     dest: /tmp
+  when: ansible_hostname == hostvars[groups['k3s_masters'][0]]['ansible_hostname']
 
 - name: Move sops binary to /usr/local/bin/ folder
   ansible.builtin.command: mv /tmp/sops-{{ sops_version }}.linux.arm64 /usr/local/bin/sops
+  when: ansible_hostname == hostvars[groups['k3s_masters'][0]]['ansible_hostname']
 
 - name: Change sops ownership, group and mode
   ansible.builtin.file:
@@ -51,18 +58,24 @@
     owner: root
     group: root
     mode: 0755
+  when: ansible_hostname == hostvars[groups['k3s_masters'][0]]['ansible_hostname']
 
 - name: Install flux cli
   ansible.builtin.shell: curl -s https://fluxcd.io/install.sh | bash
+  when: ansible_hostname == hostvars[groups['k3s_masters'][0]]['ansible_hostname']
 
 - name: Bootstrap flux
   ansible.builtin.command: kubectl apply --kustomize /root/cluster/bootstrap/
+  when: ansible_hostname == hostvars[groups['k3s_masters'][0]]['ansible_hostname']
 
 - name: Create kubernetes sops-age secret
   ansible.builtin.shell: cat /root/.config/sops/age/keys.txt | kubectl -n flux-system create secret generic sops-age --from-file=age.agekey=/dev/stdin
+  when: ansible_hostname == hostvars[groups['k3s_masters'][0]]['ansible_hostname']
 
 - name: Create kubernetes github-deploy-key secret
   ansible.builtin.shell: sops --decrypt /root/cluster/flux/flux-system/github-deploy-key.sops.yaml | kubectl apply -f -
+  when: ansible_hostname == hostvars[groups['k3s_masters'][0]]['ansible_hostname']
 
 - name: Deploy flux config
   ansible.builtin.command: kubectl apply --kustomize /root/cluster/flux/flux-system/
+  when: ansible_hostname == hostvars[groups['k3s_masters'][0]]['ansible_hostname']
