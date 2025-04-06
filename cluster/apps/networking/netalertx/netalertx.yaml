@@ -48,7 +48,7 @@ spec:
     spec:
       containers:
         - name: netalertx
-          image: jokobsk/netalertx:25.3.1
+          image: jokobsk/netalertx:25.4.1
           ports:
             - containerPort: 20211
           env:
