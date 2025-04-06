@@ -1,0 +1,21 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: traefik
+  namespace: monitoring
+  labels:
+    app: traefik
+    release: prometheus-stack
+spec:
+  jobLabel: traefik
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: traefik-networking
+      app.kubernetes.io/name: traefik
+  namespaceSelector:
+    matchNames:
+      - networking
+  endpoints:
+    - targetPort: 9100
+      path: /metrics
