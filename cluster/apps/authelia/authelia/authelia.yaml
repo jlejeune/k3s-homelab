@@ -287,9 +287,7 @@ data:
           policy: one_factor
 
         - domain: longhorn.${SECRET_DOMAIN}
-          policy: bypass
-          networks:
-            - home
+          policy: one_factor
 
         - domain: traefik.${SECRET_DOMAIN}
           policy: bypass
@@ -298,8 +296,6 @@ data:
 
         - domain: grafana.${SECRET_DOMAIN}
           policy: bypass
-          networks:
-            - home
 
         - domain: pihole.${SECRET_DOMAIN}
           policy: bypass
