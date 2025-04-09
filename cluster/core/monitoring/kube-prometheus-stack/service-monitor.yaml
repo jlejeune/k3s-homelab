@@ -5,8 +5,7 @@ metadata:
   name: traefik
   namespace: monitoring
   labels:
-    app: traefik
-    release: prometheus-stack
+    app.kubernetes.io/instance: traefik
 spec:
   jobLabel: traefik
   selector:
