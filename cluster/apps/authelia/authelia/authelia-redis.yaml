@@ -47,7 +47,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: authelia-redis
-          image: redis:7.4.2
+          image: redis:7.4.3
           command:
             - redis-server
             - "/redis-master/redis.conf"
