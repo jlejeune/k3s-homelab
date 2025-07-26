@@ -8,4 +8,4 @@ spec:
   interval: 60m
   url: https://github.com/baarde/cert-manager-webhook-ovh
   ref:
-    tag: 0.3.1
+    tag: 0.3.2
