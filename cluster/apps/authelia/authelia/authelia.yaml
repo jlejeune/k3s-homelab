@@ -318,4 +318,9 @@ data:
           policy: one_factor
           networks:
             - home
+
+        - domain: chat.${SECRET_DOMAIN}
+          policy: one_factor
+          networks:
+            - home
     ...
