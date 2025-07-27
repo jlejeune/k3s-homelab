@@ -8,6 +8,7 @@ resources:
   - mosquitto
   - namespace.yaml
   - ollama
+  - openwakeword
   - piper
   - whisper
   - zigbee2mqtt
