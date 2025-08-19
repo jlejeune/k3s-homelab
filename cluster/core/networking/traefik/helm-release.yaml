@@ -43,6 +43,7 @@ spec:
         enabled: false
     globalArguments:
       - "--api.insecure=true"
+      - "--api.dashboard=true"
       - "--serverstransport.insecureskipverify=true"
       - "--providers.kubernetesingress.ingressclass=traefik"
     additionalArguments:
