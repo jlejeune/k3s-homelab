@@ -22,6 +22,7 @@ spec:
           namespace: networking
           port: 443
           scheme: https
+          serversTransport: insecure-skip-verify
   tls:
     secretName: "${SECRET_DOMAIN}-tls"
 ---
@@ -48,6 +49,7 @@ spec:
           namespace: networking
           port: 443
           scheme: https
+          serversTransport: insecure-skip-verify
   tls:
     secretName: "${SECRET_DOMAIN}-tls"
 ---
