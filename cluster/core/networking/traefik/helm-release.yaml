@@ -35,7 +35,7 @@ spec:
         metallb.io/loadBalancerIP: "${LB_TRAEFIK_ADDRESS}"
     logs:
       general:
-        level: INFO
+        level: DEBUG
       access:
         enabled: true
     ingressRoute:
