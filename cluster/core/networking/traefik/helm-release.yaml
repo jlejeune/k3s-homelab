@@ -42,9 +42,9 @@ spec:
       dashboard:
         enabled: false
     globalArguments:
-      - "--api.insecure=true"
+#      - "--api.insecure=true"
       - "--api.dashboard=true"
-      - "--serverstransport.insecureskipverify=true"
+#      - "--serverstransport.insecureskipverify=true"
       - "--providers.kubernetesingress.ingressclass=traefik"
     additionalArguments:
       - "--providers.kubernetesingress.ingressendpoint.ip=${LB_TRAEFIK_ADDRESS}"
@@ -64,7 +64,6 @@ spec:
             to: websecure
             scheme: https
             permanent: true
-        # asDefault: true
       wireguard:
         port: 51820
         protocol: UDP
