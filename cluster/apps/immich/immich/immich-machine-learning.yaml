@@ -1,0 +1,113 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: immich-machine-learning
+  namespace: immich
+  labels:
+    app.kubernetes.io/instance: immich-machine-learning
+  annotations:
+    reloader.stakater.com/search: "true"
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: immich-machine-learning
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: immich-machine-learning
+    spec:
+      dnsPolicy: ClusterFirst
+      initContainers:
+        - name: postgresql-isready
+          image: postgres:15.14
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: immich
+                  key: DB_USERNAME
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: immich
+                  key: DB_DATABASE_NAME
+          command:
+            - /bin/sh
+            - -c
+            - until pg_isready -U "${POSTGRES_USER}" -d
+              "dbname=${POSTGRE_DB}" -h immich-db -p 5432 ; do
+              sleep 2 ; done
+      containers:
+        - name: immich-machine-learning
+          image: altran1502/immich-machine-learning:v1.139.4
+          ports:
+            - containerPort: 3003
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: immich
+                  key: DB_PASSWORD
+            - name: DB_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: immich
+                  key: DB_USERNAME
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /ping
+              port: 3003
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /ping
+              port: 3003
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          volumeMounts:
+            - name: cache
+              mountPath: /cache
+            - name: library
+              mountPath: /usr/src/app/upload
+          resources: {}
+      volumes:
+        - name: cache
+          emptyDir: {}
+        - name: library
+          persistentVolumeClaim:
+            claimName: immich-library-pvc
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 80
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: immich-machine-learning
+  namespace: immich
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: immich-machine-learning
+  ports:
+    - port: 3003
+      targetPort: 3003
+      protocol: TCP
+---
