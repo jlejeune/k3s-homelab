@@ -32,7 +32,7 @@ k3s_master_extra_args: >-
   --kubelet-arg node-status-update-frequency=5s
 
 # k9s
-k9s_version: v0.40.10
+k9s_version: v0.50.9
 
 # helm
 helm_version: v3.9.3
