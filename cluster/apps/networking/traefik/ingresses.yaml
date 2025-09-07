@@ -378,7 +378,7 @@ spec:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`traefik.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`traefik.${SECRET_DOMAIN}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
       services:
         - kind: Service
           name: traefik

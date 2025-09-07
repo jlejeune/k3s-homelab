@@ -35,16 +35,15 @@ spec:
         metallb.io/loadBalancerIP: "${LB_TRAEFIK_ADDRESS}"
     logs:
       general:
-        level: DEBUG
+        level: INFO
       access:
         enabled: true
     ingressRoute:
       dashboard:
         enabled: false
     globalArguments:
-#      - "--api.insecure=true"
+      - "--api.insecure=true"
       - "--api.dashboard=true"
-#      - "--serverstransport.insecureskipverify=true"
       - "--providers.kubernetesingress.ingressclass=traefik"
     additionalArguments:
       - "--providers.kubernetesingress.ingressendpoint.ip=${LB_TRAEFIK_ADDRESS}"
