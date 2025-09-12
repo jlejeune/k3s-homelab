@@ -34,7 +34,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: joplin
-          image: joplin/server:3.4.2
+          image: joplin/server:3.4.3
           imagePullPolicy: IfNotPresent
           env:
             - name: APP_BASE_URL
