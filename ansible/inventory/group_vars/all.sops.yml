@@ -3,7 +3,7 @@ ansible_user: ENC[AES256_GCM,data:VOliifSc2KA=,iv:iY9+9NoESTVgvF12tAoJdC4BuB1FTu
 ansible_become_pass: ENC[AES256_GCM,data:luPNbTQ3,iv:/ZJjH8uyp5y8gnB2e/VLKzXH0GT0kfAfdoTHbJ0SjXQ=,tag:k1PjFInBPdTdDKb+JmLJhQ==,type:str]
 mail: ENC[AES256_GCM,data:hyJjsOkYfThe5Rdkuf/ywNc=,iv:Rp1FmaNVnP48bypn+X/jpZpjBTKnLjjwbHAZfpVYzQc=,tag:jSNn+mS+yzr0X8PtyRnE7Q==,type:str]
 plik_url: ENC[AES256_GCM,data:+15og91o+4v1D8nlar4pazlXXEm1jfug,iv:FDPfI/VG91B5b2Uzsr7LjYeLRgUEbs52aF14EA0wdw8=,tag:1CXZdZsf6YkMSAlfYnAoAw==,type:str]
-plik_token: ENC[AES256_GCM,data:tXG/vbbhbNl9hgxcyGv8FwmP+J0cN4NifHI6Rg93J2U8sycx,iv:+UvSt5WhOXSu+TTb2UgNl/e0/OEEu55kr4vh7VVkwjM=,tag:envMeJ/xIVeQcxIqaQme8w==,type:str]
+plik_token: ENC[AES256_GCM,data:oBearDlIqE+Q5+Z7bc5boKGk9nTbZv8agKU+ITkO1SWr28Jj,iv:8TKxPNB23ze/nNPT3sUWZuvKuGVto2tzB0lritDWQwY=,tag:l9RuYOWjk66mgRiysbenyQ==,type:str]
 k3s_token: ENC[AES256_GCM,data:0x1keqdICnp9Z57NltsV8SPJZgXhQVUiknQbUHHj5cU3J2aRLbAWtXf5dmyMC2KPEMM9Hu3cg8Ik4fFTxChOdHusmFDzuHbm/OgTa8rQaeXExeGF1Cjt3jDBQ6BUlu+ITQyHw8ljmhzG6g1O,iv:oiMZfLQfdLSYZzrrqFo7Lv6+lIobPi3kMK43xtIQ1vc=,tag:bLevHtviOQLcRwIZkY0fhg==,type:str]
 sops:
     kms: []
@@ -20,8 +20,8 @@ sops:
             TXkvOWlMc3pic1pkcDZsNlNScThVZ0kKlAJBUs92ywZft95AZO7Xmf97b7n5uEje
             igsPmvJy9gc+Qj5o3FM1MMkCZQAjXYEXgnGlKuyTqQNGPGskg/UTEg==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-04-07T20:54:21Z"
-    mac: ENC[AES256_GCM,data:WeroF27RsmG24Ve7iwUAP12GmTmZNhp1uegXlKZgqjAeSb4a1eiM49RYsLNKLtLwZ9lG7KqQ42Z0PBbFNGv+vAS0d9OqVaQQ7PXa9ySnjzsCqFaHPL8mQdeq6QCVKx2R3w1Zj16aAUKE1jVigQ/otxOuPNYx3VJVeyYf6bG4Sek=,iv:qUUKEPrHcvy7od3zIEYC+2Ue7PXnw+IsrzRoI5WAsYM=,tag:ZOQGRXvS0nTTj5Cug9QGxg==,type:str]
+    lastmodified: "2025-09-15T19:32:45Z"
+    mac: ENC[AES256_GCM,data:/6Y3gHOTc2Yx2iD5R4g8udav9RxR3uHnYGzvfx5575lsbCsdkUdShrh5uMnTRMDSjIFDvRapLOsdbRLhMVXuPeCILVHlKR4Kk7B1PbHYslUqAjD4E3/urp8wz7RLwKIUEyJ85ZFZIBYBMIklvzs83Z8NYf81IgOBDEd1oUo9DWc=,iv:bO9EuWbGy5BpnkL6lBnt/JbwzTE0EfCGSAoUO0OdWdA=,tag:V3t4SSTBI/ACWzT8YiZhwQ==,type:str]
     pgp: []
     unencrypted_regex: ^(kind)$
     version: 3.7.3
