@@ -30,21 +30,17 @@ data:
     apt-get install -y --no-install-recommends \
         ffmpeg \
         ghostscript \
-        libmagickcore-6.q16-6-extra \
+        libmagickcore-7.q16-10-extra \
         procps \
         smbclient \
         supervisor
 
     apt-get install -y --no-install-recommends \
         libbz2-dev \
-        libc-client-dev \
         libkrb5-dev \
         libsmbclient-dev
 
-    docker-php-ext-configure imap --with-kerberos --with-imap-ssl
-    docker-php-ext-install \
-        bz2 \
-        imap
+    docker-php-ext-install bz2
     pecl install smbclient
     docker-php-ext-enable smbclient
 ---
