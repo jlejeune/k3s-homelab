@@ -5,3 +5,5 @@ resources:
   - namespace.yaml
   - openldap.yaml
   - openldap.secret.sops.yaml
+  - lam.secret.sops.yaml
+  - lam.yaml
