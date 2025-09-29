@@ -28,6 +28,25 @@ spec:
   resources:
     requests:
       storage: 1Gi
+#---
+#apiVersion: v1
+#kind: ConfigMap
+#metadata:
+#  name: ldap-custom-ldif
+#  namespace: openldap
+#data:
+#  acl-consumer.ldif: |
+#    dn: olcDatabase={1}mdb,cn=config
+#    changetype: modify
+#    add: olcAccess
+#    olcAccess: to dn.subtree="cn=users,dc=jlejeune,dc=home"
+#      by dn.exact="uid=consumer,cn=users,dc=jlejeune,dc=home" read
+#      by * none
+#    -
+#    add: olcAccess
+#    olcAccess: to dn.subtree="cn=groups,dc=jlejeune,dc=home"
+#      by dn.exact="uid=consumer,cn=users,dc=jlejeune,dc=home" read
+#      by * none
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -41,6 +60,8 @@ spec:
     matchLabels:
       app.kubernetes.io/instance: openldap
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -53,6 +74,8 @@ spec:
           env:
             - name: LDAP_DOMAIN
               value: jlejeune.home
+            - name: LDAP_ORGANISATION
+              value: "Jlejeune Home"
             - name: LDAP_BASE_DN
               value: dc=jlejeune,dc=home
             - name: LDAP_TLS
@@ -67,6 +90,8 @@ spec:
               value: "false"
             - name: LDAP_TLS_VERIFY_CLIENT
               value: "try"
+            - name: LDAP_READONLY_USER_USERNAME
+              value: consumer
           envFrom:
             - secretRef:
                 name: openldap
@@ -78,16 +103,20 @@ spec:
               memory: 500Mi
           args:
             - '--copy-service'
+            - '--loglevel'
+            - 'debug'
           volumeMounts:
             - name: ldap-cert-secret
               mountPath: /container/service/slapd/assets/certs
-              readOnly: true
+              #readOnly: true
             - name: ldap-data
               mountPath: /var/lib/ldap
               subPath: data
             - name: ldap-config
               mountPath: /etc/ldap/slapd.d
               subPath: config-data
+#            - name: custom-ldif
+#              mountPath: /container/service/slapd/assets/config/bootstrap/ldif/custom
       volumes:
         - name: ldap-data
           persistentVolumeClaim:
@@ -95,6 +124,9 @@ spec:
         - name: ldap-config
           persistentVolumeClaim:
             claimName: openldap-config-pvc
+#        - name: custom-ldif
+#          configMap:
+#            name: ldap-custom-ldif
         - name: ldap-cert-secret
           secret:
             secretName: openldap-tls
