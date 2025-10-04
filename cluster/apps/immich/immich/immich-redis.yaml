@@ -47,7 +47,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: immich-redis
-          image: redis:7.4.5
+          image: redis:7.4.6
           command:
             - redis-server
             - "/redis-master/redis.conf"
