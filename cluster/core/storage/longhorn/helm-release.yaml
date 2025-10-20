@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: longhorn
-      version: 1.9.2
+      version: 1.10.0
       sourceRef:
         kind: HelmRepository
         name: longhorn-charts
@@ -21,9 +21,9 @@ spec:
         enabled: true
     persistence:
       defaultClass: false
-      defaultClassReplicaCount: 2
+      defaultClassReplicaCount: "2"
     defaultSettings:
-      defaultReplicaCount: 2
+      defaultReplicaCount: "2"
       defaultDataPath: "/storage"
       backupTarget: "nfs://${NAS_ADDRESS}:/volume1/k3s/longhorn_backup"
       replicaSoftAntiAffinity: true
