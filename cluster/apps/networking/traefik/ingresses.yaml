@@ -671,3 +671,31 @@ spec:
           scheme: http
   tls:
     secretName: "${SECRET_DOMAIN}-tls"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: cryptpad
+  namespace: networking
+  annotations:
+    external-dns.alpha.kubernetes.io/target: ${SECRET_DYNAMIC_DOMAIN}
+    kubernetes.io/ingress.class: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`pad.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: forwardauth-authelia
+          namespace: networking
+        - name: security-header
+          namespace: networking
+      services:
+        - kind: Service
+          name: cryptpad
+          namespace: cryptpad
+          port: 80
+          scheme: http
+  tls:
+    secretName: "${SECRET_DOMAIN}-tls"

@@ -287,6 +287,9 @@ data:
         - domain: home.${SECRET_DOMAIN}
           policy: one_factor
 
+        - domain: pad.${SECRET_DOMAIN}
+          policy: one_factor
+
         - domain: longhorn.${SECRET_DOMAIN}
           policy: one_factor
 
