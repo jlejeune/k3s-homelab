@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
         - name: openwakeword
-          image: rhasspy/wyoming-openwakeword:1.10.0
+          image: rhasspy/wyoming-openwakeword:2.1.0
           args:
             - --custom-model-dir
             - /data
