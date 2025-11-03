@@ -42,7 +42,7 @@ spec:
               sleep 2 ; done
       containers:
         - name: immich-machine-learning
-          image: altran1502/immich-machine-learning:v2.1.0
+          image: altran1502/immich-machine-learning:v2.2.2
           ports:
             - containerPort: 3003
           env:
