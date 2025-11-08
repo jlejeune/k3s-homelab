@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
         - name: whisper
-          image: rhasspy/wyoming-whisper:2.5.0
+          image: rhasspy/wyoming-whisper:3.0.2
           args:
             - --model
             - tiny-int8
