@@ -25,8 +25,14 @@ spec:
           env:
             - name: TZ
               value: "${TZ}"
+            - name: ZIGBEE2MQTT_CONFIG_SERIAL_BAUDRATE
+              value: "115200"
+            - name: ZIGBEE2MQTT_CONFIG_SERIAL_DISABLE_LED
+              value: "false"
             - name: ZIGBEE2MQTT_CONFIG_SERIAL_PORT
-              value: /dev/ttyUSB0
+              value: "tcp://${ZIGBEE_COORDINATOR_ADDRESS}:6638"
+            - name: ZIGBEE2MQTT_CONFIG_SERIAL_ADAPTER
+              value: "ember"
             - name: ZIGBEE2MQTT_CONFIG_ADVANCED_PAN_ID
               value: "45691"
             - name: ZIGBEE2MQTT_CONFIG_ADVANCED_EXT_PAN_ID
@@ -44,7 +50,7 @@ spec:
             - name: ZIGBEE2MQTT_CONFIG_ADVANCED_LOG_OUTPUT
               value: '["console"]'
             - name: ZIGBEE2MQTT_CONFIG_ADVANCED_CHANNEL
-              value: "15"
+              value: "20"
             - name: ZIGBEE2MQTT_CONFIG_HOMEASSISTANT
               value: "true"
             - name: ZIGBEE2MQTT_CONFIG_MQTT_INCLUDE_DEVICE_INFORMATION
@@ -64,8 +70,6 @@ spec:
               value: /certs/lets-encrypt-all.pem
             - name: ZIGBEE2MQTT_CONFIG_PERMIT_JOIN
               value: "true"
-          devices:
-            - /dev/ttyUSB0:/dev/ttyUSB0
           ports:
             - containerPort: 8080
               name: http
@@ -74,13 +78,6 @@ spec:
               name: certs
             - mountPath: /app/data/
               name: data
-            - mountPath: /dev/ttyUSB0
-              name: zigbee
-            - name: udev
-              mountPath: /run/udev
-              readOnly: true
-          securityContext:
-            privileged: true
       volumes:
         - name: certs
           configMap:
@@ -88,15 +85,6 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: zigbee2mqtt-data-pvc
-        - name: zigbee
-          hostPath:
-            path: /dev/ttyUSB0
-        - name: udev
-          hostPath:
-            path: /run/udev
-            type: Directory
-      nodeSelector:
-        feature.node.kubernetes.io/custom-zigbee: "true"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
