@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: home-assistant
-          image: homeassistant/home-assistant:2025.11
+          image: homeassistant/home-assistant:2025.12
           imagePullPolicy: IfNotPresent
           env:
             - name: TZ
