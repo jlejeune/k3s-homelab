@@ -5,6 +5,7 @@
     upgrade: dist
 
 - name: Install common packages
+  ignore_errors: true
   ansible.builtin.apt:
     name: "{{ item }}"
     state: present
@@ -24,6 +25,7 @@
     - postfix
     - ntp
     - ntpdate
+    - ntpsec-ntpdate
     - rsync
     - screen
     - tmux
@@ -49,6 +51,7 @@
     - openresolv
 
 - name: Put networks packages on hold
+  ignore_errors: true
   ansible.builtin.dpkg_selections:
     name: "{{ item }}"
     selection: hold
