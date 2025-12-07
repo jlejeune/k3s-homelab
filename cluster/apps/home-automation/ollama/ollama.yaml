@@ -21,6 +21,8 @@ metadata:
     app.kubernetes.io/instance: ollama
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/instance: ollama
@@ -29,12 +31,19 @@ spec:
       labels:
         app.kubernetes.io/instance: ollama
     spec:
+      securityContext:
+        fsGroup: 992
+        supplementalGroups: [44, 992]  # video and render groups
       containers:
         - name: ollama
-          image: ollama/ollama:0.11.4
+          image: ollama/ollama:0.13.1-rocm
           env:
             - name: HOME
               value: /home/ollama
+            - name: HSA_OVERRIDE_GFX_VERSION
+              value: "11.0.0"
+            - name: HIP_VISIBLE_DEVICES
+              value: "0"
           ports:
             - name: http
               containerPort: 11434
@@ -42,13 +51,49 @@ spec:
           volumeMounts:
             - name: ollama-data
               mountPath: /home/ollama/.ollama
-          tty: true
-      nodeSelector:
-        feature.node.kubernetes.io/custom-zigbee: "true"
+            - name: rocm-dev
+              mountPath: /dev/kfd
+              readOnly: false
+            - name: rocm-render
+              mountPath: /dev/dri
+              readOnly: false
+            - name: rocm-libs
+              mountPath: /opt/rocm
+              readOnly: true
+            - name: etc-group
+              mountPath: /etc/group
+              readOnly: true
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
       volumes:
         - name: ollama-data
           persistentVolumeClaim:
             claimName: ollama-pvc
+        - name: rocm-dev
+          hostPath:
+            path: /dev/kfd
+            type: CharDevice
+        - name: rocm-render
+          hostPath:
+            path: /dev/dri
+            type: Directory
+        - name: rocm-libs
+          hostPath:
+            path: /opt/rocm
+            type: Directory
+        - name: etc-group
+          hostPath:
+            path: /etc/group
+      resources:
+        requests:
+          memory: "1Gi"
+          cpu: "1000m"
+          amd.com/gpu: 1
+        limits:
+          memory: "2Gi"
+          cpu: "2000m"
+          amd.com/gpu: 1
 ---
 apiVersion: v1
 kind: Service
