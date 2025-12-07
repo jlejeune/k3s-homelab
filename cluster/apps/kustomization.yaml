@@ -12,5 +12,6 @@ resources:
   - mealie
   - networking
   - nextcloud
+  - openldap
   - plik
   - smtp-relay

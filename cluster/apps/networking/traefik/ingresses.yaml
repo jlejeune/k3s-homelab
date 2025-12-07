@@ -627,3 +627,21 @@ spec:
           scheme: http
   tls:
     secretName: "${SECRET_DOMAIN}-tls"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: openldaps-tcp
+  namespace: openldap
+  annotations:
+    external-dns.alpha.kubernetes.io/target: ${LB_OPENLDAP_ADDRESS}
+spec:
+  entryPoints:
+    - ldaps
+  routes:
+    - match: "Host(`openldaps.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      services:
+        - name: openldap
+          port: 636
+  tls:
+    passthrough: true
