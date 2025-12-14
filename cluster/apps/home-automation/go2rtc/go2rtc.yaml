@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: go2rtc
-          image: alexxit/go2rtc:1.9.9
+          image: alexxit/go2rtc:1.9.13
           ports:
             - containerPort: 1984
           volumeMounts:
