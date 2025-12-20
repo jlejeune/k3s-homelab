@@ -31,12 +31,14 @@ spec:
       labels:
         app.kubernetes.io/instance: ollama
     spec:
+      nodeSelector:
+        amd.com/gpu: "true"
       securityContext:
         fsGroup: 992
         supplementalGroups: [44, 992]  # video and render groups
       containers:
         - name: ollama
-          image: ollama/ollama:0.13.3-rocm
+          image: ollama/ollama:0.13.5-rocm
           env:
             - name: HOME
               value: /home/ollama
