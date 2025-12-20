@@ -1,16 +1,24 @@
 ---
 apiVersion: v1
-kind: Service
+kind: PersistentVolume
 metadata:
-  name: freshrss
+  name: freshrss-pv
   namespace: freshrss
 spec:
-  ports:
-    - name: http
-      port: 80
-      targetPort: http
-  selector:
-    app.kubernetes.io/instance: freshrss
+  storageClassName: longhorn
+  persistentVolumeReclaimPolicy: Retain
+  capacity:
+    storage: 2Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  csi:
+    driver: driver.longhorn.io
+    fsType: ext4
+    volumeAttributes:
+      numberOfReplicas: '2'
+      staleReplicaTimeout: '20'
+    volumeHandle: freshrss-pv  # we have to create it manually on longhorn UI first
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -63,3 +71,16 @@ spec:
         - name: freshrss-vol
           persistentVolumeClaim:
             claimName: freshrss-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: freshrss
+  namespace: freshrss
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+  selector:
+    app.kubernetes.io/instance: freshrss
