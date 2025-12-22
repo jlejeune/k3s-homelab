@@ -1,4 +1,40 @@
 ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: zigbee2mqtt-data-pv
+  namespace: home-automation
+spec:
+  storageClassName: longhorn
+  persistentVolumeReclaimPolicy: Retain
+  capacity:
+    storage: 500Mi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  csi:
+    driver: driver.longhorn.io
+    fsType: ext4
+    volumeAttributes:
+      numberOfReplicas: '2'
+      staleReplicaTimeout: '20'
+    volumeHandle: zigbee2mqtt-data-pv  # we have to create it manually on longhorn UI first
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zigbee2mqtt-data-pvc
+  namespace: home-automation
+spec:
+  storageClassName: longhorn
+  volumeName: zigbee2mqtt-data-pv
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -83,20 +119,6 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: zigbee2mqtt-data-pvc
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: zigbee2mqtt-data-pvc
-  namespace: home-automation
-spec:
-  storageClassName: longhorn
-  volumeMode: Filesystem
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 500Mi
 ---
 apiVersion: v1
 kind: Service
