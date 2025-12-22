@@ -34,7 +34,7 @@ spec:
             - name: port
               value: "6443"
             - name: vip_interface
-              value: {{ vip_interface }}
+              value: ${VIP_INTERFACE}
             - name: vip_cidr
               value: "32"
             - name: cp_enable
@@ -52,7 +52,7 @@ spec:
             - name: vip_retryperiod
               value: "1"
             - name: address
-              value: {{ k3s_master_vip }}
+              value: ${K3S_MASTER_VIP}
           image: ghcr.io/kube-vip/kube-vip:v1.0.3
           imagePullPolicy: Always
           name: kube-vip
