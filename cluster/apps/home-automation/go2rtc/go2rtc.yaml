@@ -39,7 +39,7 @@ metadata:
   name: go2rtc
   namespace: home-automation
   annotations:
-    metallb.io/loadBalancerIPs: ${LB_GO2RTC_ADDRESS}
+    metallb.io/loadBalancerIPs: {{LB_GO2RTC_ADDRESS}}
 spec:
   selector:
     app.kubernetes.io/instance: go2rtc

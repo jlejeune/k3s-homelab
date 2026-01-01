@@ -1,0 +1,10 @@
+---
+vars:
+  - clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: LB_GO2RTC_ADDRESS
+      targetPath: LB_GO2RTC_ADDRESS
+
+deployments:
+  - path: .

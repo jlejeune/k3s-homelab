@@ -6,7 +6,7 @@ metadata:
   namespace: networking
 spec:
   forwardAuth:
-    address: http://authelia.authelia.svc.cluster.local/api/verify?rd=https%3A%2F%2Fauth.${SECRET_DOMAIN}%2F
+    address: http://authelia.authelia.svc.cluster.local/api/verify?rd=https%3A%2F%2Fauth.{{SECRET_DOMAIN}}%2F
     trustForwardHeader: true
     authResponseHeaders:
       - Remote-User

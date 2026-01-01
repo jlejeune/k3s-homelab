@@ -24,6 +24,8 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/instance: piper
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -37,7 +39,7 @@ spec:
             - fr_FR-upmc-medium
           env:
             - name: TZ
-              value: "${TZ}"
+              value: {{TZ}}
           ports:
             - name: piper
               containerPort: 10200
@@ -56,7 +58,7 @@ metadata:
   name: piper
   namespace: home-automation
   annotations:
-    metallb.io/loadBalancerIPs: ${LB_PIPER_ADDRESS}
+    metallb.io/loadBalancerIPs: {{LB_PIPER_ADDRESS}}
 spec:
   type: LoadBalancer
   selector:

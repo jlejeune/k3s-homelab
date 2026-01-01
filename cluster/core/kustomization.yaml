@@ -10,4 +10,4 @@ resources:
   - node-feature-discovery
   - reloader
   - storage
-  - system-upgrade
+#  - system-upgrade

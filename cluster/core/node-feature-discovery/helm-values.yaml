@@ -1,0 +1,52 @@
+---
+createCRDs: true
+postDeleteCleanup: false
+enableNodeFeatureApi: true
+worker:
+  nodeSelector:
+    node-role.kubernetes.io/worker: "true"
+  config:
+    core:
+      sources:
+        - custom
+        - usb
+    sources:
+      usb:
+        deviceClassWhitelist:
+          - "02"
+          - "03"
+          - "0e"
+          - "ef"
+          - "fe"
+          - "ff"
+        deviceLabelFields:
+          - class
+          - vendor
+          - device
+      custom:
+        - name: zigbee
+          labels:
+            custom-zigbee: "true"
+          matchFeatures:
+            - feature: usb.device
+              matchExpressions:
+                class: {op: In, value: ["ff"]}
+                vendor: {op: In, value: ["10c4"]}
+                device: {op: In, value: ["ea60"]}
+        - name: bluetooth
+          labels:
+            custom-bluetooth: "true"
+          matchFeatures:
+            - feature: usb.device
+              matchExpressions:
+                class: {op: In, value: ["ff"]}
+                vendor: {op: In, value: ["0bda"]}
+                device: {op: In, value: ["0129"]}
+        - name: gpu
+          labels:
+            amd.com/gpu: "true"
+          matchFeatures:
+            - feature: pci.device
+              matchExpressions:
+                class: {op: In, value: ["0300", "0302"]}  # Classes PCI pour les GPU
+                vendor: {op: In, value: ["1002", "1022"]} # Vendor IDs pour AMD

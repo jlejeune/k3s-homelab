@@ -1,0 +1,28 @@
+---
+vars:
+  - clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: LB_TRAEFIK_ADDRESS
+      targetPath: LB_TRAEFIK_ADDRESS
+  - clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: VIP_INTERFACE
+      targetPath: VIP_INTERFACE
+  - clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: K3S_MASTER_VIP
+      targetPath: K3S_MASTER_VIP
+  - clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_DOMAIN
+      targetPath: SECRET_DOMAIN
+
+deployments:
+  - path: traefik
+  - path: kube-vip
+  - path: external-dns
+  - include: metallb

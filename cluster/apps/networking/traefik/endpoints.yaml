@@ -1,22 +1,36 @@
 ---
-apiVersion: v1
-kind: Endpoints
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
 metadata:
   name: nas
   namespace: networking
-subsets:
+  labels:
+    kubernetes.io/service-name: nas
+addressType: IPv4
+endpoints:
   - addresses:
-      - ip: ${NAS_ADDRESS}
-    ports:
-      - port: 5001
+      - {{NAS_ADDRESS}}
+    conditions:
+      ready: true
+ports:
+  - port: 5001
+    appProtocol: http
+    protocol: TCP
 ---
-apiVersion: v1
-kind: Endpoints
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
 metadata:
   name: webdav
   namespace: networking
-subsets:
+  labels:
+    kubernetes.io/service-name: webdav
+addressType: IPv4
+endpoints:
   - addresses:
-      - ip: ${NAS_ADDRESS}
-    ports:
-      - port: 5006
+      - {{NAS_ADDRESS}}
+    conditions:
+      ready: true
+ports:
+  - port: 5006
+    appProtocol: http
+    protocol: TCP

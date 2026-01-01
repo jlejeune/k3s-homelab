@@ -4,6 +4,6 @@ kind: Kustomization
 resources:
   - external-dns
   - kube-vip
-  - metallb/ks.yaml
+  - metallb
   - namespace.yaml
   - traefik

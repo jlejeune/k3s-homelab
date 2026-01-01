@@ -5,14 +5,14 @@ metadata:
   name: nas
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/target: ${SECRET_DYNAMIC_DOMAIN}
+    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`nas.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`nas.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
         - name: security-header
           namespace: networking
@@ -24,7 +24,7 @@ spec:
           scheme: https
           serversTransport: insecure-skip-verify
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -32,14 +32,14 @@ metadata:
   name: webdav
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/target: ${SECRET_DYNAMIC_DOMAIN}
+    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`webdav.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`webdav.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
         - name: security-header
           namespace: networking
@@ -51,7 +51,7 @@ spec:
           scheme: https
           serversTransport: insecure-skip-verify
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -59,14 +59,14 @@ metadata:
   name: mealie
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/target: ${SECRET_DYNAMIC_DOMAIN}
+    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`mealie.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`mealie.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
         - name: security-header
           namespace: networking
@@ -77,7 +77,7 @@ spec:
           port: 9000
           scheme: http
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -85,14 +85,14 @@ metadata:
   name: jellyfin
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/target: ${SECRET_DYNAMIC_DOMAIN}
+    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`videos.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`videos.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
         - name: security-header
           namespace: networking
@@ -102,7 +102,7 @@ spec:
           namespace: jellyfin
           port: 8096
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -110,14 +110,14 @@ metadata:
   name: plik
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/target: ${SECRET_DYNAMIC_DOMAIN}
+    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`plik.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`plik.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
         - name: security-header
           namespace: networking
@@ -128,7 +128,7 @@ spec:
           port: 8080
           scheme: http
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -136,14 +136,14 @@ metadata:
   name: zigbee2mqtt
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/target: ${SECRET_DYNAMIC_DOMAIN}
+    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`zigbee2mqtt.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`zigbee2mqtt.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
         - name: forwardauth-authelia
           namespace: networking
@@ -156,7 +156,7 @@ spec:
           port: 8080
           scheme: http
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -164,14 +164,14 @@ metadata:
   name: home-assistant
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/target: ${SECRET_DYNAMIC_DOMAIN}
+    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`ha.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`ha.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
         - name: forwardauth-authelia
           namespace: networking
@@ -184,35 +184,7 @@ spec:
           port: 80
           scheme: http
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: nextcloud
-  namespace: networking
-  annotations:
-    external-dns.alpha.kubernetes.io/target: ${SECRET_DYNAMIC_DOMAIN}
-    kubernetes.io/ingress.class: traefik
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - kind: Rule
-      match: "Host(`nextcloud.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: nextcloud-redirectregex
-          namespace: networking
-        - name: security-header
-          namespace: networking
-      services:
-        - kind: Service
-          name: nextcloud
-          namespace: nextcloud
-          port: 80
-          scheme: http
-  tls:
-    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -220,14 +192,14 @@ metadata:
   name: dashy
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/target: ${SECRET_DYNAMIC_DOMAIN}
+    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`home.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`home.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
         - name: forwardauth-authelia
           namespace: networking
@@ -240,7 +212,7 @@ spec:
           port: 8080
           scheme: http
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -248,14 +220,14 @@ metadata:
   name: joplin
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/target: ${SECRET_DYNAMIC_DOMAIN}
+    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`joplin.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`joplin.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
         - name: security-header
           namespace: networking
@@ -266,7 +238,7 @@ spec:
           port: 22300
           scheme: http
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -274,14 +246,14 @@ metadata:
   name: freshrss
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/target: ${SECRET_DYNAMIC_DOMAIN}
+    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`rss.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`rss.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
         - name: security-header
           namespace: networking
@@ -292,7 +264,7 @@ spec:
           port: 80
           scheme: http
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -300,14 +272,14 @@ metadata:
   name: immich
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/target: ${SECRET_DYNAMIC_DOMAIN}
+    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`photos.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`photos.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
         - name: security-header
           namespace: networking
@@ -318,7 +290,7 @@ spec:
           port: 80
           scheme: http
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -326,14 +298,14 @@ metadata:
   name: authelia
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/target: ${SECRET_DYNAMIC_DOMAIN}
+    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`auth.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`auth.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
         - name: security-header
           namespace: networking
@@ -344,7 +316,7 @@ spec:
           port: 80
           scheme: http
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRouteUDP
@@ -352,8 +324,8 @@ metadata:
   name: wireguard
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: vpn.${SECRET_DOMAIN}
-    external-dns.alpha.kubernetes.io/target: ${SECRET_DYNAMIC_DOMAIN}
+    external-dns.alpha.kubernetes.io/hostname: vpn.{{SECRET_DOMAIN}}
+    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
@@ -370,15 +342,15 @@ metadata:
   name: traefik-dashboard
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: traefik.${SECRET_DOMAIN}
-    external-dns.alpha.kubernetes.io/target: ${LB_TRAEFIK_ADDRESS}
+    external-dns.alpha.kubernetes.io/hostname: traefik.{{SECRET_DOMAIN}}
+    external-dns.alpha.kubernetes.io/target: {{LB_TRAEFIK_ADDRESS}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`traefik.${SECRET_DOMAIN}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
+      match: "Host(`traefik.{{SECRET_DOMAIN}}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
       services:
         - kind: Service
           name: traefik
@@ -390,7 +362,7 @@ spec:
         - name: security-header
           namespace: networking
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -398,14 +370,14 @@ metadata:
   name: longhorn
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/target: ${LB_TRAEFIK_ADDRESS}
+    external-dns.alpha.kubernetes.io/target: {{LB_TRAEFIK_ADDRESS}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`longhorn.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`longhorn.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
         - name: forwardauth-authelia
           namespace: networking
@@ -417,7 +389,7 @@ spec:
           port: 80
           scheme: http
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -425,14 +397,14 @@ metadata:
   name: pihole
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/target: ${LB_TRAEFIK_ADDRESS}
+    external-dns.alpha.kubernetes.io/target: {{LB_TRAEFIK_ADDRESS}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`pihole.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`pihole.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
         - name: forwardauth-authelia
           namespace: networking
@@ -445,7 +417,7 @@ spec:
           port: 80
           scheme: http
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -453,15 +425,15 @@ metadata:
   name: code-server
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: ha-code.${SECRET_DOMAIN}
-    external-dns.alpha.kubernetes.io/target: ${LB_TRAEFIK_ADDRESS}
+    external-dns.alpha.kubernetes.io/hostname: ha-code.{{SECRET_DOMAIN}}
+    external-dns.alpha.kubernetes.io/target: {{LB_TRAEFIK_ADDRESS}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`ha-code.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`ha-code.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
         - name: forwardauth-authelia
           namespace: networking
@@ -472,33 +444,7 @@ spec:
           port: 8443
           scheme: http
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: weave-gitops
-  namespace: networking
-  annotations:
-    external-dns.alpha.kubernetes.io/hostname: gitops.${SECRET_DOMAIN}
-    external-dns.alpha.kubernetes.io/target: ${LB_TRAEFIK_ADDRESS}
-    kubernetes.io/ingress.class: traefik
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - kind: Rule
-      match: "Host(`gitops.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: security-header
-          namespace: networking
-      services:
-        - kind: Service
-          name: weave-gitops
-          namespace: flux-system
-          port: 9001
-  tls:
-    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -506,14 +452,14 @@ metadata:
   name: grafana
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/target: ${LB_TRAEFIK_ADDRESS}
+    external-dns.alpha.kubernetes.io/target: {{LB_TRAEFIK_ADDRESS}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`grafana.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`grafana.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
         - name: forwardauth-authelia
           namespace: networking
@@ -525,7 +471,7 @@ spec:
           port: 80
           scheme: http
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -533,14 +479,14 @@ metadata:
   name: prometheus
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/target: ${LB_TRAEFIK_ADDRESS}
+    external-dns.alpha.kubernetes.io/target: {{LB_TRAEFIK_ADDRESS}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`prometheus.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`prometheus.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
         - name: security-header
           namespace: networking
@@ -550,7 +496,7 @@ spec:
           port: 9090
           scheme: http
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -558,14 +504,14 @@ metadata:
   name: k3s-dashboard
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/target: ${LB_TRAEFIK_ADDRESS}
+    external-dns.alpha.kubernetes.io/target: {{LB_TRAEFIK_ADDRESS}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`k3s-dashboard.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`k3s-dashboard.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
         - name: security-header
           namespace: networking
@@ -574,33 +520,7 @@ spec:
           namespace: kubernetes-dashboard
           port: 443
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
-#---
-#apiVersion: traefik.io/v1alpha1
-#kind: IngressRoute
-#metadata:
-#  name: netalertx
-#  namespace: networking
-#  annotations:
-#    external-dns.alpha.kubernetes.io/target: ${LB_TRAEFIK_ADDRESS}
-#    kubernetes.io/ingress.class: traefik
-#spec:
-#  entryPoints:
-#    - websecure
-#  routes:
-#    - kind: Rule
-#      match: "Host(`netalertx.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
-#      middlewares:
-#        - name: security-header
-#          namespace: networking
-#      services:
-#        - kind: Service
-#          name: netalertx
-#          namespace: networking
-#          port: 20211
-#          scheme: http
-#  tls:
-#    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -608,14 +528,14 @@ metadata:
   name: open-webui
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/target: ${LB_TRAEFIK_ADDRESS}
+    external-dns.alpha.kubernetes.io/target: {{LB_TRAEFIK_ADDRESS}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`chat.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`chat.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
         - name: security-header
           namespace: networking
@@ -626,7 +546,7 @@ spec:
           port: 8080
           scheme: http
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRouteTCP
@@ -634,12 +554,12 @@ metadata:
   name: openldaps-tcp
   namespace: openldap
   annotations:
-    external-dns.alpha.kubernetes.io/target: ${LB_OPENLDAP_ADDRESS}
+    external-dns.alpha.kubernetes.io/target: {{LB_OPENLDAP_ADDRESS}}
 spec:
   entryPoints:
     - ldaps
   routes:
-    - match: "Host(`openldaps.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+    - match: "Host(`openldaps.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       services:
         - name: openldap
           port: 636
@@ -652,14 +572,14 @@ metadata:
   name: lam
   namespace: openldap
   annotations:
-    external-dns.alpha.kubernetes.io/target: ${LB_TRAEFIK_ADDRESS}
+    external-dns.alpha.kubernetes.io/target: {{LB_TRAEFIK_ADDRESS}}
     kubernetes.io/ingress.class: traefik
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`lam.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
+      match: "Host(`lam.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
         - name: security-header
           namespace: networking
@@ -670,32 +590,4 @@ spec:
           port: 80
           scheme: http
   tls:
-    secretName: "${SECRET_DOMAIN}-tls"
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: cryptpad
-  namespace: networking
-  annotations:
-    external-dns.alpha.kubernetes.io/target: ${SECRET_DYNAMIC_DOMAIN}
-    kubernetes.io/ingress.class: traefik
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - kind: Rule
-      match: "Host(`pad.${SECRET_DOMAIN}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: forwardauth-authelia
-          namespace: networking
-        - name: security-header
-          namespace: networking
-      services:
-        - kind: Service
-          name: cryptpad
-          namespace: cryptpad
-          port: 80
-          scheme: http
-  tls:
-    secretName: "${SECRET_DOMAIN}-tls"
+    secretName: "{{SECRET_DOMAIN}}-tls"

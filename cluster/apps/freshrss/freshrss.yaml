@@ -60,7 +60,7 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: TZ
-              value: "${TZ}"
+              value: "{{TZ}}"
           ports:
             - containerPort: 80
               name: http

@@ -25,7 +25,7 @@ spec:
             - name: LAM_LANG
               value: "fr_FR"
             - name: LDAP_SERVER
-              value: "ldaps://openldaps.${SECRET_DOMAIN}:636"
+              value: "ldaps://openldaps.{{SECRET_DOMAIN}}:636"
             - name: LDAP_USER
               value: "cn=admin,dc=jlejeune,dc=home"
             - name: LDAP_DOMAIN

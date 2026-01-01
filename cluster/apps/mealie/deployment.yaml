@@ -1,0 +1,10 @@
+---
+vars:
+  - clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_MEALIE_FROM_EMAIL
+      targetPath: SECRET_MEALIE_FROM_EMAIL
+
+deployments:
+  - path: .

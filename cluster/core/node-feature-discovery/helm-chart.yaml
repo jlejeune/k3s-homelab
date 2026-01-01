@@ -1,0 +1,6 @@
+---
+helmChart:
+  repo: oci://gcr.io/k8s-staging-nfd/charts/node-feature-discovery
+  chartVersion: 0.18.3
+  releaseName: node-feature-discovery
+  namespace: node-feature-discovery

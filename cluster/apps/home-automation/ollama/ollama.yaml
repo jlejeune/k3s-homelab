@@ -103,7 +103,7 @@ metadata:
   name: ollama
   namespace: home-automation
   annotations:
-    metallb.io/loadBalancerIPs: ${LB_OLLAMA_ADDRESS}
+    metallb.io/loadBalancerIPs: {{LB_OLLAMA_ADDRESS}}
 spec:
   type: LoadBalancer
   selector:

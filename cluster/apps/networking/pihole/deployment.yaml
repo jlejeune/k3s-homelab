@@ -1,0 +1,15 @@
+---
+vars:
+  - clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_EMAIL
+      targetPath: SECRET_EMAIL
+  - clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: LB_PIHOLE_ADDRESS
+      targetPath: LB_PIHOLE_ADDRESS
+
+deployments:
+  - path: .

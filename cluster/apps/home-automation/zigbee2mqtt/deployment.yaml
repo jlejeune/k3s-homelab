@@ -1,0 +1,10 @@
+---
+vars:
+  - clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: ZIGBEE_COORDINATOR_ADDRESS
+      targetPath: ZIGBEE_COORDINATOR_ADDRESS
+
+deployments:
+  - path: .

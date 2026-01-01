@@ -1,0 +1,5 @@
+---
+deployments:
+  - path: metallb-config
+  - barrier: true
+  - path: metallb-app

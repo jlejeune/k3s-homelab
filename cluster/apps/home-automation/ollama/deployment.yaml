@@ -1,0 +1,10 @@
+---
+vars:
+  - clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: LB_OLLAMA_ADDRESS
+      targetPath: LB_OLLAMA_ADDRESS
+
+deployments:
+  - path: .

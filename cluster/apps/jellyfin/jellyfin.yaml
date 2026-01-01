@@ -88,11 +88,11 @@ spec:
       volumes:
         - name: movies
           nfs:
-            server: ${NAS_ADDRESS}
+            server: {{NAS_ADDRESS}}
             path: /volume1/video/films
         - name: shows
           nfs:
-            server: ${NAS_ADDRESS}
+            server: {{NAS_ADDRESS}}
             path: /volume1/video/series
         - name: transcode
           emptyDir: {}

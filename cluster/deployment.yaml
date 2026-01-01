@@ -1,0 +1,12 @@
+---
+deployments:
+  - path: config
+  - barrier: true
+  - include: core
+  - barrier: true
+  - include: apps
+
+commonAnnotations:
+  kluctl.io/force-managed: "true"
+  kluctl.io/force-apply: "true"
+  kluctl.io/ignore-conflict: "true"

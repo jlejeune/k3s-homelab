@@ -1,0 +1,19 @@
+---
+vars:
+  - clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: LB_MQTT_ADDRESS
+      targetPath: LB_MQTT_ADDRESS
+
+deployments:
+  - include: piper
+  - include: whisper
+  - path: code-server
+  - include: go2rtc
+  - path: home-assistant
+  - path: mosquitto
+  - include: zigbee2mqtt
+  - path: open-webui
+  - include: openwakeword
+  - include: ollama

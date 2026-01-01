@@ -1,0 +1,82 @@
+---
+deployment:
+  kind: Deployment
+  replicas: 1
+podSecurityPolicy:
+  enabled: false
+service:
+  enabled: true
+  type: LoadBalancer
+  spec:
+    loadBalancerIP: "{{LB_TRAEFIK_ADDRESS}}"
+    externalTrafficPolicy: Local
+  annotations:
+    metallb.io/allow-shared-ip: "traefik"
+    metallb.io/loadBalancerIP: "{{LB_TRAEFIK_ADDRESS}}"
+logs:
+  general:
+    level: INFO
+  access:
+    enabled: true
+ingressRoute:
+  dashboard:
+    enabled: false
+globalArguments:
+  - "--api.insecure=true"
+  - "--api.dashboard=true"
+  - "--providers.kubernetesingress.ingressclass=traefik"
+additionalArguments:
+  - "--providers.kubernetesingress.ingressendpoint.ip={{LB_TRAEFIK_ADDRESS}}"
+  - "--providers.kubernetesingress.allowexternalnameservices=true"
+  - "--providers.kubernetescrd.allowexternalnameservices=true"
+  - "--providers.kubernetescrd.allowCrossNamespace=true"
+ports:
+  traefik:
+    expose:
+      default: true
+  metrics:
+    expose:
+      default: true
+  web:
+    redirections:
+      entryPoint:
+        to: websecure
+        scheme: https
+        permanent: true
+  wireguard:
+    port: 51820
+    protocol: UDP
+    expose:
+      default: true
+tlsOptions:
+  default:
+    minVersion: VersionTLS12
+    sniStrict: true
+    cipherSuites:
+      - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384 # TLS 1.2
+      - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305  # TLS 1.2
+      - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384   # TLS 1.2
+      - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305    # TLS 1.2
+      - TLS_AES_256_GCM_SHA384                  # TLS 1.3
+      - TLS_CHACHA20_POLY1305_SHA256            # TLS 1.3
+      - TLS_FALLBACK_SCSV                       # TLS FALLBACK
+    curvePreferences:
+      - secp521r1
+      - secp384r1
+resources:
+  requests:
+    memory: 200Mi
+    cpu: 200m
+  limits:
+    memory: 500Mi
+    cpu: 500m
+affinity:
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 80
+        preference:
+          matchExpressions:
+            - key: kubernetes.io/arch
+              operator: In
+              values:
+                - amd64

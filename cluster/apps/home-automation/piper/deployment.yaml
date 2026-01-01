@@ -1,0 +1,10 @@
+---
+vars:
+  - clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: LB_PIPER_ADDRESS
+      targetPath: LB_PIPER_ADDRESS
+
+deployments:
+  - path: .

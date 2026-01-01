@@ -18,58 +18,55 @@ data:
         items:
           - title: FreshRSS
             icon: hl-freshrss
-            url: https://rss.${SECRET_DOMAIN}
+            url: https://rss.{{SECRET_DOMAIN}}
           - title: Immich
             icon: hl-immich
-            url: https://photos.${SECRET_DOMAIN}
+            url: https://photos.{{SECRET_DOMAIN}}
           - title: Jellyfin
             icon: hl-jellyfin
-            url: https://videos.${SECRET_DOMAIN}
+            url: https://videos.{{SECRET_DOMAIN}}
           - title: Joplin
             icon: hl-joplin
-            url: https://joplin.${SECRET_DOMAIN}
+            url: https://joplin.{{SECRET_DOMAIN}}
           - title: Mealie
             icon: hl-mealie
-            url: https://mealie.${SECRET_DOMAIN}
-          - title: Nextcloud
-            icon: hl-Nextcloud
-            url: https://nextcloud.${SECRET_DOMAIN}
+            url: https://mealie.{{SECRET_DOMAIN}}
           - title: Synology
             icon: far fa-hdd
-            url: https://nas.${SECRET_DOMAIN}
+            url: https://nas.{{SECRET_DOMAIN}}
       - name: Home automation
         icon: fas fa-home
         items:
           - title: Home-Assistant
             icon: hl-home-assistant
-            url: https://ha.${SECRET_DOMAIN}
+            url: https://ha.{{SECRET_DOMAIN}}
       - name: Authentication
         icon: fas fa-lock
         items:
           - title: Authelia
             icon: hl-Authelia
-            url: https://auth.${SECRET_DOMAIN}
+            url: https://auth.{{SECRET_DOMAIN}}
       - name: Kubernetes
         icon: hl-kubernetes-dashboard
         items:
           - title: Longhorn
             icon: hl-longhorn
-            url: https://longhorn.${SECRET_DOMAIN}
+            url: https://longhorn.{{SECRET_DOMAIN}}
           - title: Traefik
             icon: hl-traefik
-            url: https://traefik.${SECRET_DOMAIN}
+            url: https://traefik.{{SECRET_DOMAIN}}
       - name: Monitoring
         icon: far fa-chart-line
         items:
           - title: Grafana
             icon: hl-grafana
-            url: https://grafana.${SECRET_DOMAIN}
+            url: https://grafana.{{SECRET_DOMAIN}}
       - name: Networking
         icon: fas fa-network-wired
         items:
           - title: Pi-hole
             icon: hl-pi-hole
-            url: https://pihole.${SECRET_DOMAIN}
+            url: https://pihole.{{SECRET_DOMAIN}}
 ---
 apiVersion: apps/v1
 kind: Deployment

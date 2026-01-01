@@ -137,7 +137,7 @@ metadata:
   name: openldap
   namespace: openldap
   annotations:
-    metallb.io/loadBalancerIPs: ${LB_OPENLDAP_ADDRESS}
+    metallb.io/loadBalancerIPs: {{LB_OPENLDAP_ADDRESS}}
 spec:
   type: LoadBalancer
   ports:
@@ -155,7 +155,7 @@ metadata:
   namespace: openldap
 spec:
   dnsNames:
-    - openldaps.${SECRET_DOMAIN}
+    - openldaps.{{SECRET_DOMAIN}}
   issuerRef:
     kind: ClusterIssuer
     name: letsencrypt-production

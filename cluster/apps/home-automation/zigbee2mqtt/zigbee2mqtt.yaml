@@ -60,13 +60,13 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: TZ
-              value: "${TZ}"
+              value: {{TZ}}
             - name: ZIGBEE2MQTT_CONFIG_SERIAL_BAUDRATE
               value: "115200"
             - name: ZIGBEE2MQTT_CONFIG_SERIAL_DISABLE_LED
               value: "false"
             - name: ZIGBEE2MQTT_CONFIG_SERIAL_PORT
-              value: "tcp://${ZIGBEE_COORDINATOR_ADDRESS}:6638"
+              value: "tcp://{{ZIGBEE_COORDINATOR_ADDRESS}}:6638"
             - name: ZIGBEE2MQTT_CONFIG_SERIAL_ADAPTER
               value: "ember"
             - name: ZIGBEE2MQTT_CONFIG_ADVANCED_PAN_ID
@@ -92,7 +92,7 @@ spec:
             - name: ZIGBEE2MQTT_CONFIG_MQTT_REJECT_UNAUTHORIZED
               value: "false"
             - name: ZIGBEE2MQTT_CONFIG_MQTT_SERVER
-              value: "mqtts://${LB_MQTT_ADDRESS}"
+              value: "mqtts://{{LB_MQTT_ADDRESS}}"
             - name: ZIGBEE2MQTT_CONFIG_MQTT_USER
               value: zigbee2mqtt
             - name: ZIGBEE2MQTT_CONFIG_MQTT_PASSWORD
