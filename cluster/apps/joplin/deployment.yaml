@@ -1,0 +1,15 @@
+---
+vars:
+  - clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_LDAP_ADMIN_QUERY_PASSWORD
+      targetPath: SECRET_LDAP_ADMIN_QUERY_PASSWORD
+  - clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_JOPLIN_NOREPLY_EMAIL
+      targetPath: SECRET_JOPLIN_NOREPLY_EMAIL
+
+deployments:
+  - path: .

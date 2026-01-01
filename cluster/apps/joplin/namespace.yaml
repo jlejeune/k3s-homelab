@@ -3,5 +3,3 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: joplin
-  labels:
-    managed-by: flux

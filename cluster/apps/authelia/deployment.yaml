@@ -1,0 +1,30 @@
+---
+vars:
+  - clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_IMMICH_OAUTH_CLIENT_SECRET
+      targetPath: SECRET_IMMICH_OAUTH_CLIENT_SECRET
+  - clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_SMTP_HOST
+      targetPath: SECRET_SMTP_HOST
+  - clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_SMTP_USERNAME
+      targetPath: SECRET_SMTP_USERNAME
+  - clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_SMTP_PASSWORD
+      targetPath: SECRET_SMTP_PASSWORD
+  - clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_AUTHELIA_SENDER_EMAIL
+      targetPath: SECRET_AUTHELIA_SENDER_EMAIL
+
+deployments:
+  - path: .

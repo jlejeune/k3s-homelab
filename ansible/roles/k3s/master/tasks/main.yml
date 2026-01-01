@@ -22,9 +22,3 @@
     apply:
       tags: deploy-kube-vip
   tags: deploy-kube-vip
-
-- include_tasks:
-    file: configure-flux.yml
-    apply:
-      tags: configure-flux
-  tags: configure-flux

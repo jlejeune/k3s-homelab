@@ -1,0 +1,51 @@
+---
+vars:
+  - clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: TZ
+      targetPath: TZ
+  - clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: LB_SMTP_RELAY_ADDRESS
+      targetPath: LB_SMTP_RELAY_ADDRESS
+  - clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: LB_OPENLDAP_ADDRESS
+      targetPath: LB_OPENLDAP_ADDRESS
+  - clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: NAS_ADDRESS
+      targetPath: NAS_ADDRESS
+  - clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_DOMAIN
+      targetPath: SECRET_DOMAIN
+  - clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_LDAP_ADMIN_BIND_DN
+      targetPath: SECRET_LDAP_ADMIN_BIND_DN
+  - clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_LDAP_ADMIN_QUERY_PASSWORD
+      targetPath: SECRET_LDAP_ADMIN_QUERY_PASSWORD
+
+deployments:
+  - path: smtp-relay
+  - include: mealie
+  - path: dashy
+  - include: authelia
+  - include: networking
+  - path: freshrss
+  - include: joplin
+  - path: jellyfin
+  - path: immich
+  - path: openldap
+  - path: plik
+  - include: home-automation

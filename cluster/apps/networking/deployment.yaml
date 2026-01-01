@@ -1,0 +1,6 @@
+---
+deployments:
+  - path: certificates
+  - path: wireguard
+  - include: pihole
+  - include: traefik

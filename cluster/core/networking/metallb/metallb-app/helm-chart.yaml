@@ -1,0 +1,7 @@
+---
+helmChart:
+  repo: https://metallb.github.io/metallb
+  chartName: metallb
+  chartVersion: 0.15.3
+  releaseName: metallb
+  namespace: networking

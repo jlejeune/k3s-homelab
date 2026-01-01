@@ -1,0 +1,11 @@
+---
+deployments:
+  - path: node-feature-discovery
+  - path: reloader
+  - include: cert-manager
+  - include: storage
+  - path: kube-system
+#  - path: system-upgrade
+  - include: networking
+  - include: monitoring
+  - path: kubernetes-dashboard

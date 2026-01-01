@@ -1,0 +1,5 @@
+---
+targets:
+  - name: cluster
+    context: default
+    discriminator: "my-homelab"

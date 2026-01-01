@@ -74,7 +74,7 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: TZ
-              value: "${TZ}"
+              value: "{{TZ}}"
           resources:
             requests:
               memory: "512Mi"

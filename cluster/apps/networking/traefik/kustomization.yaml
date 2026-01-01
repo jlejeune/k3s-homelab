@@ -4,6 +4,5 @@ kind: Kustomization
 resources:
   - endpoints.yaml
   - ingresses.yaml
-  - middlewares.yaml
   - serverstransports.yaml
   - services.yaml

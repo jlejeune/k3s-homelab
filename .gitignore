@@ -5,3 +5,6 @@ kubeconfig*
 *.agekey
 *.pub
 *.key
+# kluctl
+cluster/.helm-charts
+.envrc

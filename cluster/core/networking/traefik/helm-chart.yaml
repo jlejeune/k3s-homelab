@@ -1,0 +1,9 @@
+---
+helmChart:
+  git:
+    url: https://github.com/traefik/traefik-helm-chart
+    ref:
+      tag: v37.2.0
+    subDir: traefik
+  releaseName: traefik
+  namespace: networking

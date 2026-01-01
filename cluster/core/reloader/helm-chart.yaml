@@ -1,0 +1,9 @@
+---
+helmChart:
+  git:
+    url: https://github.com/stakater/Reloader
+    ref:
+      tag: v1.4.12
+    subDir: deployments/kubernetes/chart/reloader
+  releaseName: reloader
+  namespace: reloader

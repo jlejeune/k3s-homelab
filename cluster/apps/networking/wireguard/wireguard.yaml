@@ -33,7 +33,7 @@ spec:
               protocol: UDP
           env:
             - name: TZ
-              value: "${TZ}"
+              value: "{{TZ}}"
           resources:
             requests:
               memory: "64Mi"

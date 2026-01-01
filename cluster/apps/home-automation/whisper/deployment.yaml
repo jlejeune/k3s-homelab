@@ -1,0 +1,10 @@
+---
+vars:
+  - clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: LB_WHISPER_ADDRESS
+      targetPath: LB_WHISPER_ADDRESS
+
+deployments:
+  - path: .

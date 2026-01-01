@@ -1,0 +1,16 @@
+---
+vars:
+  - clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_DOMAIN
+      targetPath: SECRET_DOMAIN
+  - clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_EMAIL
+      targetPath: SECRET_EMAIL
+
+deployments:
+  - path: cert-manager
+  - path: cert-manager-webhook-ovh

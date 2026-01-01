@@ -1,0 +1,11 @@
+---
+vars:
+  - clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: NAS_ADDRESS
+      targetPath: NAS_ADDRESS
+
+deployments:
+  - path: nfs-provisioner
+  - path: longhorn

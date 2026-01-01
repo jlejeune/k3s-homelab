@@ -3,7 +3,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - authelia
-  - cryptpad
   - dashy
   - freshrss
   - home-automation
@@ -12,7 +11,6 @@ resources:
   - joplin
   - mealie
   - networking
-  - nextcloud
   - openldap
   - plik
   - smtp-relay

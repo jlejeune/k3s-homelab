@@ -62,9 +62,9 @@ spec:
           args:
             - --source=traefik-proxy
             - --source=ingress
-            - --domain-filter=${SECRET_DOMAIN}
+            - --domain-filter={{SECRET_DOMAIN}}
             - --provider=ovh
-            - --log-level=info
+            - --log-level=debug
             - --log-format=text
           envFrom:
             - secretRef:

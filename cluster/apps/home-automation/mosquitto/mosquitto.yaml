@@ -85,7 +85,7 @@ metadata:
   name: mosquitto
   namespace: home-automation
   annotations:
-    metallb.io/loadBalancerIPs: ${LB_MQTT_ADDRESS}
+    metallb.io/loadBalancerIPs: {{LB_MQTT_ADDRESS}}
 spec:
   type: LoadBalancer
   ports:
@@ -149,7 +149,7 @@ metadata:
   namespace: home-automation
 spec:
   dnsNames:
-    - mqtt.${SECRET_DOMAIN}
+    - mqtt.{{SECRET_DOMAIN}}
   issuerRef:
     kind: ClusterIssuer
     name: letsencrypt-production

@@ -7,10 +7,10 @@ metadata:
   annotations:
     reloader.stakater.com/match: "true"
 data:
-  TZ: "${TZ}"
-  ADMIN_EMAIL: "${SECRET_EMAIL}"
-  VIRTUAL_HOST: "pihole.${SECRET_DOMAIN}"
-  PIHOLE_DNS_: "${NAS_ADDRESS}"
+  TZ: "{{TZ}}"
+  ADMIN_EMAIL: "{{SECRET_EMAIL}}"
+  VIRTUAL_HOST: "pihole.{{SECRET_DOMAIN}}"
+  PIHOLE_DNS_: "{{NAS_ADDRESS}}"
   QUERY_LOGGING: "false"
 ---
 apiVersion: v1
@@ -82,7 +82,7 @@ metadata:
   namespace: networking
   annotations:
     metallb.io/allow-shared-ip: pihole
-    metallb.io/loadBalancerIPs: "${LB_PIHOLE_ADDRESS}"
+    metallb.io/loadBalancerIPs: "{{LB_PIHOLE_ADDRESS}}"
 spec:
   selector:
     app.kubernetes.io/instance: pihole
@@ -101,7 +101,7 @@ metadata:
   namespace: networking
   annotations:
     metallb.io/allow-shared-ip: pihole
-    metallb.io/loadBalancerIPs: "${LB_PIHOLE_ADDRESS}"
+    metallb.io/loadBalancerIPs: "{{LB_PIHOLE_ADDRESS}}"
 spec:
   selector:
     app.kubernetes.io/instance: pihole

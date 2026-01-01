@@ -1,0 +1,7 @@
+---
+helmChart:
+  repo: https://grafana.github.io/helm-charts
+  chartName: grafana
+  chartVersion: 10.1.2
+  releaseName: grafana
+  namespace: monitoring

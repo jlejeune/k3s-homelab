@@ -1,0 +1,8 @@
+---
+nfs:
+  server: "{{NAS_ADDRESS}}"
+  path: "/volume1/k3s"
+storageClass:
+  name: nfs
+  defaultClass: false
+  archiveOnDelete: false
