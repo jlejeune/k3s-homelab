@@ -48,3 +48,4 @@ deployments:
   - path: immich
   - path: openldap
   - include: home-automation
+  - include: kanidm

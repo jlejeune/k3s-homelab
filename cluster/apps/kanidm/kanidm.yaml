@@ -1,0 +1,160 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app.kubernetes.io/instance: kanidm
+  name: kanidm-data-pvc
+  namespace: kanidm
+spec:
+  storageClassName: longhorn
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kanidm-config
+  namespace: kanidm
+data:
+  server.toml: |
+    version = "2"
+    bindaddress = "0.0.0.0:8443"
+    db_path = "/data/kanidm.db"
+    tls_chain = "/data/tls.crt"
+    tls_key = "/data/tls.key"
+    domain = "kanidm.{{SECRET_DOMAIN}}"
+    origin = "https://kanidm.{{SECRET_DOMAIN}}"
+    ldapbindaddress = "0.0.0.0:3636"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kanidm
+  namespace: kanidm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: kanidm
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: kanidm
+    spec:
+      containers:
+        - name: kanidm
+          image: kanidm/server:1.8.5
+          ports:
+            - containerPort: 8443  # OIDC HTTPS
+            - containerPort: 3636  # LDAP
+          volumeMounts:
+            - name: data
+              mountPath: /data
+              readOnly: false
+            - name: config
+              mountPath: /data/server.toml
+              subPath: server.toml
+              readOnly: true
+            - name: tls-secret
+              mountPath: /data/tls.crt
+              subPath: tls.crt
+              readOnly: true
+            - name: tls-secret
+              mountPath: /data/tls.key
+              subPath: tls.key
+              readOnly: true
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: kanidm-data-pvc
+        - name: config
+          configMap:
+            name: kanidm-config
+            items:
+              - key: server.toml
+                path: server.toml
+        - name: tls-secret
+          secret:
+            secretName: kanidm-tls
+            items:
+              - key: tls.crt
+                path: tls.crt
+              - key: tls.key
+                path: tls.key
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kanidm-ldap
+  namespace: kanidm
+  annotations:
+    metallb.io/loadBalancerIPs: {{LB_LDAP_ADDRESS}}
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/instance: kanidm
+  ports:
+    - name: ldaps
+      port: 636
+      protocol: TCP
+      targetPort: 3636
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kanidm-https
+  namespace: kanidm
+spec:
+  selector:
+    app.kubernetes.io/instance: kanidm
+  ports:
+    - port: 443
+      targetPort: 8443
+      protocol: TCP
+      name: https
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: kanidm-cert
+  namespace: kanidm
+spec:
+  secretName: kanidm-tls
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  dnsNames:
+    - kanidm.{{SECRET_DOMAIN}}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: kanidm
+  namespace: kanidm
+  annotations:
+    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
+    kubernetes.io/ingress.class: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`kanidm.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: security-header
+          namespace: networking
+      services:
+        - kind: Service
+          name: kanidm-https
+          namespace: kanidm
+          port: 443
+          scheme: https
+  tls:
+    secretName: kanidm-tls

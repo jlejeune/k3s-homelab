@@ -1,0 +1,15 @@
+---
+vars:
+  - clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_DYNAMIC_DOMAIN
+      targetPath: SECRET_DYNAMIC_DOMAIN
+  - clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: LB_LDAP_ADDRESS
+      targetPath: LB_LDAP_ADDRESS
+
+deployments:
+  - path: .
