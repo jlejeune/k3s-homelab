@@ -1,0 +1,73 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esphome
+  namespace: home-automation
+  labels:
+    app.kubernetes.io/instance: esphome
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: esphome
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: esphome
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: esphome
+          image: ghcr.io/esphome/esphome:2025.12.7
+          ports:
+            - name: http
+              containerPort: 6052
+              protocol: TCP
+          volumeMounts:
+            - name: config
+              mountPath: /config
+          env:
+            - name: ESPHOME_DASHBOARD_USE_PING
+              value: "true"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: esphome-data-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: esphome-data-pvc
+  namespace: home-automation
+spec:
+  storageClassName: longhorn
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: esphome
+  namespace: home-automation
+spec:
+  selector:
+    app.kubernetes.io/instance: esphome
+  ports:
+  - name: http
+    port: 6052
+    targetPort: 6052
+    protocol: TCP

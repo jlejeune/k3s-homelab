@@ -13,3 +13,4 @@ resources:
   - piper
   - whisper
   - zigbee2mqtt
+  - esphome

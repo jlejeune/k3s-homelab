@@ -317,6 +317,11 @@ data:
           networks:
             - home
 
+        - domain: esphome.{{SECRET_DOMAIN}}
+          policy: bypass
+          networks:
+            - home
+
         - domain: zigbee2mqtt.{{SECRET_DOMAIN}}
           policy: one_factor
           networks:
