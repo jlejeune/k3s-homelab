@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
         - name: code-server
-          image: lscr.io/linuxserver/code-server:4.108.1
+          image: lscr.io/linuxserver/code-server:4.108.2
           imagePullPolicy: IfNotPresent
           env:
             - name: TZ
