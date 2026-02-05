@@ -70,7 +70,7 @@ spec:
     spec:
       containers:
         - name: home-assistant
-          image: homeassistant/home-assistant:2026.1
+          image: homeassistant/home-assistant:2026.2
           imagePullPolicy: IfNotPresent
           env:
             - name: TZ
