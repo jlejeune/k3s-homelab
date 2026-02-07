@@ -18,12 +18,9 @@ logs:
     level: INFO
   access:
     enabled: true
-ingressRoute:
-  dashboard:
-    enabled: false
+api:
+  dashboard: true
 globalArguments:
-  - "--api.insecure=true"
-  - "--api.dashboard=true"
   - "--providers.kubernetesingress.ingressclass=traefik"
 additionalArguments:
   - "--providers.kubernetesingress.ingressendpoint.ip={{LB_TRAEFIK_ADDRESS}}"
