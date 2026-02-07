@@ -49,7 +49,7 @@ spec:
     spec:
       containers:
         - name: smtp
-          image: juanluisbaptiste/postfix:1.8.2
+          image: juanluisbaptiste/postfix:1.9.0
           ports:
             - containerPort: 25
           imagePullPolicy: IfNotPresent
