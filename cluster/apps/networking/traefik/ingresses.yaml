@@ -352,10 +352,8 @@ spec:
     - kind: Rule
       match: "Host(`traefik.{{SECRET_DOMAIN}}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
       services:
-        - kind: Service
-          name: traefik
-          namespace: networking
-          port: 8080
+        - name: api@internal
+          kind: TraefikService
       middlewares:
         - name: forwardauth-authelia
           namespace: networking
