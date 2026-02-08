@@ -45,7 +45,7 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 │   ├── core/                   # Infrastructure services
 │   │   ├── cert-manager/       # TLS certificates (Let's Encrypt + local CA)
 │   │   ├── networking/         # Traefik, MetalLB, kube-vip, External DNS
-│   │   ├── monitoring/         # Grafana + kube-prometheus-stack
+│   │   ├── monitoring/         # Grafana, kube-prometheus-stack, Uptime Kuma
 │   │   ├── storage/            # Longhorn + NFS provisioner
 │   │   ├── kube-system/        # k8s device plugin
 │   │   ├── kubernetes-dashboard/
@@ -86,7 +86,7 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 | **Networking** | Traefik (reverse proxy, `192.168.1.200`), MetalLB (load balancer), kube-vip, External DNS |
 | **Storage** | Longhorn (distributed block storage on USB drives), NFS provisioner (NAS at `192.168.1.50`) |
 | **Certificates** | cert-manager with Let's Encrypt (production + staging), OVH DNS challenge webhook, local CA (`jlejeune.home`) |
-| **Monitoring** | Grafana, kube-prometheus-stack, ServiceMonitors |
+| **Monitoring** | Grafana, kube-prometheus-stack, Uptime Kuma, ServiceMonitors |
 | **Other** | Kubernetes Dashboard, Node Feature Discovery, Reloader, System Upgrade Controller |
 
 ## Applications
