@@ -331,4 +331,7 @@ data:
           policy: one_factor
           networks:
             - home
+
+        - domain: status.{{SECRET_DOMAIN}}
+          policy: one_factor
     ...

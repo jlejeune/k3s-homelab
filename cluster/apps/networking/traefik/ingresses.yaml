@@ -593,6 +593,34 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
+  name: uptime-kuma
+  namespace: networking
+  annotations:
+    external-dns.alpha.kubernetes.io/target: {{LB_TRAEFIK_ADDRESS}}
+    kubernetes.io/ingress.class: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`status.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: forwardauth-authelia
+          namespace: networking
+        - name: security-header
+          namespace: networking
+      services:
+        - kind: Service
+          name: uptime-kuma
+          namespace: monitoring
+          port: 3001
+          scheme: http
+  tls:
+    secretName: "{{SECRET_DOMAIN}}-tls"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
   name: esphome
   namespace: networking
   annotations:
