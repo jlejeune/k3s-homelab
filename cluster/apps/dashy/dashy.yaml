@@ -61,6 +61,9 @@ data:
           - title: Grafana
             icon: hl-grafana
             url: https://grafana.{{SECRET_DOMAIN}}
+          - title: Uptime Kuma
+            icon: hl-uptime-kuma
+            url: https://status.{{SECRET_DOMAIN}}
       - name: Networking
         icon: fas fa-network-wired
         items:
