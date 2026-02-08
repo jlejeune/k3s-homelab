@@ -1,218 +1,175 @@
 # k3s-homelab
 
-These ansible playbooks configure a fresh deployment of a k3s cluster on three mini PCs.
+A fully automated **K3s Kubernetes homelab** running on a mix of mini PCs and Raspberry Pis, provisioned with **Ansible** and deployed with **Kluctl**. Secrets are encrypted with **Mozilla SOPS** and **Age**. Image and chart updates are handled automatically by **Renovate**.
 
-It uses `kluctl` tool to easily handle Kubernetes deployments.
+Nodes are named after Lord of the Rings characters.
+
+## Cluster overview
+
+| Node | Role | Hardware | Arch | IP |
+|---|---|---|---|---|
+| theoden | Master | Geekom Mini Air 11 (NUC) | x86_64 | 192.168.1.14 |
+| sam | Worker | Raspberry Pi 4 (4 GB) | aarch64 | 192.168.1.10 |
+| merry | Worker | Raspberry Pi 4 (4 GB) | aarch64 | 192.168.1.11 |
+| pippin | Worker | Raspberry Pi 4 (4 GB) | aarch64 | 192.168.1.12 |
+| gimli | Worker | Raspberry Pi 4 (4 GB) | aarch64 | 192.168.1.13 |
+| frodon | Worker | Raspberry Pi 4 (4 GB) | aarch64 | 192.168.1.15 |
+| galadriel | Worker | BMAX B8 A Pro (Mini PC) | x86_64 | 192.168.1.16 |
+
+The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mixed-architecture setup (x86_64 + aarch64).
+
+## Project structure
+
+```
+.
+├── ansible/                    # Infrastructure provisioning
+│   ├── inventory/
+│   │   ├── hosts.yml           # Cluster node inventory
+│   │   ├── group_vars/         # Shared variables (some encrypted with SOPS)
+│   │   └── host_vars/          # Per-node variables (IP, disk UUID, etc.)
+│   ├── playbooks/
+│   │   ├── bootstrap.yml       # Initial machine setup
+│   │   ├── install-k3s.yml     # K3s cluster installation
+│   │   ├── uninstall-k3s.yml   # K3s cluster removal
+│   │   └── add-k3s-worker.yml  # Add a worker to an existing cluster
+│   ├── roles/
+│   │   ├── common/             # Base OS config (hostname, IP, SSH, locale, users, fail2ban)
+│   │   └── k3s/                # K3s binary, service config, kube-vip on master
+│   └── requirements.yml        # Ansible Galaxy collections
+│
+├── cluster/                    # Kubernetes manifests (deployed with Kluctl)
+│   ├── .kluctl.yaml            # Kluctl target definition
+│   ├── config/                 # Cluster-wide settings and secrets
+│   │   ├── cluster-settings.yaml   # ConfigMap with IPs, timezone, etc.
+│   │   └── cluster-secrets.sops.yaml
+│   ├── core/                   # Infrastructure services
+│   │   ├── cert-manager/       # TLS certificates (Let's Encrypt + local CA)
+│   │   ├── networking/         # Traefik, MetalLB, kube-vip, External DNS
+│   │   ├── monitoring/         # Grafana + kube-prometheus-stack
+│   │   ├── storage/            # Longhorn + NFS provisioner
+│   │   ├── kube-system/        # k8s device plugin
+│   │   ├── kubernetes-dashboard/
+│   │   ├── node-feature-discovery/
+│   │   ├── reloader/           # Auto-restart pods on ConfigMap/Secret changes
+│   │   └── system-upgrade/     # Automated K3s upgrades
+│   └── apps/                   # User-facing applications
+│       ├── home-automation/    # Home Assistant, Zigbee2MQTT, Mosquitto, ESPHome, Go2RTC
+│       │   ├── ollama/         # Local LLM inference
+│       │   ├── open-webui/     # Web UI for Ollama
+│       │   ├── whisper/        # Speech-to-text
+│       │   ├── piper/          # Text-to-speech
+│       │   └── openwakeword/   # Wake word detection
+│       ├── immich/             # Self-hosted photo management (server + ML)
+│       ├── jellyfin/           # Media server
+│       ├── freshrss/           # RSS reader
+│       ├── joplin/             # Note-taking (with PostgreSQL)
+│       ├── mealie/             # Recipe manager
+│       ├── dashy/              # Dashboard
+│       ├── networking/         # Pi-hole, WireGuard, Traefik ingresses, certificates
+│       ├── authelia/           # SSO / authentication (with Redis + PostgreSQL)
+│       ├── openldap/           # LDAP directory + LDAP Account Manager
+│       ├── plik/               # File sharing
+│       └── smtp-relay/         # Postfix SMTP relay
+│
+├── .sops.yaml                  # SOPS encryption rules (Age key)
+├── .pre-commit-config.yaml     # Pre-commit hooks (yamllint, sops, formatting)
+├── .github/
+│   ├── renovate.json5          # Renovate config for automated dependency updates
+│   └── linters/                # Linter configs
+└── LICENSE                     # MIT
+```
+
+## Core services
+
+| Category | Components |
+|---|---|
+| **Networking** | Traefik (reverse proxy, `192.168.1.200`), MetalLB (load balancer), kube-vip, External DNS |
+| **Storage** | Longhorn (distributed block storage on USB drives), NFS provisioner (NAS at `192.168.1.50`) |
+| **Certificates** | cert-manager with Let's Encrypt (production + staging), OVH DNS challenge webhook, local CA (`jlejeune.home`) |
+| **Monitoring** | Grafana, kube-prometheus-stack, ServiceMonitors |
+| **Other** | Kubernetes Dashboard, Node Feature Discovery, Reloader, System Upgrade Controller |
+
+## Applications
+
+| Category | Applications |
+|---|---|
+| **Home automation** | Home Assistant, Zigbee2MQTT, Mosquitto (MQTT broker), ESPHome, Go2RTC |
+| **AI / Voice** | Ollama (LLM), Open WebUI, Whisper (STT), Piper (TTS), OpenWakeWord |
+| **Media** | Jellyfin (video), Immich (photos with machine learning) |
+| **Productivity** | Joplin (notes), Mealie (recipes), FreshRSS (feeds), Code Server (VS Code) |
+| **Networking** | Pi-hole (DNS ad-blocking), WireGuard (VPN), Traefik ingress routes |
+| **Auth / Identity** | Authelia (SSO with forward auth), OpenLDAP + LDAP Account Manager |
+| **Utilities** | Plik (file sharing), SMTP Relay (Postfix), Dashy (dashboard) |
+
+## Security
+
+- All secrets in the repository are encrypted with **Mozilla SOPS** using an **Age** key
+- Separate encryption rules for `cluster/` and `ansible/` directories (see `.sops.yaml`)
+- SSH hardening and **fail2ban** configured via the `common` Ansible role
+- **Authelia** provides SSO with forward authentication through Traefik middlewares
+- A **pre-commit hook** (`forbid-secrets`) prevents accidental commit of unencrypted secrets
 
 ## Prerequisites
 
 Hardware:
-* a workstation to run ansible commands
-* 3 servers (at least 3 x raspberry pi 4 - 4GB ram)
+- A workstation to run Ansible and Kluctl commands
+- 1 master + N worker nodes (mini PCs or Raspberry Pi 4 with at least 4 GB RAM)
+- Optional: USB drives for Longhorn storage, a NAS for NFS shares
 
-Configure the workstation:
-* Install ansible
-* Install collections/roles from Ansible Galaxy by running `ansible-galaxy install -r requirements.yml`
-* Install sshpass and python-apt by running `sudo apt-get install sshpass python-apt -y`
-* Install age and age-keygen binaries from https://github.com/FiloSottile/age/releases
-* Install Mozilla sops binary from https://github.com/mozilla/sops/releases
-* Install kluctl by running `sudo curl -s https://kluctl.io/install.sh | bash`
+Software on the workstation:
+- [Ansible](https://docs.ansible.com/) + collections: `ansible-galaxy install -r ansible/requirements.yml`
+- `sshpass` and `python-apt`: `sudo apt-get install sshpass python-apt -y`
+- [Age](https://github.com/FiloSottile/age/releases) for secret encryption
+- [Mozilla SOPS](https://github.com/mozilla/sops/releases) for secret management
+- [Kluctl](https://kluctl.io/) for Kubernetes deployments: `sudo curl -s https://kluctl.io/install.sh | bash`
 
-Configure the raspberry pi:
-* Flash SD-card with last Raspbian lite release (64bit): enable ssh and configure password for pi user: raspberry
+## Getting started
 
-## Setting up Age
-
-Here we will create a Age Private and Public key. Using [SOPS](https://github.com/mozilla/sops) with [Age](https://github.com/FiloSottile/age) allows us to encrypt secrets and use them in Ansible and Kubernetes.
-
-1. Create a Age Private / Public Key
-
-    ```sh
-    age-keygen -o age.agekey
-    ```
-
-2. Set up the directory for the Age key and move the Age file to it
-
-    ```sh
-    mkdir -p ~/.config/sops/age
-    mv age.agekey ~/.config/sops/age/keys.txt
-    ```
-
-## Secrets
-
-All secrets are encrypted by Mozilla sops tool and are defined in <filename>.sops.yaml files
-in inventory folder.
-
-## Bootstrap servers
-
-You need to find the dynamic IPs given to your raspberry pis, you can use
-nmap command to do so and fill your inventory/hosts.yml file with the temporary IPs:
-
-```yaml
----
-all:
-  children:
-    k3s_masters:
-      hosts:
-        <MASTER1_NAME>:
-          ansible_host: <TEMPORARY_MASTER_IP>
-        <MASTER2_NAME>:
-          ansible_host: <TEMPORARY_WORKER2_IP>
-        <MASTER3_NAME>:
-          ansible_host: <TEMPORARY_WORKER3_IP>
-    k3s_workers:
-      hosts:
-        <WORKER1_NAME>:
-          ansible_host: <TEMPORARY_WORKER1_IP>
-    k3s_cluster:
-      children:
-        k3s_masters:
-          hosts:
-        k3s_workers:
-          hosts:
-```
-
-Run the bootstrap ansible playbook on this inventory.
+### 1. Set up Age encryption
 
 ```sh
-ansible-playbook playbooks/bootstrap.yml -u pi --ask-pass
+age-keygen -o age.agekey
+mkdir -p ~/.config/sops/age
+mv age.agekey ~/.config/sops/age/keys.txt
 ```
 
-You can now edit your inventory file to put the correct IPs you wanted
-(defined in inventory/host_vars/ folder) and run the install-k3s.yml playbook.
+### 2. Bootstrap servers
+
+Find the temporary IPs of your nodes (e.g. with `nmap`) and fill `ansible/inventory/hosts.yml`.
 
 ```sh
-ansible-playbook playbooks/install-k3s.yml
+ansible-playbook ansible/playbooks/bootstrap.yml -u pi --ask-pass
 ```
 
-## Ansible roles
-
-### common
-
- * Configure hostname
- * Set static IP
- * Configure locale
- * Create users and delete default pi user
- * Set the default editor
- * Setup a secure SSH configuration
- * Configure /boot/config.txt
- * Run raspi-config
-
-### k3s
-
- * Download k3s binary
- * Configure k3s service on both nodes
- * Deploy kube-vip on master nodes
-
-## Ansible playbooks
-
-### Bootstrap raspberry pi
+Update the inventory with the final static IPs (defined in `ansible/inventory/host_vars/`), then install K3s:
 
 ```sh
-ansible-playbook playbooks/bootstrap.yml
+ansible-playbook ansible/playbooks/install-k3s.yml
 ```
 
-### k3s
-
-#### Install
-
-```sh
-ansible-playbook playbooks/install-k3s.yml
-```
-
-#### Uninstall
-
-```sh
-ansible-playbook playbooks/uninstall-k3s.yml
-```
-
-#### Promote a worker node to master
-
-Edit hosts.yaml inventory file to move the name of your worker to the masters list.
-
-Run these commands:
-
-```sh
-kubectl cordon <NODE>
-kubectl drain --force --ignore-daemonsets --delete-emptydir-data --grace-period=10 <NODE>
-kubectl delete nodes/<NODE>
-ansible-playbook --limit <NODE> playbooks/uninstall-k3s.yml
-ansible-playbook --limit <NODE> playbooks/install-k3s.yml
-```
-
-#### Add a new worker
-
-Edit hosts.yaml inventory file to add the name and the temporary IP of your new worker.
-
-Create a new file in inventory/host_vars folder matching the hostname of your new worker and fill it with the correct values.
-
-Run these commands:
-
-```sh
-ansible-playbook playbooks/bootstrap.yml -e 'ansible_user=pi' --ask-pass -l <NEW_WORKER_NAME>
-ansible <NEW_WORKER_NAME> -a "/sbin/shutdown -r now -b"
-```
-
-After reboot, update the inventory file with your final worker IP and run this command to finalize bootstrap:
-
-```sh
-ansible-playbook playbooks/bootstrap.yml -l <NEW_WORKER_NAME>
-```
-
-Get your k3s master token from your master node in that file:
-/var/lib/rancher/k3s/server/token and run that command:
-
-```sh
-ansible-playbook playbooks/add-k3s-worker.yml -e "host=<NEW_WORKER_NAME>" -e "token=<YOUR_TOKEN>"
-```
-
-### Kluctl
-
-I have defined a single target, named 'cluster' in .kluctl.yaml file.
-
-#### Perform a diff between the locally rendered target and the already deployed target
+### 3. Deploy Kubernetes manifests
 
 ```sh
 cd cluster
-kluctl diff -t cluster
+kluctl diff -t cluster    # Preview changes
+kluctl deploy -t cluster  # Apply to cluster
 ```
 
-#### Deploys the 'cluster' target to the cluster
+## Ansible
 
-```sh
-cd cluster
-kluctl deploy -t cluster
-```
+See [ansible/README.md](ansible/README.md) for detailed documentation on roles, playbooks, and Longhorn storage setup.
 
-### Longhorn
+## Tooling
 
-In my case, I use three usb sticks of 64GB plugged on my three worker nodes.
+| Tool | Purpose |
+|---|---|
+| [Ansible](https://docs.ansible.com/) | Infrastructure provisioning and OS configuration |
+| [Kluctl](https://kluctl.io/) | Declarative Kubernetes deployment (diff & deploy) |
+| [SOPS](https://github.com/mozilla/sops) + [Age](https://github.com/FiloSottile/age) | Secret encryption at rest in Git |
+| [Renovate](https://github.com/renovatebot/renovate) | Automated dependency/image updates (runs every Saturday) |
+| [pre-commit](https://pre-commit.com/) | Git hooks for linting, formatting, and secret leak prevention |
+| [yamllint](https://github.com/adrienverge/yamllint) | YAML linting |
 
-#### Identify the disks
+## License
 
-```sh
-ansible k3s_workers -a "lsblk -f"  # to get usb_disk_name value
-```
-
-Fill your hosts_vars usb_disk_name value in inventory.
-
-#### Wipe the disks and format them
-
-```sh
-ansible k3s_workers -b -m shell -a "wipefs -a /dev/{{ usb_disk_name }}"
-ansible k3s_workers -b -m filesystem -a "fstype=ext4 dev=/dev/{{ usb_disk_name }}"
-```
-
-#### Identify the disks UUID
-
-```sh
-ansible k3s_workers -b -m shell -a "blkid -s UUID -o value /dev/{{ usb_disk_name }}"  # to get external_usb_uuid
-```
-
-Fill your hosts_vars usb_disk_uuid value in inventory.
-
-#### Mount the disks
-
-```sh
-ansible k3s_workers -b -m ansible.posix.mount -a "path=/storage src=UUID={{ usb_disk_uuid }} fstype=ext4 state=mounted"
-```
+[MIT](LICENSE)
