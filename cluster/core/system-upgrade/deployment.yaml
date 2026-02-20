@@ -1,0 +1,5 @@
+---
+deployments:
+  - path: system-upgrade-controller/app
+  - barrier: true
+  - path: system-upgrade-controller/plans
