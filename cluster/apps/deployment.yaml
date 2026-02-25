@@ -47,4 +47,5 @@ deployments:
   - path: jellyfin
   - path: immich
   - path: openldap
+  - path: supabase
   - include: home-automation

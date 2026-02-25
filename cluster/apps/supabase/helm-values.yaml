@@ -1,0 +1,178 @@
+---
+# Use existing SOPS-managed secret (secret.sops.yaml) for JWT, Postgres and Studio dashboard
+secret:
+  jwt:
+    secretRef: supabase
+    secretRefKey:
+      secret: secret
+      anonKey: anonKey
+      serviceKey: serviceKey
+  db:
+    secretRef: supabase
+    secretRefKey:
+      password: password
+      database: database
+  dashboard:
+    secretRef: supabase
+    secretRefKey:
+      username: dashboard_username
+      password: dashboard_password
+      openAiApiKey: openAiApiKey
+
+# Disable chart ingress (Traefik IngressRoute in apps/networking/traefik/ingresses.yaml)
+ingress:
+  enabled: false
+
+# Persistence with Longhorn (functions/deno/snippets disabled: same PVC was shared by functions + studio pods → multi-attach)
+persistence:
+  db:
+    enabled: true
+    storageClassName: longhorn
+    size: 10Gi
+  storage:
+    enabled: true
+    storageClassName: longhorn
+    size: 5Gi
+  functions:
+    enabled: false
+  deno:
+    enabled: false
+  imgproxy:
+    enabled: true
+    storageClassName: longhorn
+  snippets:
+    enabled: false
+
+# Public URLs (Kluctl substitution {{SECRET_DOMAIN}})
+environment:
+  auth:
+    API_EXTERNAL_URL: https://supabase.{{SECRET_DOMAIN}}
+    GOTRUE_SITE_URL: https://supabase.{{SECRET_DOMAIN}}
+  studio:
+    SUPABASE_PUBLIC_URL: https://supabase.{{SECRET_DOMAIN}}
+
+# Disable autoscaling
+autoscaling:
+  analytics:
+    enabled: false
+  auth:
+    enabled: false
+  db:
+    enabled: false
+  functions:
+    enabled: false
+  imgproxy:
+    enabled: false
+  kong:
+    enabled: false
+  meta:
+    enabled: false
+  realtime:
+    enabled: false
+  rest:
+    enabled: false
+  storage:
+    enabled: false
+  studio:
+    enabled: false
+  vector:
+    enabled: false
+
+# Resource requests and limits
+deployment:
+  db:
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 200m
+      limits:
+        memory: 1024Mi
+        cpu: 1000m
+  kong:
+    resources:
+      requests:
+        memory: 768Mi
+        cpu: 200m
+      limits:
+        memory: 1024Mi
+        cpu: 1000m
+  studio:
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 200m
+      limits:
+        memory: 768Mi
+        cpu: 1000m
+  auth:
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 100m
+      limits:
+        memory: 256Mi
+        cpu: 400m
+  rest:
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 100m
+      limits:
+        memory: 256Mi
+        cpu: 400m
+  realtime:
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 200m
+      limits:
+        memory: 768Mi
+        cpu: 600m
+  storage:
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 200m
+      limits:
+        memory: 512Mi
+        cpu: 600m
+  meta:
+    resources:
+      requests:
+        memory: 320Mi
+        cpu: 100m
+      limits:
+        memory: 512Mi
+        cpu: 400m
+  analytics:
+    resources:
+      requests:
+        memory: 1024Mi
+        cpu: 100m
+      limits:
+        memory: 1536Mi
+        cpu: 600m
+  functions:
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 100m
+      limits:
+        memory: 512Mi
+        cpu: 400m
+  imgproxy:
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 100m
+      limits:
+        memory: 256Mi
+        cpu: 400m
+  vector:
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 100m
+      limits:
+        memory: 256Mi
+        cpu: 400m

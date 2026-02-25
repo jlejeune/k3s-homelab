@@ -1,0 +1,20 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - secret.sops.yaml
+  - helm-rendered.yaml
+patches:
+  - target:
+      kind: Deployment
+      labelSelector: app.kubernetes.io/instance=supabase
+    patch: '[{"op": "add", "path": "/spec/strategy", "value": {"type": "Recreate"}}]'
+    options:
+      allowNameChange: false
+  - target:
+      kind: StatefulSet
+      labelSelector: app.kubernetes.io/instance=supabase
+    patch: '[{"op": "add", "path": "/spec/updateStrategy", "value": {"type": "OnDelete"}}]'
+    options:
+      allowNameChange: false
