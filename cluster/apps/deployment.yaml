@@ -48,4 +48,5 @@ deployments:
   - path: immich
   - path: openldap
   - path: plik
+  - path: supabase
   - include: home-automation
