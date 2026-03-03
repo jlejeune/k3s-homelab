@@ -5,11 +5,16 @@ resources:
   - namespace.yaml
   - secret.sops.yaml
   - helm-rendered.yaml
+  - edge-functions-configmap.yaml
 patches:
   - target:
       kind: Deployment
       labelSelector: app.kubernetes.io/instance=supabase
     patch: '[{"op": "add", "path": "/spec/strategy", "value": {"type": "Recreate"}}]'
+  - path: functions-patch.yaml
+    target:
+      kind: Deployment
+      name: supabase-supabase-functions
     options:
       allowNameChange: false
   - target:
