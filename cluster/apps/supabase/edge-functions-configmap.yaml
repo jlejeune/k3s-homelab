@@ -1,0 +1,200 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: supabase-edge-functions
+  namespace: supabase
+data:
+  index.ts: |
+    import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+    interface ServiceAccount {
+      project_id: string;
+      client_email: string;
+      private_key: string;
+    }
+
+    async function getAccessToken(serviceAccount: ServiceAccount): Promise<string> {
+      const now = Math.floor(Date.now() / 1000);
+      const header = { alg: 'RS256', typ: 'JWT' };
+      const payload = {
+        iss: serviceAccount.client_email,
+        scope: 'https://www.googleapis.com/auth/firebase.messaging',
+        aud: 'https://oauth2.googleapis.com/token',
+        iat: now,
+        exp: now + 3600,
+      };
+
+      const encode = (obj: unknown) =>
+        btoa(JSON.stringify(obj))
+          .replace(/\+/g, '-')
+          .replace(/\//g, '_')
+          .replace(/=+$/, '');
+
+      const headerEncoded = encode(header);
+      const payloadEncoded = encode(payload);
+      const signingInput = `${headerEncoded}.${payloadEncoded}`;
+
+      const pemBody = serviceAccount.private_key
+        .replace(/-----BEGIN PRIVATE KEY-----/, '')
+        .replace(/-----END PRIVATE KEY-----/, '')
+        .replace(/\n/g, '');
+      const keyBuffer = Uint8Array.from(atob(pemBody), (c) => c.charCodeAt(0));
+
+      const cryptoKey = await crypto.subtle.importKey(
+        'pkcs8',
+        keyBuffer,
+        { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+        false,
+        ['sign'],
+      );
+
+      const signingInputBuffer = new TextEncoder().encode(signingInput);
+      const signatureBuffer = await crypto.subtle.sign(
+        'RSASSA-PKCS1-v1_5',
+        cryptoKey,
+        signingInputBuffer,
+      );
+
+      const signatureEncoded = btoa(
+        String.fromCharCode(...new Uint8Array(signatureBuffer)),
+      )
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+
+      const jwt = `${signingInput}.${signatureEncoded}`;
+
+      const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+          assertion: jwt,
+        }),
+      });
+
+      if (!tokenResponse.ok) {
+        const body = await tokenResponse.text();
+        throw new Error(`Failed to get FCM access token: ${body}`);
+      }
+
+      const { access_token } = await tokenResponse.json();
+      return access_token as string;
+    }
+
+    serve(async (req) => {
+      if (req.method !== 'POST') {
+        return new Response('Method not allowed', { status: 405 });
+      }
+
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      const serviceAccountJson = Deno.env.get('FCM_SERVICE_ACCOUNT');
+
+      if (!serviceAccountJson) {
+        console.error('FCM_SERVICE_ACCOUNT secret is not set');
+        return new Response('FCM_SERVICE_ACCOUNT not configured', { status: 500 });
+      }
+
+      const serviceAccount: ServiceAccount = JSON.parse(serviceAccountJson);
+      const projectId = serviceAccount.project_id;
+
+      const { match_id, user_ids } = await req.json() as {
+        match_id: string;
+        user_ids: string[];
+      };
+
+      if (!match_id || !Array.isArray(user_ids) || user_ids.length === 0) {
+        return new Response('Invalid payload', { status: 400 });
+      }
+
+      const supabase = createClient(supabaseUrl, serviceRoleKey);
+
+      const { data: tokenRows, error: tokenError } = await supabase
+        .from('device_tokens')
+        .select('token')
+        .in('user_id', user_ids);
+
+      if (tokenError) {
+        console.error('Error fetching tokens:', tokenError);
+        return new Response('DB error', { status: 500 });
+      }
+
+      const tokens: string[] = (tokenRows ?? []).map(
+        (r: { token: string }) => r.token,
+      );
+
+      if (tokens.length === 0) {
+        return new Response(JSON.stringify({ sent: 0 }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
+      const { data: matchRow } = await supabase
+        .from('matches')
+        .select('date, teams_a:teams!matches_team_a_id_fkey(name), teams_b:teams!matches_team_b_id_fkey(name)')
+        .eq('id', match_id)
+        .maybeSingle();
+
+      const teamAName =
+        (matchRow?.teams_a as { name: string } | null)?.name ?? 'Équipe A';
+      const teamBName =
+        (matchRow?.teams_b as { name: string } | null)?.name ?? 'Équipe B';
+      const matchDate = matchRow?.date
+        ? new Date(matchRow.date as string).toLocaleDateString('fr-FR')
+        : '';
+
+      const notificationTitle = 'Vous êtes convoqué !';
+      const notificationBody = `Match : ${teamAName} vs ${teamBName}${matchDate ? ' — ' + matchDate : ''}`;
+
+      const accessToken = await getAccessToken(serviceAccount);
+      const fcmUrl = `https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`;
+
+      let sent = 0;
+      for (const token of tokens) {
+        const message = {
+          message: {
+            token,
+            notification: {
+              title: notificationTitle,
+              body: notificationBody,
+            },
+            android: {
+              priority: 'HIGH',
+              notification: {
+                channel_id: 'convocations',
+                sound: 'default',
+              },
+            },
+            data: {
+              match_id,
+              type: 'convocation',
+            },
+          },
+        };
+
+        const res = await fetch(fcmUrl, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(message),
+        });
+
+        if (res.ok) {
+          sent++;
+        } else {
+          const body = await res.text();
+          console.error(`FCM send failed for token ${token.slice(0, 8)}…: ${body}`);
+        }
+      }
+
+      return new Response(JSON.stringify({ sent, total: tokens.length }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    });
