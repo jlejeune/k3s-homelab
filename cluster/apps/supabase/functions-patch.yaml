@@ -1,0 +1,25 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: supabase-supabase-functions
+  namespace: supabase
+spec:
+  template:
+    spec:
+      containers:
+        - name: supabase-functions
+          env:
+            - name: FCM_SERVICE_ACCOUNT
+              valueFrom:
+                secretKeyRef:
+                  name: supabase
+                  key: fcm_service_account
+          volumeMounts:
+            - name: edge-functions-convocation
+              mountPath: /home/deno/functions/send-convocation-notification/index.ts
+              subPath: index.ts
+      volumes:
+        - name: edge-functions-convocation
+          configMap:
+            name: supabase-edge-functions
