@@ -9,6 +9,10 @@ data:
     import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
+    // ---------------------------------------------------------------------------
+    // Helpers: sign a JWT RS256 for FCM v1 API using the service account.
+    // ---------------------------------------------------------------------------
+
     interface ServiceAccount {
       project_id: string;
       client_email: string;
@@ -36,6 +40,7 @@ data:
       const payloadEncoded = encode(payload);
       const signingInput = `${headerEncoded}.${payloadEncoded}`;
 
+      // Import private key.
       const pemBody = serviceAccount.private_key
         .replace(/-----BEGIN PRIVATE KEY-----/, '')
         .replace(/-----END PRIVATE KEY-----/, '')
@@ -66,6 +71,7 @@ data:
 
       const jwt = `${signingInput}.${signatureEncoded}`;
 
+      // Exchange JWT for access token.
       const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -83,6 +89,10 @@ data:
       const { access_token } = await tokenResponse.json();
       return access_token as string;
     }
+
+    // ---------------------------------------------------------------------------
+    // Main handler
+    // ---------------------------------------------------------------------------
 
     serve(async (req) => {
       if (req.method !== 'POST') {
@@ -112,6 +122,7 @@ data:
 
       const supabase = createClient(supabaseUrl, serviceRoleKey);
 
+      // Fetch device tokens for the targeted users.
       const { data: tokenRows, error: tokenError } = await supabase
         .from('device_tokens')
         .select('token')
@@ -133,9 +144,10 @@ data:
         });
       }
 
+      // Fetch match info for the notification body.
       const { data: matchRow } = await supabase
         .from('matches')
-        .select('date, teams_a:teams!matches_team_a_id_fkey(name), teams_b:teams!matches_team_b_id_fkey(name)')
+        .select('date, teams_a:teams!matches_team_id_fkey(name), teams_b:teams!matches_team_b_id_fkey(name)')
         .eq('id', match_id)
         .maybeSingle();
 
@@ -150,9 +162,12 @@ data:
       const notificationTitle = 'Vous êtes convoqué !';
       const notificationBody = `Match : ${teamAName} vs ${teamBName}${matchDate ? ' — ' + matchDate : ''}`;
 
+      // Obtain a fresh FCM access token.
       const accessToken = await getAccessToken(serviceAccount);
       const fcmUrl = `https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`;
 
+      // Send one FCM message per token (FCM v1 does not support multi-cast in one
+      // request for different tokens without the legacy API).
       let sent = 0;
       for (const token of tokens) {
         const message = {
