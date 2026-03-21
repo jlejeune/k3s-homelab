@@ -5,7 +5,8 @@ resources:
   - namespace.yaml
   - secret.sops.yaml
   - helm-rendered.yaml
-  - edge-functions-configmap.yaml
+  - edge-functions-configmap-send-convocation-notification.yaml
+  - edge-functions-configmap-import-championship-matches.yaml
 patches:
   - target:
       kind: Deployment

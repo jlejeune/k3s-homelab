@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: supabase-edge-functions
+  name: supabase-edge-functions-send-convocation-notification
   namespace: supabase
 data:
   index.ts: |

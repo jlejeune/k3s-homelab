@@ -4,6 +4,8 @@ kind: Deployment
 metadata:
   name: supabase-supabase-functions
   namespace: supabase
+  annotations:
+    reloader.stakater.com/auto: "true"
 spec:
   template:
     spec:
@@ -19,7 +21,13 @@ spec:
             - name: edge-functions-convocation
               mountPath: /home/deno/functions/send-convocation-notification/index.ts
               subPath: index.ts
+            - name: edge-functions-import-championship-matches
+              mountPath: /home/deno/functions/import-group-results/index.ts
+              subPath: index.ts
       volumes:
         - name: edge-functions-convocation
           configMap:
-            name: supabase-edge-functions
+            name: supabase-edge-functions-send-convocation-notification
+        - name: edge-functions-import-championship-matches
+          configMap:
+            name: supabase-edge-functions-import-championship-matches

@@ -1,0 +1,357 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: supabase-edge-functions-import-championship-matches
+  namespace: supabase
+data:
+  index.ts: |
+    import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+    // ---------------------------------------------------------------------------
+    // Types
+    // ---------------------------------------------------------------------------
+
+    interface ParsedRow {
+      matchDay: number;
+      matchWeek: Date;
+      homeTeamName: string;
+      awayTeamName: string;
+      hasScore: boolean;
+      homeSetsWon?: number;
+      awaySetsWon?: number;
+      homeScore?: number;
+      awayScore?: number;
+      setScores?: number[][];
+    }
+
+    interface ImportResponse {
+      created: number;
+      updated: number;
+      skipped: number;
+      participantsCreated: number;
+    }
+
+    // ---------------------------------------------------------------------------
+    // CSV parsing helpers
+    // ---------------------------------------------------------------------------
+
+    /** Parse row[3] format: "J2R du 12 au 16/01" */
+    function parseMatchWeek(label: string): { matchDay: number; matchWeek: Date } | null {
+      const m = label.match(/J(\d+)R\s+du\s+(\d+)(?:\/(\d+))?\s+au\s+\d+\/(\d+)/);
+      if (!m) return null;
+
+      const matchDay = parseInt(m[1], 10);
+      const startDay = parseInt(m[2], 10);
+      // Use the start date's month when present (e.g. "30/03"), else fall back to end date's month (e.g. "16/01")
+      const month = m[3] ? parseInt(m[3], 10) : parseInt(m[4], 10);
+
+      // Volleyball season heuristic: September to May
+      const now = new Date();
+      const currentMonth = now.getMonth() + 1; // 1-based
+      const seasonStartYear = currentMonth >= 9 ? now.getFullYear() : now.getFullYear() - 1;
+      const year = month >= 9 ? seasonStartYear : seasonStartYear + 1;
+
+      return { matchDay, matchWeek: new Date(year, month - 1, startDay) };
+    }
+
+    /** Parse set details string "25/22-26/24-16/24-25/23" → [[25,22],[26,24],[16,24],[25,23]] */
+    function parseSetScores(detail: string): number[][] {
+      if (!detail || detail.trim() === '') return [];
+      return detail.split('-').map((s) => {
+        const parts = s.split('/');
+        return [parseInt(parts[0], 10), parseInt(parts[1], 10)];
+      });
+    }
+
+    /** Parse a valid CSV line into a ParsedRow, or return null if invalid */
+    function parseRow(columns: string[]): ParsedRow | null {
+      if (columns.length < 12) return null;
+
+      const matchDayLabel = columns[3]?.trim() ?? '';
+      const homeTeamName = columns[6]?.trim() ?? '';
+      const awayTeamName = columns[11]?.trim() ?? '';
+
+      if (!homeTeamName || !awayTeamName) return null;
+
+      const parsed = parseMatchWeek(matchDayLabel);
+      if (!parsed) return null;
+
+      const homeSetsRaw = columns[8]?.trim() ?? '';
+      const awaySetsRaw = columns[9]?.trim() ?? '';
+      const hasScore = homeSetsRaw !== '' && awaySetsRaw !== '';
+
+      if (!hasScore) {
+        return {
+          matchDay: parsed.matchDay,
+          matchWeek: parsed.matchWeek,
+          homeTeamName,
+          awayTeamName,
+          hasScore: false,
+        };
+      }
+
+      const homeSetsWon = parseInt(homeSetsRaw, 10);
+      const awaySetsWon = parseInt(awaySetsRaw, 10);
+      const rawSetDetail = columns[14]?.trim() ?? '';
+      const setScoresParsed = parseSetScores(rawSetDetail);
+
+      // Compute total points per side from set scores
+      let homeScore = 0;
+      let awayScore = 0;
+      for (const [h, a] of setScoresParsed) {
+        homeScore += h;
+        awayScore += a;
+      }
+
+      return {
+        matchDay: parsed.matchDay,
+        matchWeek: parsed.matchWeek,
+        homeTeamName,
+        awayTeamName,
+        hasScore: true,
+        homeSetsWon,
+        awaySetsWon,
+        homeScore,
+        awayScore,
+        setScores: setScoresParsed,
+      };
+    }
+
+    // ---------------------------------------------------------------------------
+    // Main handler
+    // ---------------------------------------------------------------------------
+
+    serve(async (req) => {
+      if (req.method !== 'POST') {
+        return new Response('Method not allowed', { status: 405 });
+      }
+
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      const authHeader = req.headers.get('Authorization') ?? '';
+
+      // Verify the caller is a super admin
+      const userClient = createClient(supabaseUrl, serviceRoleKey, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data: superAdminCheck, error: saError } = await userClient
+        .from('super_admins')
+        .select('user_id')
+        .limit(1);
+
+      if (saError || !superAdminCheck || superAdminCheck.length === 0) {
+        return new Response('Forbidden', { status: 403 });
+      }
+
+      const { group_id, url } = (await req.json()) as {
+        group_id: string;
+        url: string;
+      };
+
+      if (!group_id || !url) {
+        return new Response('Invalid payload: group_id and url are required', { status: 400 });
+      }
+
+      // Fetch the page content
+      let pageHtml: string;
+      try {
+        const pageRes = await fetch(url);
+        if (!pageRes.ok) {
+          return new Response(`Failed to fetch URL: ${pageRes.status}`, { status: 502 });
+        }
+        pageHtml = await pageRes.text();
+      } catch (err) {
+        console.error('Fetch error:', err);
+        return new Response(`Fetch failed: ${err}`, { status: 502 });
+      }
+
+      // Extract CSV from <textarea>
+      const textareaMatch = pageHtml.match(/<textarea[^>]*>([\s\S]*?)<\/textarea>/i);
+      if (!textareaMatch) {
+        return new Response('No <textarea> found in the page', { status: 422 });
+      }
+      const csvContent = textareaMatch[1].trim();;
+
+      // Service-role client for DB operations
+      const admin = createClient(supabaseUrl, serviceRoleKey);
+
+      // Fetch championship_id from the group (required for participant inserts)
+      const { data: groupRow, error: gError } = await admin
+        .from('championship_groups')
+        .select('championship_id')
+        .eq('id', group_id)
+        .single();
+
+      if (gError || !groupRow) {
+        console.error('Group fetch error:', gError);
+        return new Response('DB error fetching group', { status: 500 });
+      }
+      const championship_id = groupRow.championship_id as string;
+
+      // Load participants for the group
+      const { data: participantRows, error: pError } = await admin
+        .from('championship_participants')
+        .select('id, display_name')
+        .eq('group_id', group_id);
+
+      if (pError) {
+        console.error('Participant fetch error:', pError);
+        return new Response('DB error fetching participants', { status: 500 });
+      }
+
+      // Build display_name → participant_id map (case-insensitive)
+      const participantMap = new Map<string, string>();
+      for (const row of participantRows ?? []) {
+        const displayName = (row.display_name as string | null)?.trim();
+        if (displayName) {
+          participantMap.set(displayName.toUpperCase(), row.id as string);
+        }
+      }
+
+      // Load existing matches for the group
+      const { data: existingMatches, error: mError } = await admin
+        .from('championship_group_matches')
+        .select('id, participant_a_id, participant_b_id, status')
+        .eq('group_id', group_id)
+        .is('deleted_at', null);
+
+      if (mError) {
+        console.error('Match fetch error:', mError);
+        return new Response('DB error fetching matches', { status: 500 });
+      }
+
+      // Build match lookup map: "pA_id|pB_id" and "pB_id|pA_id" → { id, participantAId, status }
+      const matchMap = new Map<
+        string,
+        { id: string; participantAId: string; status: string }
+      >();
+      for (const m of existingMatches ?? []) {
+        const pA = m.participant_a_id as string;
+        const pB = m.participant_b_id as string;
+        const entry = { id: m.id as string, participantAId: pA, status: m.status as string };
+        matchMap.set(`${pA}|${pB}`, entry);
+        matchMap.set(`${pB}|${pA}`, entry);
+      }
+
+      // Helper: create a missing participant and register it in the map
+      async function ensureParticipant(teamName: string): Promise<string | null> {
+        const { data, error } = await admin
+          .from('championship_participants')
+          .insert({ group_id, championship_id, display_name: teamName })
+          .select('id')
+          .single();
+        if (error) {
+          console.error(`Failed to create participant "${teamName}":`, error);
+          return null;
+        }
+        const newId = data.id as string;
+        participantMap.set(teamName.toUpperCase(), newId);
+        result.participantsCreated++;
+        return newId;
+      }
+
+      // Process CSV rows
+      const result: ImportResponse = { created: 0, updated: 0, skipped: 0, participantsCreated: 0 };
+
+      const lines = csvContent.split(/\r\n|\r|\n/).filter((l) => l.trim() !== '');
+      for (const line of lines) {
+        const columns = line.split(';');
+        const parsed = parseRow(columns);
+        if (!parsed) continue;
+
+        const homeKey = parsed.homeTeamName.toUpperCase();
+        const awayKey = parsed.awayTeamName.toUpperCase();
+
+        let homeParticipantId = participantMap.get(homeKey);
+        let awayParticipantId = participantMap.get(awayKey);
+
+        if (!homeParticipantId) {
+          homeParticipantId = await ensureParticipant(parsed.homeTeamName) ?? undefined;
+        }
+        if (!awayParticipantId) {
+          awayParticipantId = await ensureParticipant(parsed.awayTeamName) ?? undefined;
+        }
+        if (!homeParticipantId || !awayParticipantId) continue;
+
+        const existingKey = `${homeParticipantId}|${awayParticipantId}`;
+        const existing = matchMap.get(existingKey);
+
+        if (existing) {
+          if (existing.status === 'played') {
+            result.skipped++;
+            continue;
+          }
+
+          if (!parsed.hasScore) {
+            // Match exists but no score to update — skip silently
+            continue;
+          }
+
+          // Determine correct orientation (participant_a may differ from home)
+          const isReversed = existing.participantAId === awayParticipantId;
+          const setsWonA = isReversed ? parsed.awaySetsWon! : parsed.homeSetsWon!;
+          const setsWonB = isReversed ? parsed.homeSetsWon! : parsed.awaySetsWon!;
+          const scoreA = isReversed ? parsed.awayScore! : parsed.homeScore!;
+          const scoreB = isReversed ? parsed.homeScore! : parsed.awayScore!;
+          const setScores = isReversed
+            ? (parsed.setScores ?? []).map(([h, a]) => [a, h])
+            : parsed.setScores ?? [];
+
+          const { error: updateError } = await admin
+            .from('championship_group_matches')
+            .update({
+              status: 'played',
+              sets_won_a: setsWonA,
+              sets_won_b: setsWonB,
+              score_a: scoreA,
+              score_b: scoreB,
+              set_scores: setScores.length > 0 ? JSON.stringify(setScores) : null,
+            })
+            .eq('id', existing.id);
+
+          if (updateError) {
+            console.error(`Update error for match ${existing.id}:`, updateError);
+          } else {
+            result.updated++;
+          }
+        } else {
+          // Insert new match
+          const status = parsed.hasScore ? 'played' : 'scheduled';
+          const insertPayload: Record<string, unknown> = {
+            group_id,
+            participant_a_id: homeParticipantId,
+            participant_b_id: awayParticipantId,
+            match_week: parsed.matchWeek.toISOString(),
+            match_day: parsed.matchDay,
+            status,
+          };
+
+          if (parsed.hasScore) {
+            insertPayload.sets_won_a = parsed.homeSetsWon;
+            insertPayload.sets_won_b = parsed.awaySetsWon;
+            insertPayload.score_a = parsed.homeScore;
+            insertPayload.score_b = parsed.awayScore;
+            if (parsed.setScores && parsed.setScores.length > 0) {
+              insertPayload.set_scores = JSON.stringify(parsed.setScores);
+            }
+          }
+
+          const { error: insertError } = await admin
+            .from('championship_group_matches')
+            .insert(insertPayload);
+
+          if (insertError) {
+            console.error('Insert error:', insertError);
+          } else {
+            result.created++;
+          }
+        }
+      }
+
+      return new Response(JSON.stringify(result), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    });
