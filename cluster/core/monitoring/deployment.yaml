@@ -10,3 +10,4 @@ deployments:
   - path: grafana
   - path: kube-prometheus-stack
   - path: uptime-kuma
+  - path: maintenant
