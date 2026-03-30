@@ -1,0 +1,133 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: maintenant
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/instance: maintenant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: maintenant
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: maintenant
+    spec:
+      restartPolicy: Always
+      serviceAccountName: maintenant
+      securityContext:
+        fsGroup: 65534
+        runAsNonRoot: true
+        runAsUser: 65534
+      containers:
+        - name: maintenant
+          image: ghcr.io/kolapsis/maintenant:1.2.6
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: MAINTENANT_ADDR
+              value: "0.0.0.0:8080"
+            - name: MAINTENANT_DB
+              value: "/data/maintenant.db"
+            - name: MAINTENANT_BASE_URL
+              value: "https://maintenant.{{SECRET_DOMAIN}}"
+            - name: MAINTENANT_RUNTIME
+              value: "kubernetes"
+            - name: MAINTENANT_K8S_EXCLUDE_NAMESPACES
+              value: "kube-system,kube-public,kube-node-lease,node-feature-discovery,system-upgrade,storage,cert-manager"
+          ports:
+            - containerPort: 8080
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          volumeMounts:
+            - name: maintenant-data
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+      volumes:
+        - name: maintenant-data
+          persistentVolumeClaim:
+            claimName: maintenant-data-pvc
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: maintenant
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/instance: maintenant
+spec:
+  selector:
+    app.kubernetes.io/instance: maintenant
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: maintenant-data-pvc
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/instance: maintenant
+spec:
+  storageClassName: longhorn
+  volumeName: maintenant-data-pv
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: maintenant-data-pv
+  labels:
+    app.kubernetes.io/instance: maintenant
+spec:
+  storageClassName: longhorn
+  persistentVolumeReclaimPolicy: Retain
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  csi:
+    driver: driver.longhorn.io
+    fsType: ext4
+    volumeAttributes:
+      numberOfReplicas: '2'
+      staleReplicaTimeout: '2880'
+    volumeHandle: maintenant-data-pv  # à créer manuellement dans l'UI Longhorn d'abord

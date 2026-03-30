@@ -8,3 +8,6 @@ kubeconfig*
 # kluctl
 cluster/.helm-charts
 .envrc
+# claude
+CLAUDE.md
+.claude
