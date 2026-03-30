@@ -5,4 +5,5 @@ resources:
   - grafana
   - kube-prometheus-stack
   - uptime-kuma
+  - maintenant
   - namespace.yaml
