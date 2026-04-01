@@ -50,7 +50,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: plik
-          image: rootgg/plik:1.4.1
+          image: rootgg/plik:1.4.2
           imagePullPolicy: IfNotPresent
           securityContext:
             runAsUser: 1000
