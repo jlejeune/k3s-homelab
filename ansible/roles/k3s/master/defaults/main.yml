@@ -21,7 +21,7 @@ k3s_master_extra_args: >-
   {{ k3s_master_init_args }}
   --token {{ hostvars[groups['k3s_masters'][0]]['token'] | default (k3s_token) }}
   --tls-san={{ k3s_master_vip }}
-  {{ '--node-taint node-role.kubernetes.io/master=true:PreferNoSchedule' if k3s_master_taint else '' | trim }}
+  {{ '--node-taint node-role.kubernetes.io/control-plane=true:PreferNoSchedule' if k3s_master_taint else '' | trim }}
   --disable servicelb
   --disable traefik
   --write-kubeconfig-mode 644
