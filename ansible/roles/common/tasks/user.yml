@@ -4,7 +4,7 @@
     name: "{{ item.username }}"
     comment: "{{ item.comment }}"
     shell: /bin/zsh
-    password: "{{ item.password }}"
+    password: "{{ ansible_become_pass | password_hash('sha512') }}"
     append: yes
     group: "{{ item.group }}"
     groups: "{{ item.groups }}"
