@@ -2,6 +2,10 @@
 
 Ansible playbooks and roles for provisioning and managing the K3s cluster nodes.
 
+## Collections
+
+ansible-galaxy collection install -r requirements.yml
+
 ## Roles
 
 ### common
