@@ -8,13 +8,6 @@
     group: "{{ item.group  }}"
   with_items: "{{ users }}"
 
-- name: Set authorized keys
-  ansible.posix.authorized_key:
-    user: "{{ item.username }}"
-    state: present
-    key: "{{ lookup('file', 'files/'+ item.username + '.key.pub') }}"
-  with_items: "{{ users }}"
-
 - name: Disable ssh remote root login
   lineinfile:
     dest: /etc/ssh/sshd_config

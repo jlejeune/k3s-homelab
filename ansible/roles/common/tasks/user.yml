@@ -12,24 +12,38 @@
     update_password: on_create
   with_items: "{{ users }}"
 
-- name: Get my dotfiles config for me and for root user
-  ansible.builtin.git:
-    repo: "https://github.com/jlejeune/dotbot.git"
-    dest: "{{ item.home }}/.dotbot"
-    update: yes
-  become: yes
-  become_user: "{{ item.username }}"
-  with_items:
-    - { username: "jlejeune", home: "/home/jlejeune" }
-    - { username: "root", home: "/root" }
+- name: Install chezmoi
+  ansible.builtin.get_url:
+    url: "https://github.com/twpayne/chezmoi/releases/latest/download/chezmoi-linux-{{ 'arm64' if ansible_architecture == 'aarch64' else 'amd64' }}"
+    dest: /usr/local/bin/chezmoi
+    mode: '0755'
 
-- name: Install my dotfiles for me and for root user
-  ansible.builtin.command: "{{ item.home }}/.dotbot/install"
+- name: Create chezmoi config directory
+  ansible.builtin.file:
+    path: /home/jlejeune/.config/chezmoi
+    state: directory
+    owner: jlejeune
+    group: users
+    mode: '0755'
+
+- name: Create chezmoi config
+  ansible.builtin.copy:
+    dest: /home/jlejeune/.config/chezmoi/chezmoi.toml
+    owner: jlejeune
+    group: users
+    mode: '0600'
+    content: |
+      [data]
+          is_server = true
+
+- name: Init and apply chezmoi dotfiles
+  ansible.builtin.command:
+    cmd: "chezmoi init --apply https://oauth2:{{ github_token }}@github.com/jlejeune/dotfiles.git"
+    creates: /home/jlejeune/.local/share/chezmoi
   become: yes
-  become_user: "{{ item.username }}"
-  with_items:
-    - { username: "jlejeune", home: "/home/jlejeune" }
-    - { username: "root", home: "/root" }
+  become_user: jlejeune
+  environment:
+    HOME: /home/jlejeune
 
 - name: Remove the user 'pi'
   ansible.builtin.user:
