@@ -32,10 +32,39 @@
     - tree
     - tzdata
     - ufw
+    - luarocks
     - unzip
     - util-linux
     - vim
     - zsh
+
+- name: Get latest neovim version
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/neovim/neovim/releases/latest
+    return_content: true
+  register: neovim_release
+  delegate_to: localhost
+
+- name: Download neovim archive on controller
+  vars:
+    neovim_version: "{{ neovim_release.json.tag_name }}"
+    neovim_arch: "{{ 'arm64' if ansible_architecture == 'aarch64' else 'x86_64' }}"
+  ansible.builtin.get_url:
+    url: "https://github.com/neovim/neovim/releases/download/{{ neovim_version }}/nvim-linux-{{ neovim_arch }}.tar.gz"
+    dest: "/tmp/nvim-linux-{{ neovim_arch }}.tar.gz"
+    mode: '0644'
+  delegate_to: localhost
+
+- name: Install neovim
+  vars:
+    neovim_arch: "{{ 'arm64' if ansible_architecture == 'aarch64' else 'x86_64' }}"
+  ansible.builtin.unarchive:
+    src: "/tmp/nvim-linux-{{ neovim_arch }}.tar.gz"
+    dest: /usr/local
+    remote_src: false
+    extra_opts:
+      - --strip-components=1
+    creates: /usr/local/bin/nvim
 
 - name: Uninstall useless packages
   ansible.builtin.apt:
