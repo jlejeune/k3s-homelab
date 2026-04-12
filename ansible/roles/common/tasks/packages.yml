@@ -1,4 +1,11 @@
 ---
+- name: Fix non-free-firmware component in apt sources (Debian 12+)
+  ansible.builtin.replace:
+    path: /etc/apt/sources.list
+    regexp: ' non-free(?!-firmware)'
+    replace: ' non-free non-free-firmware'
+  when: ansible_distribution == 'Debian' and ansible_distribution_major_version | int >= 12
+
 - name: Update packages
   ansible.builtin.apt:
     update_cache: yes
