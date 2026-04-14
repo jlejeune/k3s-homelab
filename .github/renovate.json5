@@ -25,5 +25,25 @@
       "ansible/.+\\.(ya?ml(\\.j2)?|j2)$",
       "cluster/.+\\.ya?ml$"
     ]
-  }
+  },
+  "customManagers": [
+    {
+      // Kluctl helmChart with Helm repo (repo: + chartName: + chartVersion:)
+      "customType": "regex",
+      "fileMatch": ["cluster/.+/helm-chart\\.ya?ml$"],
+      "matchStrings": [
+        "repo:\\s*(?<registryUrl>[^\\n]+)\\n\\s+chartName:\\s*(?<depName>[^\\n]+)\\n\\s+chartVersion:\\s*[\"']?(?<currentValue>[^\\n\"']+)"
+      ],
+      "datasourceTemplate": "helm"
+    },
+    {
+      // Kluctl helmChart with Git tag (git.ref.tag:)
+      "customType": "regex",
+      "fileMatch": ["cluster/.+/helm-chart\\.ya?ml$"],
+      "matchStrings": [
+        "url:\\s*https://github\\.com/(?<depName>[^\\n]+)\\n[\\s\\S]+?tag:\\s*(?<currentValue>[^\\n]+)"
+      ],
+      "datasourceTemplate": "github-releases"
+    }
+  ]
 }
