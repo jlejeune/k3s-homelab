@@ -1,0 +1,31 @@
+---
+config:
+  global:
+    resolve_timeout: 5m
+  receivers:
+    - name: discord
+      discord_configs:
+        - webhook_url: "{{DISCORD_WEBHOOK_URL}}"
+          title: |-
+            {% raw %}[{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .CommonLabels.alertname }}{% endraw %}
+          message: |-
+            {% raw %}{{ range .Alerts -}}
+            **{{ .Annotations.summary }}**
+            {{ .Annotations.description }}
+            Nœud: `{{ .Labels.instance }}`
+            Sévérité: `{{ .Labels.severity }}`
+            {{ end }}{% endraw %}
+  route:
+    group_by: ['alertname', 'instance']
+    group_wait: 30s
+    group_interval: 5m
+    repeat_interval: 4h
+    receiver: discord
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi

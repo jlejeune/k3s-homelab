@@ -5,10 +5,16 @@ vars:
       namespace: default
       key: SECRET_DOMAIN
       targetPath: SECRET_DOMAIN
+  - clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: DISCORD_WEBHOOK_URL
+      targetPath: DISCORD_WEBHOOK_URL
 
 deployments:
   - path: victoria-metrics
   - path: vmagent
+  - path: alertmanager
   - path: grafana
   - path: kube-prometheus-stack
   - path: uptime-kuma
