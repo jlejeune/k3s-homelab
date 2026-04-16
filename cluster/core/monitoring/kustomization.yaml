@@ -5,6 +5,7 @@ resources:
   - victoria-metrics
   - vmagent
   - alertmanager
+  - vmalert
   - grafana
   - kube-prometheus-stack
   - uptime-kuma
