@@ -1,0 +1,7 @@
+---
+helmChart:
+  repo: https://victoriametrics.github.io/helm-charts/
+  chartName: victoria-metrics-alert
+  chartVersion: "0.37.0"
+  releaseName: vmalert
+  namespace: monitoring
