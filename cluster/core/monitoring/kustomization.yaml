@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - victoria-metrics
   - vmagent
+  - alertmanager
   - grafana
   - kube-prometheus-stack
   - uptime-kuma
