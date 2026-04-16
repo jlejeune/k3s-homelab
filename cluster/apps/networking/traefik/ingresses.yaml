@@ -474,7 +474,7 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: prometheus
+  name: victoria-metrics
   namespace: networking
   annotations:
     external-dns.alpha.kubernetes.io/target: {{LB_TRAEFIK_ADDRESS}}
@@ -484,14 +484,16 @@ spec:
     - websecure
   routes:
     - kind: Rule
-      match: "Host(`prometheus.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
+      match: "Host(`victoria-metrics.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
+        - name: forwardauth-authelia
+          namespace: networking
         - name: security-header
           namespace: networking
       services:
-        - name: prometheus-prometheus
+        - name: victoria-metrics-single-server
           namespace: monitoring
-          port: 9090
+          port: 8428
           scheme: http
   tls:
     secretName: "{{SECRET_DOMAIN}}-tls"
