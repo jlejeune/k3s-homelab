@@ -1,7 +1,7 @@
 ---
 helmChart:
   repo: https://prometheus-community.github.io/helm-charts
-  chartName: kube-prometheus-stack
-  chartVersion: 78.3.2
-  releaseName: kube-prometheus-stack
+  chartName: prometheus-node-exporter
+  chartVersion: "4.53.1"
+  releaseName: node-exporter
   namespace: monitoring
