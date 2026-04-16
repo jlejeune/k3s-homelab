@@ -6,7 +6,7 @@
     ":disableRateLimiting",
     ":dependencyDashboard",
     ":automergeDisabled",
-    "github>jlejeune/jlejeune.home-ansible//.github/renovate/commitMessage.json5",
+    ":semanticCommits",
     "github>jlejeune/jlejeune.home-ansible//.github/renovate/labels.json5",
   ],
   "dependencyDashboard": true,
