@@ -1,0 +1,6 @@
+helmChart:
+  chartName: snapshot-controller
+  chartVersion: 5.0.3
+  namespace: kube-system
+  releaseName: snapshot-controller
+  repo: https://piraeus.io/helm-charts/
