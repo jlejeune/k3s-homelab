@@ -293,6 +293,9 @@ data:
         - domain: longhorn.{{SECRET_DOMAIN}}
           policy: one_factor
 
+        - domain: victoria-metrics.{{SECRET_DOMAIN}}
+          policy: one_factor
+
         - domain: traefik.{{SECRET_DOMAIN}}
           policy: bypass
           networks:
