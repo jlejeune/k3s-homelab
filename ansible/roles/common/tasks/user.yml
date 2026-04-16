@@ -46,8 +46,24 @@
     group: users
     mode: '0600'
     content: |
+      encryption = "age"
+      [age]
+          identity = "~/.config/chezmoi/key.txt"
+          recipient = "age1tcree7luqazqy6fyzujszu85pky4dm7ncygfds3x6pxr4qmpd3qshrjd5n"
+
       [data]
           is_server = true
+          name = "{{ chezmoi_name }}"
+          email = "{{ chezmoi_email }}"
+          email_github = "{{ chezmoi_email_github }}"
+
+- name: Deploy chezmoi Age key
+  ansible.builtin.copy:
+    dest: /home/jlejeune/.config/chezmoi/key.txt
+    owner: jlejeune
+    group: users
+    mode: '0600'
+    content: "{{ chezmoi_age_key }}"
 
 - name: Install fzf
   ansible.builtin.git:
@@ -67,6 +83,12 @@
   environment:
     HOME: /home/jlejeune
 
+- name: Symlink fzf to /usr/local/bin
+  ansible.builtin.file:
+    src: /home/jlejeune/.fzf/bin/fzf
+    dest: /usr/local/bin/fzf
+    state: link
+
 - name: Install oh-my-zsh
   ansible.builtin.git:
     repo: https://github.com/ohmyzsh/ohmyzsh.git
@@ -80,6 +102,14 @@
   ansible.builtin.command:
     cmd: "chezmoi init --apply https://oauth2:{{ github_token }}@github.com/jlejeune/dotfiles.git"
     creates: /home/jlejeune/.local/share/chezmoi
+  become: yes
+  become_user: jlejeune
+  environment:
+    HOME: /home/jlejeune
+
+- name: Update and apply chezmoi dotfiles
+  ansible.builtin.command:
+    cmd: "chezmoi update{{ ' --force' if chezmoi_force | default(false) | bool else '' }}"
   become: yes
   become_user: jlejeune
   environment:
