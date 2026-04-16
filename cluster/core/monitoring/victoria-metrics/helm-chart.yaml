@@ -1,0 +1,7 @@
+---
+helmChart:
+  repo: https://victoriametrics.github.io/helm-charts/
+  chartName: victoria-metrics-single
+  chartVersion: "0.35.0"
+  releaseName: victoria-metrics-single
+  namespace: monitoring
