@@ -11,3 +11,5 @@ cluster/.helm-charts
 # claude
 CLAUDE.md
 .claude
+# worktrees
+.worktrees
