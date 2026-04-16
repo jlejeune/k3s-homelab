@@ -36,7 +36,7 @@ plugins:
   - vonage-status-panel
   - grafana-worldmap-panel
 serviceMonitor:
-  enabled: true
+  enabled: false
 dashboardProviders:
   dashboardproviders.yaml:
     apiVersion: 1
