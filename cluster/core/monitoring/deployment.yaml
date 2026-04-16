@@ -15,6 +15,7 @@ deployments:
   - path: victoria-metrics
   - path: vmagent
   - path: alertmanager
+  - path: vmalert
   - path: grafana
   - path: kube-prometheus-stack
   - path: uptime-kuma

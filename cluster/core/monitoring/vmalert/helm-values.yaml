@@ -1,0 +1,69 @@
+---
+server:
+  datasource:
+    url: "http://victoria-metrics-single-server.monitoring.svc.cluster.local:8428"
+  notifiers:
+    - url: "http://alertmanager.monitoring.svc.cluster.local:9093/api/v2/alerts"
+  evaluationInterval: 60s
+
+  resources:
+    requests:
+      cpu: 20m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+  config:
+    alerts:
+      groups:
+        - name: node.rules
+          rules:
+            - alert: NodeCPUHigh
+              expr: >
+                100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+              for: 15m
+              labels:
+                severity: warning
+              annotations:
+                summary: {% raw %}"CPU élevé sur {{ $labels.instance }}"{% endraw %}
+                description: {% raw %}"Utilisation CPU: {{ $value | humanize }}% depuis 15 minutes."{% endraw %}
+
+            - alert: NodeMemoryHigh
+              expr: >
+                (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
+              for: 10m
+              labels:
+                severity: warning
+              annotations:
+                summary: {% raw %}"RAM élevée sur {{ $labels.instance }}"{% endraw %}
+                description: {% raw %}"Utilisation mémoire: {{ $value | humanize }}% depuis 10 minutes."{% endraw %}
+
+            - alert: NodeDiskLow
+              expr: >
+                (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"}) * 100 < 10
+              for: 5m
+              labels:
+                severity: critical
+              annotations:
+                summary: {% raw %}"Disque presque plein sur {{ $labels.instance }}"{% endraw %}
+                description: {% raw %}"Espace disque restant: {{ $value | humanize }}% sur {{ $labels.mountpoint }}."{% endraw %}
+
+            - alert: NodeDown
+              expr: up{job="node-exporter"} == 0
+              for: 5m
+              labels:
+                severity: critical
+              annotations:
+                summary: {% raw %}"Nœud {{ $labels.instance }} injoignable"{% endraw %}
+                description: {% raw %}"node-exporter sur {{ $labels.instance }} ne répond plus depuis 5 minutes."{% endraw %}
+
+            - alert: NodeFilesystemReadOnly
+              expr: >
+                node_filesystem_readonly{fstype!~"tmpfs|overlay|squashfs"} == 1
+              for: 1m
+              labels:
+                severity: critical
+              annotations:
+                summary: {% raw %}"Filesystem en lecture seule sur {{ $labels.instance }}"{% endraw %}
+                description: {% raw %}"{{ $labels.mountpoint }} est monté en read-only sur {{ $labels.instance }}."{% endraw %}
