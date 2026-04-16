@@ -22,7 +22,7 @@ spec:
       dnsPolicy: ClusterFirst
       initContainers:
         - name: postgresql-isready
-          image: postgres:15.17
+          image: postgres:18.3
           env:
             - name: POSTGRES_USER
               valueFrom:
