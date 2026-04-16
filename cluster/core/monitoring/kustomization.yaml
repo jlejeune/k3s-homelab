@@ -6,8 +6,8 @@ resources:
   - vmagent
   - alertmanager
   - vmalert
+  - node-exporter
   - grafana
-  - kube-prometheus-stack
   - uptime-kuma
   - maintenant
   - namespace.yaml
