@@ -16,7 +16,7 @@ deployments:
   - path: vmagent
   - path: alertmanager
   - path: vmalert
+  - path: node-exporter
   - path: grafana
-  - path: kube-prometheus-stack
   - path: uptime-kuma
   - path: maintenant
