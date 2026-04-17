@@ -13,3 +13,5 @@ CLAUDE.md
 .claude
 # worktrees
 .worktrees
+# audit reports
+cluster/audit/reports/
