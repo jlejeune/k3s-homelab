@@ -15,3 +15,5 @@ CLAUDE.md
 .worktrees
 # audit reports
 cluster/audit/reports/
+# superpowers plans/specs
+docs/superpowers
