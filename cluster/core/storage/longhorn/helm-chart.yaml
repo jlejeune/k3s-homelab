@@ -2,6 +2,6 @@
 helmChart:
   repo: https://charts.longhorn.io
   chartName: longhorn
-  chartVersion: 1.10.1
+  chartVersion: 1.10.2
   releaseName: longhorn
   namespace: storage
