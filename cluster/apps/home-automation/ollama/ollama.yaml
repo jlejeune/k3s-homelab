@@ -46,6 +46,8 @@ spec:
               value: "11.0.0"
             - name: HIP_VISIBLE_DEVICES
               value: "0"
+            - name: OLLAMA_NO_CLOUD
+              value: "1"
           ports:
             - name: http
               containerPort: 11434
