@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kube-bench-master
+  namespace: default
+spec:
+  template:
+    spec:
+      hostPID: true
+      hostNetwork: true
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: "true"
+      containers:
+        - name: kube-bench
+          image: aquasec/kube-bench:latest
+          command:
+            - kube-bench
+            - run
+            - --benchmark
+            - k3s-cis-1.8
+            - --targets
+            - master,etcd
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: var-lib-rancher
+              mountPath: /var/lib/rancher
+              readOnly: true
+            - name: etc-rancher
+              mountPath: /etc/rancher
+              readOnly: true
+            - name: usr-local-bin-k3s
+              mountPath: /usr/local/bin/k3s
+              readOnly: true
+      restartPolicy: Never
+      volumes:
+        - name: var-lib-rancher
+          hostPath:
+            path: /var/lib/rancher
+        - name: etc-rancher
+          hostPath:
+            path: /etc/rancher
+        - name: usr-local-bin-k3s
+          hostPath:
+            path: /usr/local/bin/k3s
+  backoffLimit: 0
