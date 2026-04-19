@@ -20,9 +20,8 @@ logs:
     enabled: true
 api:
   dashboard: true
-globalArguments:
-  - "--providers.kubernetesingress.ingressclass=traefik"
 additionalArguments:
+  - "--providers.kubernetesingress.ingressclass=traefik"
   - "--providers.kubernetesingress.ingressendpoint.ip={{LB_TRAEFIK_ADDRESS}}"
   - "--providers.kubernetesingress.allowexternalnameservices=true"
   - "--providers.kubernetescrd.allowexternalnameservices=true"
@@ -35,11 +34,12 @@ ports:
     expose:
       default: true
   web:
-    redirections:
-      entryPoint:
-        to: websecure
-        scheme: https
-        permanent: true
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
   wireguard:
     port: 51820
     protocol: UDP
