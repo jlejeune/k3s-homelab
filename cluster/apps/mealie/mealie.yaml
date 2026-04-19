@@ -57,15 +57,13 @@ spec:
             - name: LDAP_AUTH_ENABLED
               value: "true"
             - name: LDAP_SERVER_URL
-              value: ldap://{{NAS_ADDRESS}}
-            - name: LDAP_TLS_INSECURE
-              value: "true"
+              value: ldap://lldap.lldap.svc.cluster.local:3890
             - name: LDAP_BASE_DN
-              value: "cn=users,dc=jlejeune,dc=home"
+              value: "ou=people,dc=jlejeune,dc=home"
             - name: LDAP_USER_FILTER
-              value: "(|(memberof=cn=external users,cn=groups,dc=jlejeune,dc=home)(memberof=cn=internal users,cn=groups,dc=jlejeune,dc=home))"
+              value: "(|(memberof=cn=external users,ou=groups,dc=jlejeune,dc=home)(memberof=cn=internal users,ou=groups,dc=jlejeune,dc=home))"
             - name: LDAP_ADMIN_FILTER
-              value: "(memberof=cn=administrators,cn=groups,dc=jlejeune,dc=home)"
+              value: "(memberof=cn=administrators,ou=groups,dc=jlejeune,dc=home)"
             - name: LDAP_QUERY_BIND
               value: "{{SECRET_LDAP_ADMIN_BIND_DN}}"
             - name: LDAP_QUERY_PASSWORD
@@ -73,7 +71,7 @@ spec:
             - name: LDAP_ID_ATTRIBUTE
               value: "uid"
             - name: LDAP_NAME_ATTRIBUTE
-              value: "gecos"
+              value: "displayName"
             - name: LDAP_MAIL_ATTRIBUTE
               value: "mail"
           envFrom:

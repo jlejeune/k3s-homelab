@@ -3,7 +3,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - namespace.yaml
-  - openldap.yaml
-  - openldap.secret.sops.yaml
-  - lam.secret.sops.yaml
-  - lam.yaml
+  - lldap-pvc.yaml
+  - lldap.yaml
+  - secret.sops.yaml

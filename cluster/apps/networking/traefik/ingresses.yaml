@@ -549,50 +549,6 @@ spec:
     secretName: "{{SECRET_DOMAIN}}-tls"
 ---
 apiVersion: traefik.io/v1alpha1
-kind: IngressRouteTCP
-metadata:
-  name: openldaps-tcp
-  namespace: openldap
-  annotations:
-    external-dns.alpha.kubernetes.io/target: {{LB_OPENLDAP_ADDRESS}}
-spec:
-  entryPoints:
-    - ldaps
-  routes:
-    - match: "Host(`openldaps.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
-      services:
-        - name: openldap
-          port: 636
-  tls:
-    passthrough: true
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: lam
-  namespace: openldap
-  annotations:
-    external-dns.alpha.kubernetes.io/target: {{LB_TRAEFIK_ADDRESS}}
-    kubernetes.io/ingress.class: traefik
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - kind: Rule
-      match: "Host(`lam.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: security-header
-          namespace: networking
-      services:
-        - kind: Service
-          name: lam
-          namespace: openldap
-          port: 80
-          scheme: http
-  tls:
-    secretName: "{{SECRET_DOMAIN}}-tls"
----
-apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: maintenant
@@ -699,6 +655,32 @@ spec:
           name: supabase-supabase-kong
           namespace: supabase
           port: 8000
+          scheme: http
+  tls:
+    secretName: "{{SECRET_DOMAIN}}-tls"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: lldap
+  namespace: networking
+  annotations:
+    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
+    kubernetes.io/ingress.class: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`lldap.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: security-header
+          namespace: networking
+      services:
+        - kind: Service
+          name: lldap
+          namespace: lldap
+          port: 17170
           scheme: http
   tls:
     secretName: "{{SECRET_DOMAIN}}-tls"
