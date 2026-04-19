@@ -11,7 +11,7 @@ resources:
   - joplin
   - mealie
   - networking
-  - openldap
+  - lldap
   - plik
   - smtp-relay
   - supabase
