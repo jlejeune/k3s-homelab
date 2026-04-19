@@ -1,0 +1,10 @@
+---
+vars:
+  - clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_DOMAIN
+      targetPath: SECRET_DOMAIN
+
+deployments:
+  - path: .

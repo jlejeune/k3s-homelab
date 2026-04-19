@@ -206,24 +206,24 @@ data:
         disable: false
         custom_url: ''
       ldap:
-        implementation: custom
-        address: ldap://{{NAS_ADDRESS}}
+        implementation: lldap
+        address: ldap://lldap.lldap.svc.cluster.local:3890
         timeout: 5s
         start_tls: false
         base_dn: dc=jlejeune,dc=home
-        additional_users_dn: cn=users
-        additional_groups_dn: cn=groups
+        additional_users_dn: ou=people
+        additional_groups_dn: ou=groups
         permit_referrals: false
         permit_unauthenticated_bind: false
         user: {{SECRET_LDAP_ADMIN_BIND_DN}}
         password: {{SECRET_LDAP_ADMIN_QUERY_PASSWORD}}
-        users_filter: (&({username_attribute}={input})(objectClass=person))
-        groups_filter: (&(member={dn})(objectclass=posixGroup))
+        users_filter: (&({username_attribute}={input})(objectClass=inetOrgPerson))
+        groups_filter: (&(member={dn})(objectclass=groupOfUniqueNames))
         attributes:
           username: uid
           mail: mail
           group_name: cn
-          display_name: gecos
+          display_name: displayName
     password_policy:
       standard:
         enabled: false
