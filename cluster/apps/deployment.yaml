@@ -13,8 +13,8 @@ vars:
   - clusterConfigMap:
       name: cluster-settings
       namespace: default
-      key: LB_OPENLDAP_ADDRESS
-      targetPath: LB_OPENLDAP_ADDRESS
+      key: LB_LLDAP_ADDRESS
+      targetPath: LB_LLDAP_ADDRESS
   - clusterConfigMap:
       name: cluster-settings
       namespace: default
@@ -46,7 +46,7 @@ deployments:
   - include: joplin
   - path: jellyfin
   - path: immich
-  - path: openldap
+  - path: lldap
   - path: plik
   - path: supabase
   - include: home-automation
