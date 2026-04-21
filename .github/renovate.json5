@@ -12,6 +12,12 @@
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Renovate Dashboard 🤖",
   "suppressNotifications": ["prIgnoreNotification"],
+  "packageRules": [
+    {
+      "matchPackageNames": ["lldap/lldap"],
+      "versioning": "regex:^(?<major>\\d{4})-(?<minor>\\d{2})-(?<patch>\\d{2})$"
+    }
+  ],
   "rebaseWhen": "conflicted",
   "schedule": ["every saturday"],
   "flux": {
