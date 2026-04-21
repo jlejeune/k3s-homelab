@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: lldap
-          image: lldap/lldap:stable
+          image: lldap/lldap:2026-03-04
           imagePullPolicy: IfNotPresent
           env:
             - name: LLDAP_LDAP_BASE_DN
