@@ -43,7 +43,7 @@ spec:
               done
       containers:
         - name: nextcloud
-          image: nextcloud:30.0.11-apache
+          image: nextcloud:30.0.17-apache
           imagePullPolicy: IfNotPresent
           env:
             - name: POSTGRES_HOST
@@ -172,7 +172,7 @@ spec:
                   topologyKey: kubernetes.io/hostname
           containers:
             - name: nextcloud-cron
-              image: nextcloud:30.0.11-apache
+              image: nextcloud:30.0.17-apache
               command:
                 - su
                 - -s
