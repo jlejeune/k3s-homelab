@@ -1,0 +1,68 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nextcloud-homes
+spec:
+  capacity:
+    storage: 100Gi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  persistentVolumeReclaimPolicy: Retain
+  claimRef:
+    name: nextcloud-homes
+    namespace: nextcloud
+  nfs:
+    server: "{{NAS_ADDRESS}}"
+    path: /volume1/homes
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextcloud-homes
+  namespace: nextcloud
+  labels:
+    app.kubernetes.io/instance: nextcloud
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  volumeName: nextcloud-homes
+  resources:
+    requests:
+      storage: 100Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nextcloud-documents
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  persistentVolumeReclaimPolicy: Retain
+  claimRef:
+    name: nextcloud-documents
+    namespace: nextcloud
+  nfs:
+    server: "{{NAS_ADDRESS}}"
+    path: /volume1/document
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextcloud-documents
+  namespace: nextcloud
+  labels:
+    app.kubernetes.io/instance: nextcloud
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  volumeName: nextcloud-documents
+  resources:
+    requests:
+      storage: 20Gi

@@ -50,3 +50,4 @@ deployments:
   - path: plik
   - path: supabase
   - include: home-automation
+  - include: nextcloud
