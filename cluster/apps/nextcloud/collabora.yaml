@@ -1,0 +1,82 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: collabora
+  namespace: nextcloud
+  labels:
+    app.kubernetes.io/instance: collabora
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: collabora
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: collabora
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+      containers:
+        - name: collabora
+          image: collabora/code:24.04.9.2.1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: aliasgroup1
+              value: "https://nextcloud.{{SECRET_DOMAIN}}:443"
+            - name: aliasgroup2
+              value: "https://collabora.{{SECRET_DOMAIN}}:443"
+            - name: DONT_GEN_SSL_CERT
+              value: "true"
+            - name: extra_params
+              value: >-
+                --o:ssl.enable=false
+                --o:ssl.termination=true
+                --o:server_name=collabora.{{SECRET_DOMAIN}}
+          ports:
+            - name: http
+              containerPort: 9980
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /hosting/discovery
+              port: 9980
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /hosting/discovery
+              port: 9980
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 5
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: collabora
+  namespace: nextcloud
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: collabora
+  ports:
+    - name: http
+      port: 9980
+      targetPort: 9980
