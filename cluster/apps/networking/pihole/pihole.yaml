@@ -12,6 +12,7 @@ data:
   VIRTUAL_HOST: "pihole.{{SECRET_DOMAIN}}"
   PIHOLE_DNS_: "{{NAS_ADDRESS}}"
   QUERY_LOGGING: "false"
+  FTLCONF_dns_listeningMode: "all"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
