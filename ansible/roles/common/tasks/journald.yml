@@ -1,0 +1,15 @@
+---
+- name: Limit systemd journal size
+  community.general.ini_file:
+    path: /etc/systemd/journald.conf
+    section: Journal
+    option: SystemMaxUse
+    value: 500M
+    mode: "0644"
+  become: true
+  notify: restart systemd-journald
+
+- name: Vacuum journal to apply new limit immediately
+  command: journalctl --vacuum-size=500M
+  become: true
+  changed_when: false
