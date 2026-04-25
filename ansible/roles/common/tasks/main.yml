@@ -53,3 +53,9 @@
     apply:
       tags: ssh
   tags: ssh
+
+- include_tasks:
+    file: journald.yml
+    apply:
+      tags: journald
+  tags: journald
