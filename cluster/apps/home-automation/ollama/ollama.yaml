@@ -70,6 +70,15 @@ spec:
           securityContext:
             privileged: true
             allowPrivilegeEscalation: true
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "1000m"
+              amd.com/gpu: 1
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+              amd.com/gpu: 1
       volumes:
         - name: ollama-data
           persistentVolumeClaim:
@@ -89,15 +98,6 @@ spec:
         - name: etc-group
           hostPath:
             path: /etc/group
-      resources:
-        requests:
-          memory: "1Gi"
-          cpu: "1000m"
-          amd.com/gpu: 1
-        limits:
-          memory: "2Gi"
-          cpu: "2000m"
-          amd.com/gpu: 1
 ---
 apiVersion: v1
 kind: Service
