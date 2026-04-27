@@ -57,7 +57,7 @@ spec:
             - name: LDAP_AUTH_ENABLED
               value: "true"
             - name: LDAP_SERVER_URL
-              value: ldap://lldap.lldap.svc.cluster.local:3890
+              value: ldap://openldap.openldap.svc.cluster.local:389
             - name: LDAP_BASE_DN
               value: "ou=people,dc=jlejeune,dc=home"
             - name: LDAP_USER_FILTER
