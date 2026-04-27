@@ -39,9 +39,9 @@ spec:
             - mountPath: /mosquitto/data/
               name: data
           livenessProbe:
-            failureThreshold: 3
+            failureThreshold: 5
             initialDelaySeconds: 1
-            periodSeconds: 10
+            periodSeconds: 30
             successThreshold: 1
             tcpSocket:
               port: 9002
