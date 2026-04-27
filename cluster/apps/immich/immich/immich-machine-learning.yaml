@@ -59,12 +59,12 @@ spec:
                   name: immich
                   key: DB_USERNAME
           livenessProbe:
-            failureThreshold: 3
+            failureThreshold: 5
             httpGet:
               path: /ping
               port: 3003
             initialDelaySeconds: 0
-            periodSeconds: 10
+            periodSeconds: 30
             timeoutSeconds: 1
           readinessProbe:
             failureThreshold: 3
