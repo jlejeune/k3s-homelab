@@ -32,7 +32,7 @@ cluster/
     ├── jellyfin/             # Video streaming
     ├── joplin/               # Notes
     ├── mealie/               # Recipes
-    ├── lldap/                # LDAP directory (lldap/lldap:2026-03-04, SQLite on Longhorn)
+    ├── openldap/             # LDAP directory (osixia/openldap:1.5.0, Longhorn PVCs) + LAM web UI
     ├── networking/           # IngressRoutes, wildcard certificates
     ├── nextcloud/            # File sharing + PostgreSQL + Redis + Collabora CODE
     ├── plik/                 # File sharing
@@ -67,6 +67,7 @@ kluctl deploy -t cluster --include-deployment-dir apps/immich
 | Whisper (STT) | 192.168.1.207 |
 | Piper (TTS) | 192.168.1.208 |
 | OpenWakeWord | 192.168.1.209 |
+| OpenLDAP | 192.168.1.210 |
 | kube-vip (control plane) | 192.168.1.9 |
 | NAS | 192.168.1.50 |
 | Zigbee coordinator | 192.168.1.30 |
