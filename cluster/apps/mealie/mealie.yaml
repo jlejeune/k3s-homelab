@@ -80,6 +80,20 @@ spec:
           ports:
             - containerPort: 9000
               name: http
+          readinessProbe:
+            httpGet:
+              path: /api/app/about
+              port: 9000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api/app/about
+              port: 9000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
           volumeMounts:
             - name: mealie-data
               mountPath: /app/data

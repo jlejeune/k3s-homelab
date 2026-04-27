@@ -82,6 +82,20 @@ spec:
               memory: "1Gi"
           ports:
             - containerPort: 8123
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8123
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8123
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 5
           volumeMounts:
             - mountPath: /config
               name: home-assistant-vol

@@ -39,6 +39,18 @@ spec:
               value: "{{TZ}}"
           ports:
             - containerPort: 8443
+          readinessProbe:
+            tcpSocket:
+              port: 8443
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 8443
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
           volumeMounts:
             - name: home-assistant
               mountPath: /config/workspace

@@ -25,6 +25,20 @@ spec:
           image: alexxit/go2rtc:1.9.14
           ports:
             - containerPort: 1984
+          readinessProbe:
+            httpGet:
+              path: /api
+              port: 1984
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api
+              port: 1984
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
           volumeMounts:
             - name: config
               mountPath: /config
