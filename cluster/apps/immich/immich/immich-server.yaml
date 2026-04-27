@@ -162,6 +162,20 @@ spec:
                 optional: false
           ports:
             - containerPort: 2283
+          readinessProbe:
+            httpGet:
+              path: /api/server/ping
+              port: 2283
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api/server/ping
+              port: 2283
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
           volumeMounts:
             - name: geocoding-dump
               mountPath: /usr/src/app/.reverse-geocoding-dump
