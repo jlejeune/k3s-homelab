@@ -662,32 +662,6 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: lldap
-  namespace: networking
-  annotations:
-    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
-    kubernetes.io/ingress.class: traefik
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - kind: Rule
-      match: "Host(`lldap.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: security-header
-          namespace: networking
-      services:
-        - kind: Service
-          name: lldap
-          namespace: lldap
-          port: 17170
-          scheme: http
-  tls:
-    secretName: "{{SECRET_DOMAIN}}-tls"
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
   name: nextcloud
   namespace: networking
   annotations:
@@ -734,5 +708,27 @@ spec:
           namespace: nextcloud
           port: 9980
           scheme: http
+  tls:
+    secretName: "{{SECRET_DOMAIN}}-tls"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: lam
+  namespace: networking
+  annotations:
+    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
+    kubernetes.io/ingress.class: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`lam.{{SECRET_DOMAIN}}`)
+      services:
+        - kind: Service
+          name: lam
+          namespace: openldap
+          port: 80
   tls:
     secretName: "{{SECRET_DOMAIN}}-tls"
