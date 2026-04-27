@@ -44,6 +44,18 @@ spec:
             - name: openwakeword
               containerPort: 10400
               protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 10400
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 10400
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
           volumeMounts:
             - name: openwakeword-data
               mountPath: /data

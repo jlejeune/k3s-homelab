@@ -100,6 +100,24 @@ spec:
             - containerPort: 5432
               name: joplin-db
               protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - joplin
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - joplin
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: joplin-db-vol
