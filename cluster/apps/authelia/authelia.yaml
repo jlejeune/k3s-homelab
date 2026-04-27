@@ -206,8 +206,8 @@ data:
         disable: false
         custom_url: ''
       ldap:
-        implementation: lldap
-        address: ldap://lldap.lldap.svc.cluster.local:3890
+        implementation: custom
+        address: ldap://openldap.openldap.svc.cluster.local:389
         timeout: 5s
         start_tls: false
         base_dn: dc=jlejeune,dc=home
@@ -218,7 +218,7 @@ data:
         user: {{SECRET_LDAP_ADMIN_BIND_DN}}
         password: {{SECRET_LDAP_ADMIN_QUERY_PASSWORD}}
         users_filter: (&({username_attribute}={input})(objectClass=inetOrgPerson))
-        groups_filter: (&(member={dn})(objectclass=groupOfUniqueNames))
+        groups_filter: (&(memberUid={uid})(objectClass=posixGroup))
         attributes:
           username: uid
           mail: mail

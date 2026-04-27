@@ -1,0 +1,73 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lam
+  namespace: openldap
+  labels:
+    app.kubernetes.io/instance: lam
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: lam
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: lam
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+      containers:
+        - name: lam
+          image: ldapaccountmanager/lam:stable
+          env:
+            - name: LDAP_SERVER
+              value: "ldap://openldap.openldap.svc.cluster.local"
+            - name: LDAP_DOMAIN
+              value: "jlejeune.home"
+            - name: LDAP_BASE_DN
+              value: "dc=jlejeune,dc=home"
+            - name: BIND_DN
+              value: "cn=admin,dc=jlejeune,dc=home"
+            - name: BIND_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openldap
+                  key: LDAP_ADMIN_PASSWORD
+            - name: LAM_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openldap
+                  key: LAM_PASSWORD
+            - name: LAM_LANG
+              value: "fr_FR"
+            - name: LAM_TIME_ZONE
+              value: "Europe/Paris"
+          ports:
+            - name: http
+              containerPort: 80
+          resources:
+            limits:
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lam
+  namespace: openldap
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: lam
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80

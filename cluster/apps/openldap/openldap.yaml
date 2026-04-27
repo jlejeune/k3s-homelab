@@ -1,0 +1,76 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openldap
+  namespace: openldap
+  labels:
+    app.kubernetes.io/instance: openldap
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: openldap
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: openldap
+    spec:
+      containers:
+        - name: openldap
+          image: osixia/openldap:1.5.0
+          args: ["--copy-service"]
+          env:
+            - name: LDAP_ORGANISATION
+              value: "jlejeune"
+            - name: LDAP_DOMAIN
+              value: "jlejeune.home"
+            - name: LDAP_BASE_DN
+              value: "dc=jlejeune,dc=home"
+            - name: LDAP_TLS
+              value: "false"
+            - name: LDAP_REMOVE_CONFIG_AFTER_SETUP
+              value: "false"
+          envFrom:
+            - secretRef:
+                name: openldap
+          ports:
+            - name: ldap
+              containerPort: 389
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/ldap
+            - name: config
+              mountPath: /etc/ldap/slapd.d
+            - name: bootstrap
+              mountPath: /container/service/slapd/assets/config/bootstrap/ldif/custom
+          resources:
+            limits:
+              memory: 256Mi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: openldap-data
+        - name: config
+          persistentVolumeClaim:
+            claimName: openldap-config
+        - name: bootstrap
+          configMap:
+            name: openldap-bootstrap
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openldap
+  namespace: openldap
+spec:
+  type: LoadBalancer
+  loadBalancerIP: "{{LB_OPENLDAP_ADDRESS}}"
+  selector:
+    app.kubernetes.io/instance: openldap
+  ports:
+    - name: ldap
+      port: 389
+      targetPort: 389
