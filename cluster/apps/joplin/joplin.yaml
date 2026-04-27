@@ -79,3 +79,15 @@ spec:
           ports:
             - containerPort: 22300
               name: joplin-port
+          readinessProbe:
+            tcpSocket:
+              port: 22300
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 22300
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
