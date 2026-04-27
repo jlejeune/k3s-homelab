@@ -27,6 +27,20 @@ spec:
             - name: http
               containerPort: 6052
               protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 6052
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 6052
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
           volumeMounts:
             - name: config
               mountPath: /config
