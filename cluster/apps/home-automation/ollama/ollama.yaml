@@ -52,6 +52,20 @@ spec:
             - name: http
               containerPort: 11434
               protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 11434
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 11434
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 5
           volumeMounts:
             - name: ollama-data
               mountPath: /home/ollama/.ollama
