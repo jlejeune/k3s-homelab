@@ -44,6 +44,18 @@ spec:
             - name: piper
               containerPort: 10200
               protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 10200
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 10200
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
           volumeMounts:
             - name: piper-data
               mountPath: /data

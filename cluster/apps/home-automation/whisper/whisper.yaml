@@ -46,6 +46,18 @@ spec:
             - name: whisper
               containerPort: 10300
               protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 10300
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 10300
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
           volumeMounts:
             - name: whisper-data
               mountPath: /data
