@@ -59,7 +59,7 @@ kluctl deploy -t cluster --include-deployment-dir apps/immich
 | Service | IP |
 |---|---|
 | Traefik (ingress) | 192.168.1.200 |
-| Pi-hole | 192.168.1.202 |
+| Technitium DNS | 192.168.1.202 |
 | SMTP Relay | 192.168.1.203 |
 | MQTT (Mosquitto) | 192.168.1.204 |
 | Ollama | 192.168.1.205 |

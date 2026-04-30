@@ -309,7 +309,7 @@ data:
         - domain: grafana.{{SECRET_DOMAIN}}
           policy: bypass
 
-        - domain: pihole.{{SECRET_DOMAIN}}
+        - domain: technitium.{{SECRET_DOMAIN}}
           policy: bypass
           networks:
             - home
