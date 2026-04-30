@@ -392,34 +392,6 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: pihole
-  namespace: networking
-  annotations:
-    external-dns.alpha.kubernetes.io/target: {{LB_TRAEFIK_ADDRESS}}
-    kubernetes.io/ingress.class: traefik
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - kind: Rule
-      match: "Host(`pihole.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
-      middlewares:
-        - name: forwardauth-authelia
-          namespace: networking
-        - name: security-header
-          namespace: networking
-      services:
-        - kind: Service
-          name: pihole-dashboard
-          namespace: networking
-          port: 80
-          scheme: http
-  tls:
-    secretName: "{{SECRET_DOMAIN}}-tls"
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
   name: code-server
   namespace: networking
   annotations:
