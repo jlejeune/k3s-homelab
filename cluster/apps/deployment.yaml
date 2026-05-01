@@ -48,6 +48,7 @@ deployments:
   - path: immich
   - path: openldap
   - path: plik
+  - path: stirling-pdf
   - path: supabase
   - include: home-automation
   - include: nextcloud
