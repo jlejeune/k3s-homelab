@@ -43,7 +43,7 @@ spec:
               done
       containers:
         - name: nextcloud
-          image: nextcloud:33.0.2-apache
+          image: nextcloud:33.0.3-apache
           imagePullPolicy: IfNotPresent
           command: ["/bin/bash", "-c"]
           args:
@@ -167,7 +167,7 @@ spec:
                   topologyKey: kubernetes.io/hostname
           containers:
             - name: nextcloud-cron
-              image: nextcloud:33.0.2-apache
+              image: nextcloud:33.0.3-apache
               command:
                 - su
                 - -s
