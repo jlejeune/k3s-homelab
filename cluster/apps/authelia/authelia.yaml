@@ -345,4 +345,14 @@ data:
 
         - domain: maintenant.{{SECRET_DOMAIN}}
           policy: one_factor
+
+        - domain: sonarr.{{SECRET_DOMAIN}}
+          policy: one_factor
+
+        - domain: radarr.{{SECRET_DOMAIN}}
+          policy: one_factor
+
+        - domain: prowlarr.{{SECRET_DOMAIN}}
+          policy: one_factor
+
     ...
