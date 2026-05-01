@@ -1,0 +1,78 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plundrio
+  namespace: media-automation
+  labels:
+    app.kubernetes.io/instance: plundrio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: plundrio
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: plundrio
+    spec:
+      securityContext:
+        runAsUser: 1026
+        runAsGroup: 100
+        fsGroup: 100
+      containers:
+        - name: plundrio
+          image: ghcr.io/elsbrock/plundrio:latest
+          ports:
+            - containerPort: 9091
+              name: http
+          env:
+            - name: PLDR_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: media-automation-secrets
+                  key: PUTIO_TOKEN
+            - name: PLDR_TARGET
+              value: /downloads
+            - name: PLDR_FOLDER
+              value: "Sonarr and Radarr"
+            - name: TZ
+              value: {{TZ}}
+          readinessProbe:
+            tcpSocket:
+              port: 9091
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 5
+          livenessProbe:
+            tcpSocket:
+              port: 9091
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+          volumeMounts:
+            - name: downloads
+              mountPath: /downloads
+      volumes:
+        - name: downloads
+          nfs:
+            server: {{NAS_ADDRESS}}
+            path: /volume1/video/downloads
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: plundrio
+  namespace: media-automation
+spec:
+  ports:
+    - port: 9091
+      name: http
+  selector:
+    app.kubernetes.io/instance: plundrio
