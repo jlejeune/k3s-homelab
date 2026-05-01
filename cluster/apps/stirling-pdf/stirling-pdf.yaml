@@ -1,0 +1,79 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: stirling-pdf-pvc
+  namespace: stirling-pdf
+spec:
+  storageClassName: longhorn
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stirling-pdf
+  namespace: stirling-pdf
+  labels:
+    app.kubernetes.io/instance: stirling-pdf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: stirling-pdf
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: stirling-pdf
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: stirling-pdf
+          image: stirlingtools/stirling-pdf:2.10.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TZ
+              value: "{{TZ}}"
+            - name: SECURITY_ENABLELOGIN
+              value: "false"
+          ports:
+            - containerPort: 8080
+              name: http
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
+          volumeMounts:
+            - mountPath: /configs
+              name: stirling-pdf-vol
+      volumes:
+        - name: stirling-pdf-vol
+          persistentVolumeClaim:
+            claimName: stirling-pdf-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stirling-pdf
+  namespace: stirling-pdf
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+  selector:
+    app.kubernetes.io/instance: stirling-pdf
