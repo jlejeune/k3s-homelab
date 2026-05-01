@@ -51,3 +51,4 @@ deployments:
   - path: supabase
   - include: home-automation
   - include: nextcloud
+  - include: media-automation
