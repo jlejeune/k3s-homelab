@@ -32,6 +32,7 @@ cluster/
     ├── jellyfin/             # Video streaming
     ├── joplin/               # Notes
     ├── mealie/               # Recipes
+    ├── media-automation/     # Sonarr + Radarr + Prowlarr + autobrr → put.io
     ├── openldap/             # LDAP directory (osixia/openldap:1.5.0, Longhorn PVCs) + LAM web UI
     ├── networking/           # IngressRoutes, wildcard certificates
     ├── nextcloud/            # File sharing + PostgreSQL + Redis + Collabora CODE
@@ -137,6 +138,10 @@ sops apps/my-app/secret.sops.yaml
 4. New MetalLB IPs are allocated from range 192.168.1.200-250 and declared in `cluster-settings.yaml`
 5. Each new app must have its own dedicated namespace
 6. The root `deployment.yaml` controls deployment order: config → core (barrier) → apps (barrier)
+
+## Worktrees
+
+For all git operations on worktrees, always use `git -C <path>` rather than `cd <path> && git`.
 
 ## CLAUDE.md Maintenance
 
