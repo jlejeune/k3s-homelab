@@ -1,0 +1,25 @@
+---
+vars:
+  - clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: TZ
+      targetPath: TZ
+  - clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: LB_TRAEFIK_ADDRESS
+      targetPath: LB_TRAEFIK_ADDRESS
+  - clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: NAS_ADDRESS
+      targetPath: NAS_ADDRESS
+  - clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_DOMAIN
+      targetPath: SECRET_DOMAIN
+
+deployments:
+  - path: .
