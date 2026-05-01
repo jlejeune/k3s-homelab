@@ -704,3 +704,87 @@ spec:
           port: 80
   tls:
     secretName: "{{SECRET_DOMAIN}}-tls"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: sonarr
+  namespace: networking
+  annotations:
+    external-dns.alpha.kubernetes.io/target: "{{LB_TRAEFIK_ADDRESS}}"
+    kubernetes.io/ingress.class: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`sonarr.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: forwardauth-authelia
+          namespace: networking
+        - name: security-header
+          namespace: networking
+      services:
+        - kind: Service
+          name: sonarr
+          namespace: media-automation
+          port: 8989
+          scheme: http
+  tls:
+    secretName: "{{SECRET_DOMAIN}}-tls"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: radarr
+  namespace: networking
+  annotations:
+    external-dns.alpha.kubernetes.io/target: "{{LB_TRAEFIK_ADDRESS}}"
+    kubernetes.io/ingress.class: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`radarr.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: forwardauth-authelia
+          namespace: networking
+        - name: security-header
+          namespace: networking
+      services:
+        - kind: Service
+          name: radarr
+          namespace: media-automation
+          port: 7878
+          scheme: http
+  tls:
+    secretName: "{{SECRET_DOMAIN}}-tls"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: prowlarr
+  namespace: networking
+  annotations:
+    external-dns.alpha.kubernetes.io/target: "{{LB_TRAEFIK_ADDRESS}}"
+    kubernetes.io/ingress.class: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`prowlarr.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: forwardauth-authelia
+          namespace: networking
+        - name: security-header
+          namespace: networking
+      services:
+        - kind: Service
+          name: prowlarr
+          namespace: media-automation
+          port: 9696
+          scheme: http
+  tls:
+    secretName: "{{SECRET_DOMAIN}}-tls"
