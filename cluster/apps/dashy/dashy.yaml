@@ -12,64 +12,147 @@ data:
   conf.yml: |-
     pageInfo:
       title: Jlejeune Homelab
+
+    appConfig:
+      statusCheck: true
+      statusCheckInterval: 300
+      statusCheckAcceptCodes: "200,401,403"
+
     sections:
       - name: Media & Entertainment
-        icon: fas fa-browser
+        icon: fas fa-photo-film
         items:
           - title: FreshRSS
             icon: hl-freshrss
             url: https://rss.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://freshrss.freshrss.svc.cluster.local:80
           - title: Immich
             icon: hl-immich
             url: https://photos.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://immich-server.immich.svc.cluster.local:80
           - title: Jellyfin
             icon: hl-jellyfin
             url: https://videos.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://jellyfin.jellyfin.svc.cluster.local:8096
           - title: Joplin
             icon: hl-joplin
             url: https://joplin.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://joplin.joplin.svc.cluster.local:22300
           - title: Mealie
             icon: hl-mealie
             url: https://mealie.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://mealie.mealie.svc.cluster.local:9000
+          - title: Nextcloud
+            icon: hl-nextcloud
+            url: https://nextcloud.{{SECRET_DOMAIN}}
+            statusCheck: false
           - title: Synology
             icon: far fa-hdd
             url: https://nas.{{SECRET_DOMAIN}}
-      - name: Home automation
-        icon: fas fa-home
+
+      - name: Media Automation
+        icon: fas fa-clapperboard
+        items:
+          - title: Sonarr
+            icon: hl-sonarr
+            url: https://sonarr.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://sonarr.media-automation.svc.cluster.local:8989
+          - title: Radarr
+            icon: hl-radarr
+            url: https://radarr.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://radarr.media-automation.svc.cluster.local:7878
+          - title: Prowlarr
+            icon: hl-prowlarr
+            url: https://prowlarr.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://prowlarr.media-automation.svc.cluster.local:9696
+
+      - name: Home Automation
+        icon: fas fa-house
         items:
           - title: Home-Assistant
             icon: hl-home-assistant
             url: https://ha.{{SECRET_DOMAIN}}
-      - name: Authentication
-        icon: fas fa-lock
+            statusCheckUrl: http://home-assistant.home-automation.svc.cluster.local:80
+          - title: ESPHome
+            icon: hl-esphome
+            url: https://esphome.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://esphome.home-automation.svc.cluster.local:6052
+          - title: Zigbee2MQTT
+            icon: hl-zigbee2mqtt
+            url: https://zigbee2mqtt.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://zigbee2mqtt.home-automation.svc.cluster.local:8080
+          - title: Code Server
+            icon: fas fa-code
+            url: https://ha-code.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://code-server.home-automation.svc.cluster.local:8443
+
+      - name: AI
+        icon: fas fa-brain
         items:
-          - title: Authelia
-            icon: hl-Authelia
-            url: https://auth.{{SECRET_DOMAIN}}
+          - title: Open WebUI
+            icon: hl-ollama
+            url: https://chat.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://open-webui.home-automation.svc.cluster.local:8080
+
       - name: Kubernetes
-        icon: hl-kubernetes-dashboard
+        icon: hl-kubernetes
         items:
           - title: Longhorn
             icon: hl-longhorn
             url: https://longhorn.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://longhorn-frontend.storage.svc.cluster.local:80
           - title: Traefik
             icon: hl-traefik
             url: https://traefik.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://traefik.networking.svc.cluster.local:8080/ping
+
       - name: Monitoring
         icon: far fa-chart-line
         items:
           - title: Grafana
             icon: hl-grafana
             url: https://grafana.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://grafana.monitoring.svc.cluster.local:80
           - title: Uptime Kuma
             icon: hl-uptime-kuma
             url: https://status.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://uptime-kuma.monitoring.svc.cluster.local:3001
+          - title: VictoriaMetrics
+            icon: hl-victoriametrics
+            url: https://victoria-metrics.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://victoria-metrics-single-server.monitoring.svc.cluster.local:8428
+
       - name: Networking
         icon: fas fa-network-wired
         items:
-          - title: Pi-hole
-            icon: hl-pi-hole
-            url: https://pihole.{{SECRET_DOMAIN}}
+          - title: Technitium
+            icon: fas fa-globe
+            url: https://technitium.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://technitium-dashboard.networking.svc.cluster.local:5380
+
+      - name: Tools
+        icon: fas fa-wrench
+        items:
+          - title: Plik
+            icon: fas fa-upload
+            url: https://plik.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://plik.plik.svc.cluster.local:8080
+          - title: Stirling PDF
+            icon: hl-stirling-pdf
+            url: https://pdf.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://stirling-pdf.stirling-pdf.svc.cluster.local:8080
+
+      - name: Administration
+        icon: fas fa-shield-halved
+        items:
+          - title: Authelia
+            icon: hl-authelia
+            url: https://auth.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://authelia.authelia.svc.cluster.local:80
+          - title: LDAP Account Manager
+            icon: fas fa-users-cog
+            url: https://lam.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://lam.openldap.svc.cluster.local:80
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -98,11 +181,18 @@ spec:
           image: lissy93/dashy:4.0.4
           imagePullPolicy: IfNotPresent
           env:
-            - name: port
+            - name: PORT
               value: "8080"
           ports:
             - containerPort: 8080
               name: http
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
           readinessProbe:
             httpGet:
               path: /
