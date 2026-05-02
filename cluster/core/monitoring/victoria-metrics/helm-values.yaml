@@ -3,7 +3,7 @@ server:
   retentionPeriod: 7d
   persistentVolume:
     enabled: true
-    storageClass: longhorn
+    storageClassName: longhorn
     size: 10Gi
   resources:
     requests:
