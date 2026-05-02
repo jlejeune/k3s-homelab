@@ -22,6 +22,11 @@ config:
     repeat_interval: 4h
     receiver: discord
 
+persistence:
+  enabled: true
+  storageClass: longhorn
+  size: 50Mi
+
 resources:
   requests:
     cpu: 10m
