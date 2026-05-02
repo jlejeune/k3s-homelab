@@ -8,4 +8,3 @@ deployments:
   - include: system-upgrade
   - include: networking
   - include: monitoring
-  - path: kubernetes-dashboard
