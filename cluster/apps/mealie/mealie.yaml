@@ -63,7 +63,7 @@ spec:
             - name: LDAP_USER_FILTER
               value: "(objectClass=inetOrgPerson)"
             - name: LDAP_ADMIN_FILTER
-              value: "(uid=jlejeune)"
+              value: "(ou=admin)"
             - name: LDAP_QUERY_BIND
               value: "{{SECRET_LDAP_ADMIN_BIND_DN}}"
             - name: LDAP_QUERY_PASSWORD
