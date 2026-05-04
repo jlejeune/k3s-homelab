@@ -1,0 +1,10 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: private-network-access
+  namespace: networking
+spec:
+  headers:
+    customResponseHeaders:
+      Access-Control-Allow-Private-Network: "true"

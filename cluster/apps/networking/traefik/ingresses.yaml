@@ -555,6 +555,29 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
+  name: esphome-pna-preflight
+  namespace: networking
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`esphome.{{SECRET_DOMAIN}}`) && Method(`OPTIONS`)"
+      priority: 100
+      middlewares:
+        - name: private-network-access
+          namespace: networking
+      services:
+        - kind: Service
+          name: preflight-responder
+          namespace: networking
+          port: 80
+  tls:
+    secretName: "{{SECRET_DOMAIN}}-tls"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
   name: esphome
   namespace: networking
   annotations:
@@ -570,7 +593,7 @@ spec:
       middlewares:
         - name: forwardauth-authelia
           namespace: networking
-        - name: security-header
+        - name: private-network-access
           namespace: networking
       services:
         - kind: Service
