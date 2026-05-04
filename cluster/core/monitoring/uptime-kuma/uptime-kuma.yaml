@@ -35,7 +35,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: uptime-kuma
-          image: louislam/uptime-kuma:2.3.0
+          image: louislam/uptime-kuma:2.3.2
           imagePullPolicy: IfNotPresent
           env:
             - name: UPTIME_KUMA_PORT
