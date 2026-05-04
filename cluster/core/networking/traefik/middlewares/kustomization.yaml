@@ -5,4 +5,5 @@ resources:
   - forwardauth-authelia.yaml
   - forwardbasicauth-authelia.yaml
   - redirect-https.yaml
+  - private-network-access.yaml
   - security-header.yaml

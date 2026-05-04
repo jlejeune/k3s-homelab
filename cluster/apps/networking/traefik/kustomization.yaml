@@ -4,5 +4,6 @@ kind: Kustomization
 resources:
   - endpoints.yaml
   - ingresses.yaml
+  - preflight-responder.yaml
   - serverstransports.yaml
   - services.yaml
