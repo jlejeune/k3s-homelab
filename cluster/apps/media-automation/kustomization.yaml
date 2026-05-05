@@ -8,3 +8,4 @@ resources:
   - sonarr
   - radarr
   - prowlarr
+  - calibre-web-automated

@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: sonarr-config-pvc
+  name: calibre-web-automated-config-pvc
   namespace: media-automation
 spec:
   storageClassName: longhorn
@@ -10,32 +10,32 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 2Gi
+      storage: 1Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sonarr
+  name: calibre-web-automated
   namespace: media-automation
   labels:
-    app.kubernetes.io/instance: sonarr
+    app.kubernetes.io/instance: calibre-web-automated
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/instance: sonarr
+      app.kubernetes.io/instance: calibre-web-automated
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app.kubernetes.io/instance: sonarr
+        app.kubernetes.io/instance: calibre-web-automated
     spec:
       containers:
-        - name: sonarr
-          image: lscr.io/linuxserver/sonarr:4.0.17.2952-ls309
+        - name: calibre-web-automated
+          image: ghcr.io/crocodilestick/calibre-web-automated:v4.0.6
           ports:
-            - containerPort: 8989
+            - containerPort: 8083
               name: http
           env:
             - name: PUID
@@ -46,50 +46,50 @@ spec:
               value: {{TZ}}
           readinessProbe:
             httpGet:
-              path: /ping
-              port: 8989
+              path: /login
+              port: 8083
             initialDelaySeconds: 30
             periodSeconds: 10
             failureThreshold: 5
           livenessProbe:
             httpGet:
-              path: /ping
-              port: 8989
+              path: /login
+              port: 8083
             initialDelaySeconds: 60
             periodSeconds: 30
             failureThreshold: 5
           resources:
             requests:
               cpu: 200m
-              memory: 256Mi
+              memory: 512Mi
           volumeMounts:
             - name: config
               mountPath: /config
-            - name: downloads
-              mountPath: /downloads
-            - name: series
-              mountPath: /series
+            - name: calibre-library
+              mountPath: /calibre-library
+            - name: cwa-book-ingest
+              mountPath: /cwa-book-ingest
       volumes:
         - name: config
           persistentVolumeClaim:
-            claimName: sonarr-config-pvc
-        - name: downloads
+            claimName: calibre-web-automated-config-pvc
+        - name: calibre-library
           nfs:
             server: {{NAS_ADDRESS}}
-            path: /volume1/video/downloads/sonarr
-        - name: series
+            path: /volume1/book/library
+        - name: cwa-book-ingest
           nfs:
             server: {{NAS_ADDRESS}}
-            path: /volume1/video/series
+            path: /volume1/book/ingest
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: sonarr
+  name: calibre-web-automated
   namespace: media-automation
 spec:
   ports:
-    - port: 8989
+    - port: 8083
       name: http
   selector:
-    app.kubernetes.io/instance: sonarr
+    app.kubernetes.io/instance: calibre-web-automated
