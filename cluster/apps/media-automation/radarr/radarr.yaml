@@ -76,7 +76,7 @@ spec:
         - name: downloads
           nfs:
             server: {{NAS_ADDRESS}}
-            path: /volume1/video/downloads
+            path: /volume1/video/downloads/radarr
         - name: films
           nfs:
             server: {{NAS_ADDRESS}}

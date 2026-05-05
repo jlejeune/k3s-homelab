@@ -355,6 +355,9 @@ data:
         - domain: prowlarr.{{SECRET_DOMAIN}}
           policy: one_factor
 
+        - domain: calibre.{{SECRET_DOMAIN}}
+          policy: one_factor
+
         - domain: pdf.{{SECRET_DOMAIN}}
           policy: one_factor
 
