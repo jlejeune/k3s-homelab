@@ -2,21 +2,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: plundrio
+  name: plundrio-radarr
   namespace: media-automation
   labels:
-    app.kubernetes.io/instance: plundrio
+    app.kubernetes.io/instance: plundrio-radarr
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/instance: plundrio
+      app.kubernetes.io/instance: plundrio-radarr
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app.kubernetes.io/instance: plundrio
+        app.kubernetes.io/instance: plundrio-radarr
     spec:
       securityContext:
         runAsUser: 1026
@@ -37,7 +37,7 @@ spec:
             - name: PLDR_TARGET
               value: /downloads
             - name: PLDR_FOLDER
-              value: "Sonarr and Radarr"
+              value: "Radarr"
             - name: TZ
               value: {{TZ}}
           readinessProbe:
@@ -63,16 +63,94 @@ spec:
         - name: downloads
           nfs:
             server: {{NAS_ADDRESS}}
-            path: /volume1/video/downloads
+            path: /volume1/video/downloads/radarr
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: plundrio
+  name: plundrio-radarr
   namespace: media-automation
 spec:
   ports:
     - port: 9091
       name: http
   selector:
-    app.kubernetes.io/instance: plundrio
+    app.kubernetes.io/instance: plundrio-radarr
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plundrio-sonarr
+  namespace: media-automation
+  labels:
+    app.kubernetes.io/instance: plundrio-sonarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: plundrio-sonarr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: plundrio-sonarr
+    spec:
+      securityContext:
+        runAsUser: 1026
+        runAsGroup: 100
+        fsGroup: 100
+      containers:
+        - name: plundrio
+          image: ghcr.io/elsbrock/plundrio:latest
+          ports:
+            - containerPort: 9091
+              name: http
+          env:
+            - name: PLDR_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: media-automation-secrets
+                  key: PUTIO_TOKEN
+            - name: PLDR_TARGET
+              value: /downloads
+            - name: PLDR_FOLDER
+              value: "Sonarr"
+            - name: TZ
+              value: {{TZ}}
+          readinessProbe:
+            tcpSocket:
+              port: 9091
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 5
+          livenessProbe:
+            tcpSocket:
+              port: 9091
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+          volumeMounts:
+            - name: downloads
+              mountPath: /downloads
+      volumes:
+        - name: downloads
+          nfs:
+            server: {{NAS_ADDRESS}}
+            path: /volume1/video/downloads/sonarr
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: plundrio-sonarr
+  namespace: media-automation
+spec:
+  ports:
+    - port: 9091
+      name: http
+  selector:
+    app.kubernetes.io/instance: plundrio-sonarr
