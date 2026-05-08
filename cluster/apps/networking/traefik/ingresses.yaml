@@ -201,8 +201,6 @@ spec:
     - kind: Rule
       match: "Host(`home.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
-        - name: forwardauth-authelia
-          namespace: networking
         - name: security-header
           namespace: networking
       services:
