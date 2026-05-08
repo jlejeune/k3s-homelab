@@ -16,6 +16,12 @@ data:
     appConfig:
       statusCheck: true
       statusCheckInterval: 300
+      auth:
+        enableOidc: true
+        oidc:
+          clientId: dashy
+          endpoint: 'https://auth.{{SECRET_DOMAIN}}'
+          scope: 'openid profile email groups'
 
     sections:
       - name: Media & Entertainment
@@ -25,10 +31,16 @@ data:
             icon: hl-freshrss
             url: https://rss.{{SECRET_DOMAIN}}
             statusCheckUrl: http://freshrss.freshrss.svc.cluster.local:80
+            displayData:
+              showForKeycloakUsers:
+                groups: ["internal users", administrators]
           - title: Immich
             icon: hl-immich
             url: https://photos.{{SECRET_DOMAIN}}
             statusCheckUrl: http://immich-server.immich.svc.cluster.local:80
+            displayData:
+              showForKeycloakUsers:
+                groups: ["internal users", administrators]
           - title: Jellyfin
             icon: hl-jellyfin
             url: https://videos.{{SECRET_DOMAIN}}
@@ -37,6 +49,9 @@ data:
             icon: hl-joplin
             url: https://joplin.{{SECRET_DOMAIN}}
             statusCheckUrl: http://joplin.joplin.svc.cluster.local:22300
+            displayData:
+              showForKeycloakUsers:
+                groups: ["internal users", administrators]
           - title: Mealie
             icon: hl-mealie
             url: https://mealie.{{SECRET_DOMAIN}}
@@ -48,9 +63,15 @@ data:
           - title: Synology
             icon: far fa-hdd
             url: https://nas.{{SECRET_DOMAIN}}
+            displayData:
+              showForKeycloakUsers:
+                groups: ["internal users", administrators]
 
       - name: Media Automation
         icon: fas fa-clapperboard
+        displayData:
+          showForKeycloakUsers:
+            groups: [administrators]
         items:
           - title: Sonarr
             icon: hl-sonarr
@@ -72,21 +93,36 @@ data:
             icon: hl-home-assistant
             url: https://ha.{{SECRET_DOMAIN}}
             statusCheckUrl: http://home-assistant.home-automation.svc.cluster.local:80
+            displayData:
+              showForKeycloakUsers:
+                groups: ["internal users", administrators]
           - title: ESPHome
             icon: hl-esphome
             url: https://esphome.{{SECRET_DOMAIN}}
             statusCheckUrl: http://esphome.home-automation.svc.cluster.local:6052
+            displayData:
+              showForKeycloakUsers:
+                groups: [administrators]
           - title: Zigbee2MQTT
             icon: hl-zigbee2mqtt
             url: https://zigbee2mqtt.{{SECRET_DOMAIN}}
             statusCheckUrl: http://zigbee2mqtt.home-automation.svc.cluster.local:8080
+            displayData:
+              showForKeycloakUsers:
+                groups: [administrators]
           - title: Code Server
             icon: fas fa-code
             url: https://ha-code.{{SECRET_DOMAIN}}
             statusCheckUrl: http://code-server.home-automation.svc.cluster.local:8443
+            displayData:
+              showForKeycloakUsers:
+                groups: [administrators]
 
       - name: AI
         icon: fas fa-brain
+        displayData:
+          showForKeycloakUsers:
+            groups: ["internal users", administrators]
         items:
           - title: Open WebUI
             icon: hl-ollama
@@ -95,6 +131,9 @@ data:
 
       - name: Kubernetes
         icon: hl-kubernetes
+        displayData:
+          showForKeycloakUsers:
+            groups: [administrators]
         items:
           - title: Longhorn
             icon: hl-longhorn
@@ -107,6 +146,9 @@ data:
 
       - name: Monitoring
         icon: far fa-chart-line
+        displayData:
+          showForKeycloakUsers:
+            groups: [administrators]
         items:
           - title: Grafana
             icon: hl-grafana
@@ -123,6 +165,9 @@ data:
 
       - name: Networking
         icon: fas fa-network-wired
+        displayData:
+          showForKeycloakUsers:
+            groups: [administrators]
         items:
           - title: Technitium
             icon: fas fa-globe
@@ -136,13 +181,22 @@ data:
             icon: fas fa-upload
             url: https://plik.{{SECRET_DOMAIN}}
             statusCheckUrl: http://plik.plik.svc.cluster.local:8080
+            displayData:
+              showForKeycloakUsers:
+                groups: [administrators]
           - title: Stirling PDF
             icon: hl-stirling-pdf
             url: https://pdf.{{SECRET_DOMAIN}}
             statusCheckUrl: http://stirling-pdf.stirling-pdf.svc.cluster.local:8080
+            displayData:
+              showForKeycloakUsers:
+                groups: ["internal users", administrators]
 
       - name: Administration
         icon: fas fa-shield-halved
+        displayData:
+          showForKeycloakUsers:
+            groups: [administrators]
         items:
           - title: Authelia
             icon: hl-authelia
