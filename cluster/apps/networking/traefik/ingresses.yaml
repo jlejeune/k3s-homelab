@@ -869,3 +869,29 @@ spec:
           scheme: http
   tls:
     secretName: "{{SECRET_DOMAIN}}-tls"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: shelfmark
+  namespace: networking
+  annotations:
+    external-dns.alpha.kubernetes.io/target: "{{LB_TRAEFIK_ADDRESS}}"
+    kubernetes.io/ingress.class: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`shelfmark.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: security-header
+          namespace: networking
+      services:
+        - kind: Service
+          name: shelfmark
+          namespace: media-automation
+          port: 8084
+          scheme: http
+  tls:
+    secretName: "{{SECRET_DOMAIN}}-tls"
