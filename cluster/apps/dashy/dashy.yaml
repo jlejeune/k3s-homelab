@@ -16,7 +16,6 @@ data:
     appConfig:
       statusCheck: true
       statusCheckInterval: 300
-      statusCheckAcceptCodes: "200,401,403"
 
     sections:
       - name: Media & Entertainment
@@ -178,7 +177,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: dashy
-          image: lissy93/dashy:4.0.6
+          image: lissy93/dashy:4.0.7
           imagePullPolicy: IfNotPresent
           env:
             - name: PORT
