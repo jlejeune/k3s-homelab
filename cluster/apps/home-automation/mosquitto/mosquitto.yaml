@@ -25,6 +25,9 @@ spec:
           image: eclipse-mosquitto:2.0.22
           imagePullPolicy: IfNotPresent
           ports:
+            - containerPort: 1883
+              name: mqtt
+              protocol: TCP
             - containerPort: 8883
               name: mqtts
               protocol: TCP
@@ -97,6 +100,21 @@ spec:
     app.kubernetes.io/instance: mosquitto
 ---
 apiVersion: v1
+kind: Service
+metadata:
+  name: mosquitto-internal
+  namespace: home-automation
+spec:
+  type: ClusterIP
+  ports:
+    - port: 1883
+      protocol: TCP
+      targetPort: 1883
+      name: mqtt
+  selector:
+    app.kubernetes.io/instance: mosquitto
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: mosquitto
@@ -119,6 +137,9 @@ data:
     log_timestamp_format %Y-%m-%dT%H:%M:%S
 
     # Listeners
+    listener 1883
+    protocol mqtt
+
     listener 8883
     protocol mqtt
     certfile /mosquitto/certs/tls.crt
@@ -135,12 +156,16 @@ data:
   mosquitto.passwd: |
     homeassistant:$7$101$qhRjwnzNmRpTP54v$mMEma60H9AZtN9S0rUpuvfk54aj37BNw5aOI7snFqhg3MX8vypz3rq8+AcnOzikXw3GV7FYUdqmdXkl46U608g==
     zigbee2mqtt:$7$101$QKN5Ghmr4QaiXn5A$KB42itqcWqjjghNpkhlZLsEHRo5Yu28Z9HGmQNvu+dMs/Ra/e+zk3XwQyawsdthUYVFhdt29KnMRNMUGpwrXxA==
+    uptime-kuma:$7$101$9HgozqY5HianOLvk$XUEseQw+Q13uwPEmKJMOL8h+AWnXbjDzUaJfo2Y5gqb0ReyHzNsVwKxgYGtOTcSZUEaQtvnMjFkmYFJXp6DsSA==
   mosquitto.acl: |
     user homeassistant
     topic readwrite #
 
     user zigbee2mqtt
     topic readwrite #
+
+    user uptime-kuma
+    topic readwrite uptime-kuma/#
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate

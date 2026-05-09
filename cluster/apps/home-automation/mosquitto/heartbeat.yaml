@@ -1,0 +1,36 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mosquitto-heartbeat
+  namespace: home-automation
+spec:
+  schedule: "* * * * *"
+  concurrencyPolicy: Replace
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 60
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: publisher
+              image: eclipse-mosquitto:2.0.22
+              command:
+                - mosquitto_pub
+                - -h
+                - mosquitto-internal.home-automation.svc.cluster.local
+                - -p
+                - "1883"
+                - -u
+                - $(MQTT_USERNAME)
+                - -P
+                - $(MQTT_PASSWORD)
+                - -t
+                - uptime-kuma/heartbeat
+                - -m
+                - "1"
+                - -r
+              envFrom:
+                - secretRef:
+                    name: mosquitto-uptime-kuma
