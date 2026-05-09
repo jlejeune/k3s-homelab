@@ -254,7 +254,7 @@ data:
         user: {{SECRET_LDAP_ADMIN_BIND_DN}}
         password: {{SECRET_LDAP_ADMIN_QUERY_PASSWORD}}
         users_filter: (&({username_attribute}={input})(objectClass=inetOrgPerson))
-        groups_filter: (&(memberUid={uid})(objectClass=posixGroup))
+        groups_filter: (&(memberUid={username})(objectClass=posixGroup))
         attributes:
           username: uid
           mail: mail
