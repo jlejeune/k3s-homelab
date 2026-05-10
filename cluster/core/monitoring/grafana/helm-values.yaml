@@ -52,7 +52,20 @@ dashboardProviders:
 dashboards:
   default:
     node-exporter:
-      url: https://grafana.com/api/dashboards/11074/revisions/9/download
+      gnetId: 1860
+      revision: 37
+      datasource: Prometheus
+    traefik:
+      gnetId: 17346
+      revision: 9
+      datasource: Prometheus
+    longhorn:
+      gnetId: 13032
+      revision: 6
+      datasource: Prometheus
+    victoria-metrics:
+      gnetId: 10229
+      revision: 22
       datasource: Prometheus
     prometheus-exporter-summary:
       url: https://raw.githubusercontent.com/billimek/k8s-gitops/master/monitoring/grafana/dashboards/prometheus_exporter_summary.json
