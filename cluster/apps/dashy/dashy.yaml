@@ -48,7 +48,7 @@ data:
           - title: Joplin
             icon: hl-joplin
             url: https://joplin.{{SECRET_DOMAIN}}
-            statusCheckUrl: http://joplin.joplin.svc.cluster.local:22300
+            statusCheckUrl: https://joplin.{{SECRET_DOMAIN}}/api/ping
             displayData:
               showForKeycloakUsers:
                 groups: ["internal users", administrators]
@@ -59,7 +59,7 @@ data:
           - title: Nextcloud
             icon: hl-nextcloud
             url: https://nextcloud.{{SECRET_DOMAIN}}
-            statusCheck: false
+            statusCheckUrl: https://nextcloud.{{SECRET_DOMAIN}}/status.php
           - title: Synology
             icon: far fa-hdd
             url: https://nas.{{SECRET_DOMAIN}}
