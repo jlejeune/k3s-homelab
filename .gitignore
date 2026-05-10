@@ -17,3 +17,5 @@ CLAUDE.md
 cluster/audit/reports/
 # superpowers plans/specs
 docs/superpowers
+# understand-anything plugin
+.understand-anything
