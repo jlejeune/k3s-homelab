@@ -2,8 +2,6 @@
 deployment:
   kind: Deployment
   replicas: 1
-podSecurityPolicy:
-  enabled: false
 service:
   enabled: true
   type: LoadBalancer
