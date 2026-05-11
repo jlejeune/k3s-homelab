@@ -56,6 +56,7 @@ spec:
                       external-dns.alpha.kubernetes.io/hostname: '$IP_HOSTNAME'
                       external-dns.alpha.kubernetes.io/target: '$(curl --silent ifconfig.me)'
                   spec:
+                    ingressClassName: traefik
                     rules:
                       - host: '$IP_HOSTNAME'
                   EOF
