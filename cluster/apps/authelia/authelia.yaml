@@ -397,4 +397,7 @@ data:
         - domain: pdf.{{SECRET_DOMAIN}}
           policy: one_factor
 
+        - domain: homepage.{{SECRET_DOMAIN}}
+          policy: one_factor
+
     ...
