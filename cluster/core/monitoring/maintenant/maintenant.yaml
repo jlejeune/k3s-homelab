@@ -108,7 +108,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 2Gi
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -120,7 +120,7 @@ spec:
   storageClassName: longhorn
   persistentVolumeReclaimPolicy: Retain
   capacity:
-    storage: 1Gi
+    storage: 2Gi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
