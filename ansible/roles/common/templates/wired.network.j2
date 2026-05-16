@@ -3,5 +3,5 @@ Name=eth0
 
 [Network]
 Address={{ ip_address }}
-DNS={{ ip_dns }}
+DNS={{ ip_dns | join(' ') }}
 Gateway={{ ip_gateway }}

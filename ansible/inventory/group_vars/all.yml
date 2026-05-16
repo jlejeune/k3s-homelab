@@ -3,7 +3,9 @@ ansible_become: yes
 ansible_become_method: sudo
 ansible_user: jlejeune
 ip_gateway: 192.168.1.1
-ip_dns: 192.168.1.50
+ip_dns:
+  - 192.168.1.202
+  - 9.9.9.9
 domain_search: jlejeune.home
 users:
   - username: jlejeune

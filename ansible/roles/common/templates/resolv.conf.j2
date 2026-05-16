@@ -1,0 +1,4 @@
+{% for server in ip_dns %}
+nameserver {{ server }}
+{% endfor %}
+search {{ domain_search }}
