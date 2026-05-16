@@ -2,6 +2,6 @@
 helmChart:
   repo: https://prometheus-community.github.io/helm-charts
   chartName: alertmanager
-  chartVersion: "1.36.0"
+  chartVersion: "1.37.0"
   releaseName: alertmanager
   namespace: monitoring
