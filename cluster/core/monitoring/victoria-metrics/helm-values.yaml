@@ -7,8 +7,8 @@ server:
     size: 10Gi
   resources:
     requests:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 600m
+      memory: 640Mi
     limits:
       cpu: 1000m
       memory: 1Gi
