@@ -1,4 +1,20 @@
 ---
+- name: Create K3s audit log directory
+  file:
+    path: /var/lib/rancher/k3s/server/logs
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Deploy audit policy
+  template:
+    src: audit-policy.yaml.j2
+    dest: /var/lib/rancher/k3s/server/audit-policy.yaml
+    owner: root
+    group: root
+    mode: "0600"
+
 - name: Copy K3s service file
   register: k3s_service
   template:
