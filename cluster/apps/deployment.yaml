@@ -49,6 +49,7 @@ deployments:
   - path: openldap
   - path: plik
   - path: stirling-pdf
+  - path: karakeep
   - path: supabase
   - include: home-automation
   - include: nextcloud
