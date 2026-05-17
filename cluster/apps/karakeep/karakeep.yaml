@@ -30,6 +30,7 @@ data:
   INFERENCE_PROVIDER: ollama
   INFERENCE_TEXT_MODEL: qwen2.5:3b
   INFERENCE_IMAGE_MODEL: qwen2.5:3b
+  MEILI_ADDR: "http://meilisearch:7700"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -101,3 +102,91 @@ spec:
       targetPort: http
   selector:
     app.kubernetes.io/instance: karakeep
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: meilisearch-pvc
+  namespace: karakeep
+spec:
+  storageClassName: longhorn
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: meilisearch
+  namespace: karakeep
+  labels:
+    app.kubernetes.io/instance: meilisearch
+  annotations:
+    reloader.stakater.com/search: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: meilisearch
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: meilisearch
+    spec:
+      restartPolicy: Always
+      enableServiceLinks: false
+      containers:
+        - name: meilisearch
+          image: getmeili/meilisearch:v1.43.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 7700
+              protocol: TCP
+          env:
+            - name: MEILI_MASTER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: karakeep
+                  key: MEILI_MASTER_KEY
+            - name: MEILI_ENV
+              value: production
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            failureThreshold: 5
+          volumeMounts:
+            - mountPath: /meili_data
+              name: meilisearch-vol
+      volumes:
+        - name: meilisearch-vol
+          persistentVolumeClaim:
+            claimName: meilisearch-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: meilisearch
+  namespace: karakeep
+spec:
+  ports:
+    - name: http
+      port: 7700
+      targetPort: http
+  selector:
+    app.kubernetes.io/instance: meilisearch
