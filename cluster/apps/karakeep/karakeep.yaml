@@ -28,8 +28,8 @@ data:
   OAUTH_PROVIDER_NAME: Authelia
   OLLAMA_BASE_URL: "http://ollama.home-automation.svc.cluster.local:11434"
   INFERENCE_PROVIDER: ollama
-  INFERENCE_TEXT_MODEL: llama3.2
-  INFERENCE_IMAGE_MODEL: llama3.2
+  INFERENCE_TEXT_MODEL: llama3.2:1b
+  INFERENCE_IMAGE_MODEL: llama3.2:1b
 ---
 apiVersion: apps/v1
 kind: Deployment

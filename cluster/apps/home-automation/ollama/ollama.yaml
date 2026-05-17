@@ -86,11 +86,11 @@ spec:
             allowPrivilegeEscalation: true
           resources:
             requests:
-              memory: "1Gi"
+              memory: "2Gi"
               cpu: "1000m"
               amd.com/gpu: 1
             limits:
-              memory: "2Gi"
+              memory: "6Gi"
               cpu: "2000m"
               amd.com/gpu: 1
       volumes:
