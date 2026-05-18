@@ -35,7 +35,7 @@ spec:
                   name: media-automation-secrets
                   key: PUTIO_TOKEN
             - name: PLDR_TARGET
-              value: /downloads
+              value: /media/downloads/radarr
             - name: PLDR_FOLDER
               value: "Radarr"
             - name: TZ
@@ -57,13 +57,13 @@ spec:
               cpu: 50m
               memory: 64Mi
           volumeMounts:
-            - name: downloads
-              mountPath: /downloads
+            - name: media
+              mountPath: /media
       volumes:
-        - name: downloads
+        - name: media
           nfs:
             server: {{NAS_ADDRESS}}
-            path: /volume1/video/downloads/radarr
+            path: /volume1/video
 ---
 apiVersion: v1
 kind: Service
@@ -113,7 +113,7 @@ spec:
                   name: media-automation-secrets
                   key: PUTIO_TOKEN
             - name: PLDR_TARGET
-              value: /downloads
+              value: /media/downloads/sonarr
             - name: PLDR_FOLDER
               value: "Sonarr"
             - name: TZ
@@ -135,13 +135,13 @@ spec:
               cpu: 50m
               memory: 64Mi
           volumeMounts:
-            - name: downloads
-              mountPath: /downloads
+            - name: media
+              mountPath: /media
       volumes:
-        - name: downloads
+        - name: media
           nfs:
             server: {{NAS_ADDRESS}}
-            path: /volume1/video/downloads/sonarr
+            path: /volume1/video
 ---
 apiVersion: v1
 kind: Service

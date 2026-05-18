@@ -65,22 +65,16 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /config
-            - name: downloads
-              mountPath: /downloads
-            - name: films
-              mountPath: /films
+            - name: media
+              mountPath: /media
       volumes:
         - name: config
           persistentVolumeClaim:
             claimName: radarr-config-pvc
-        - name: downloads
+        - name: media
           nfs:
             server: {{NAS_ADDRESS}}
-            path: /volume1/video/downloads/radarr
-        - name: films
-          nfs:
-            server: {{NAS_ADDRESS}}
-            path: /volume1/video/films
+            path: /volume1/video
 ---
 apiVersion: v1
 kind: Service

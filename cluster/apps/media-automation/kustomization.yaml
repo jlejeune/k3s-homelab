@@ -10,3 +10,4 @@ resources:
   - prowlarr
   - calibre-web-automated
   - shelfmark
+  - downloads-cleanup

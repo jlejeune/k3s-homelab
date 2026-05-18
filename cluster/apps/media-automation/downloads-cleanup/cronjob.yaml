@@ -1,0 +1,46 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: downloads-cleanup
+  namespace: media-automation
+spec:
+  schedule: "0 4 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          securityContext:
+            runAsUser: 1026
+            runAsGroup: 100
+            fsGroup: 100
+          containers:
+            - name: cleanup
+              image: busybox:1.37
+              command:
+                - sh
+                - -c
+                - |
+                  echo "Cleaning up radarr downloads..."
+                  find /media/downloads/radarr -type f -links +1 -delete
+                  find /media/downloads/radarr -mindepth 1 -type d -empty -delete
+                  echo "Cleaning up sonarr downloads..."
+                  find /media/downloads/sonarr -type f -links +1 -delete
+                  find /media/downloads/sonarr -mindepth 1 -type d -empty -delete
+                  echo "Done."
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 32Mi
+              volumeMounts:
+                - name: media
+                  mountPath: /media
+          volumes:
+            - name: media
+              nfs:
+                server: {{NAS_ADDRESS}}
+                path: /volume1/video
