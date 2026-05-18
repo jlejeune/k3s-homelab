@@ -1,0 +1,50 @@
+---
+# Managed by kluctl — overrides k3s default CoreDNS addon.
+# NodeHosts is maintained here; update when nodes are added or removed.
+# Changes: forward to Technitium (192.168.1.202) with 1.1.1.1 as sequential
+# fallback. 9.9.9.9 is unreachable from cluster pods.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns
+  namespace: kube-system
+data:
+  Corefile: |
+    .:53 {
+        errors
+        health
+        ready
+        kubernetes cluster.local in-addr.arpa ip6.arpa {
+          pods insecure
+          fallthrough in-addr.arpa ip6.arpa
+        }
+        hosts /etc/coredns/NodeHosts {
+          ttl 60
+          reload 15s
+          fallthrough
+        }
+        prometheus :9153
+        cache 30
+        loop
+        reload
+        loadbalance
+        import /etc/coredns/custom/*.override
+        forward . 192.168.1.202 1.1.1.1 {
+            policy sequential
+            health_check 5s
+            max_fails 3
+        }
+    }
+    import /etc/coredns/custom/*.server
+  NodeHosts: |
+    192.168.1.10 sam
+    192.168.1.11 merry
+    192.168.1.12 pippin
+    192.168.1.13 gimli
+    192.168.1.14 theoden
+    192.168.1.16 galadriel
+    2001:861:5406:3300:3af7:cdff:fec3:db38 theoden
+    2001:861:5406:3300:da3a:ddff:fe27:737e gimli
+    2001:861:5406:3300:dea6:32ff:fe6d:9b52 sam
+    2001:861:5406:3300:dea6:32ff:fe70:4eeb pippin
+    2001:861:5406:3300:dea6:32ff:fe70:91c8 merry

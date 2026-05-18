@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-custom
+  namespace: kube-system
+data:
+  jlejeune-home.server: |
+    jlejeune.home:53 {
+        errors
+        template IN A {
+            rcode NXDOMAIN
+        }
+        template IN AAAA {
+            rcode NXDOMAIN
+        }
+    }
