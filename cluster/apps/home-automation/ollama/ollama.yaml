@@ -5,7 +5,7 @@ metadata:
   name: ollama-pvc
   namespace: home-automation
 spec:
-  storageClassName: longhorn
+  storageClassName: local-path
   accessModes:
     - ReadWriteOnce
   resources:
@@ -52,6 +52,8 @@ spec:
               value: "4096"
             - name: OLLAMA_MAX_QUEUE
               value: "10"
+            - name: OLLAMA_KEEP_ALIVE
+              value: "-1"
           ports:
             - name: http
               containerPort: 11434
@@ -62,17 +64,19 @@ spec:
               port: 11434
             initialDelaySeconds: 30
             periodSeconds: 15
-            failureThreshold: 5
+            failureThreshold: 10
           livenessProbe:
             httpGet:
               path: /
               port: 11434
             initialDelaySeconds: 60
             periodSeconds: 30
-            failureThreshold: 5
+            failureThreshold: 10
           volumeMounts:
             - name: ollama-data
               mountPath: /home/ollama/.ollama
+            - name: ollama-cache
+              mountPath: /home/ollama/.cache
             - name: rocm-dev
               mountPath: /dev/kfd
               readOnly: false
@@ -101,6 +105,10 @@ spec:
         - name: ollama-data
           persistentVolumeClaim:
             claimName: ollama-pvc
+        - name: ollama-cache
+          hostPath:
+            path: /var/lib/ollama-cache
+            type: DirectoryOrCreate
         - name: rocm-dev
           hostPath:
             path: /dev/kfd
