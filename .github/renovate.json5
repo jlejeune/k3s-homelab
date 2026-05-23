@@ -1,13 +1,13 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base",
+    "config:recommended",
     "docker:enableMajor",
     ":disableRateLimiting",
     ":dependencyDashboard",
     ":automergeDisabled",
     ":semanticCommits",
-    "github>jlejeune/jlejeune.home-ansible//.github/renovate/labels.json5",
+    "github>jlejeune/k3s-homelab//.github/renovate/labels.json5",
   ],
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Renovate Dashboard 🤖",
