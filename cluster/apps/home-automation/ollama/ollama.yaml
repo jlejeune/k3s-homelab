@@ -49,7 +49,7 @@ spec:
             - name: OLLAMA_NO_CLOUD
               value: "1"
             - name: OLLAMA_NUM_CTX
-              value: "4096"
+              value: "65536"
             - name: OLLAMA_MAX_QUEUE
               value: "10"
             - name: OLLAMA_KEEP_ALIVE
