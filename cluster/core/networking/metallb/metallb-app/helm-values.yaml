@@ -1,3 +1,7 @@
 ---
 psp:
-  create: true
+  create: false
+frr-k8s:
+  prometheus:
+    serviceMonitor:
+      enabled: false
