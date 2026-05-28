@@ -17,6 +17,7 @@ deployments:
   - path: alertmanager
   - path: vmalert
   - path: node-exporter
+  - path: kube-state-metrics
   - path: grafana
   - path: uptime-kuma
   - path: maintenant

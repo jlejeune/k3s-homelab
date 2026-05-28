@@ -7,6 +7,7 @@ resources:
   - alertmanager
   - vmalert
   - node-exporter
+  - kube-state-metrics
   - grafana
   - uptime-kuma
   - maintenant
