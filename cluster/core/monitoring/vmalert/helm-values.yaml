@@ -67,3 +67,87 @@ server:
               annotations:
                 summary: {% raw %}"Filesystem en lecture seule sur {{ $labels.instance }}"{% endraw %}
                 description: {% raw %}"{{ $labels.mountpoint }} est monté en read-only sur {{ $labels.instance }}."{% endraw %}
+
+        - name: kubernetes.rules
+          rules:
+            - alert: KubePodCrashLooping
+              expr: >
+                kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff"} == 1
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                summary: {% raw %}"Pod {{ $labels.namespace }}/{{ $labels.pod }} en CrashLoopBackOff"{% endraw %}
+                description: {% raw %}"Le container {{ $labels.container }} redémarre en boucle depuis 5 minutes."{% endraw %}
+
+            - alert: KubePodNotReady
+              expr: >
+                kube_pod_status_phase{phase=~"Pending|Unknown"} == 1
+              for: 15m
+              labels:
+                severity: warning
+              annotations:
+                summary: {% raw %}"Pod {{ $labels.namespace }}/{{ $labels.pod }} non prêt"{% endraw %}
+                description: {% raw %}"Pod en phase {{ $labels.phase }} depuis 15 minutes."{% endraw %}
+
+            - alert: KubePodStuckCreating
+              expr: >
+                kube_pod_container_status_waiting_reason{reason=~"ContainerCreating|PodInitializing"} == 1
+              for: 15m
+              labels:
+                severity: warning
+              annotations:
+                summary: {% raw %}"Pod {{ $labels.namespace }}/{{ $labels.pod }} bloqué au démarrage"{% endraw %}
+                description: {% raw %}"Le container {{ $labels.container }} est en {{ $labels.reason }} depuis 15 minutes."{% endraw %}
+
+            - alert: KubeContainerOOMKilled
+              expr: >
+                kube_pod_container_status_last_terminated_reason{reason="OOMKilled"} == 1
+              for: 0m
+              labels:
+                severity: warning
+              annotations:
+                summary: {% raw %}"Container OOM killed: {{ $labels.namespace }}/{{ $labels.pod }}"{% endraw %}
+                description: {% raw %}"Le container {{ $labels.container }} a été tué par OOM."{% endraw %}
+
+            - alert: KubeDeploymentUnavailable
+              expr: >
+                kube_deployment_status_replicas_unavailable > 0
+              for: 15m
+              labels:
+                severity: warning
+              annotations:
+                summary: {% raw %}"Deployment {{ $labels.namespace }}/{{ $labels.deployment }} dégradé"{% endraw %}
+                description: {% raw %}"{{ $value }} replica(s) indisponible(s) depuis 15 minutes."{% endraw %}
+
+        - name: longhorn.rules
+          rules:
+            - alert: LonghornVolumeRobustnessDegraded
+              expr: >
+                longhorn_volume_robustness == 2
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                summary: {% raw %}"Volume Longhorn dégradé: {{ $labels.volume }}"{% endraw %}
+                description: {% raw %}"Le volume {{ $labels.volume }} est dégradé (replica manquante) depuis 5 minutes."{% endraw %}
+
+            - alert: LonghornVolumeRobustnessFaulted
+              expr: >
+                longhorn_volume_robustness == 3
+              for: 0m
+              labels:
+                severity: critical
+              annotations:
+                summary: {% raw %}"Volume Longhorn en erreur: {{ $labels.volume }}"{% endraw %}
+                description: {% raw %}"Le volume {{ $labels.volume }} est faulted — données inaccessibles."{% endraw %}
+
+            - alert: LonghornNodeNotReady
+              expr: >
+                longhorn_node_status{condition="ready"} == 0
+              for: 5m
+              labels:
+                severity: critical
+              annotations:
+                summary: {% raw %}"Nœud Longhorn {{ $labels.node }} non prêt"{% endraw %}
+                description: {% raw %}"Le nœud {{ $labels.node }} est indisponible dans Longhorn depuis 5 minutes."{% endraw %}

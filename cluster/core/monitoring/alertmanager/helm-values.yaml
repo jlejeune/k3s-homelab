@@ -12,11 +12,11 @@ config:
             {% raw %}{{ range .Alerts -}}
             **{{ .Annotations.summary }}**
             {{ .Annotations.description }}
-            Nœud: `{{ .Labels.instance }}`
+            {{ if .Labels.pod }}Pod: `{{ .Labels.namespace }}/{{ .Labels.pod }}`{{ else if .Labels.volume }}Volume: `{{ .Labels.volume }}`{{ else if .Labels.node }}Nœud: `{{ .Labels.node }}`{{ else }}Nœud: `{{ .Labels.instance }}`{{ end }}
             Sévérité: `{{ .Labels.severity }}`
             {{ end }}{% endraw %}
   route:
-    group_by: ['alertname', 'instance']
+    group_by: ['alertname', 'instance', 'namespace', 'pod']
     group_wait: 30s
     group_interval: 5m
     repeat_interval: 4h

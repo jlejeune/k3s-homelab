@@ -36,6 +36,11 @@ extraScrapeConfigs:
       - targets:
           - traefik.networking.svc.cluster.local:9100
     metrics_path: /metrics
+  - job_name: kube-state-metrics
+    static_configs:
+      - targets:
+          - kube-state-metrics.monitoring.svc.cluster.local:8080
+    metrics_path: /metrics
   - job_name: longhorn
     static_configs:
       - targets:
