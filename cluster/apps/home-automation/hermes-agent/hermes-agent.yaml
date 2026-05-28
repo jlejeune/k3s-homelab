@@ -57,6 +57,13 @@ spec:
       labels:
         app.kubernetes.io/instance: hermes-agent
     spec:
+      initContainers:
+        - name: agent-src-init
+          image: nousresearch/hermes-agent:v2026.5.16
+          command: ["sh", "-c", "cp -a /opt/hermes/. /agent-src/"]
+          volumeMounts:
+            - name: agent-src
+              mountPath: /agent-src
       containers:
         - name: hermes-agent
           image: nousresearch/hermes-agent:v2026.5.16
@@ -83,6 +90,51 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 10
             failureThreshold: 6
+        - name: hermes-webui
+          image: ghcr.io/nesquena/hermes-webui:0.51.153
+          env:
+            - name: HERMES_WEBUI_HOST
+              value: "0.0.0.0"
+            - name: HERMES_WEBUI_PORT
+              value: "8787"
+            - name: HERMES_WEBUI_STATE_DIR
+              value: "/opt/data/webui"
+            - name: HERMES_HOME
+              value: "/opt/data"
+            - name: WANTED_UID
+              value: "10000"
+            - name: WANTED_GID
+              value: "10000"
+            - name: HERMES_WEBUI_AGENT_DIR
+              value: "/opt/hermes"
+          ports:
+            - containerPort: 8787
+          volumeMounts:
+            - name: data
+              mountPath: /opt/data
+            - name: agent-src
+              mountPath: /opt/hermes
+              readOnly: true
+            - name: config
+              mountPath: /opt/data/config.yaml
+              subPath: config.yaml
+            - name: env-secret
+              mountPath: /opt/data/.env
+              subPath: .env
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8787
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
       volumes:
         - name: data
           persistentVolumeClaim:
@@ -93,3 +145,18 @@ spec:
         - name: env-secret
           secret:
             secretName: hermes-agent-secret
+        - name: agent-src
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hermes-webui
+  namespace: home-automation
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: hermes-agent
+  ports:
+    - port: 80
+      targetPort: 8787
