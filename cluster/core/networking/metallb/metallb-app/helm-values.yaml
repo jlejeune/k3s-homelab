@@ -1,7 +1,5 @@
 ---
 psp:
   create: false
-frr-k8s:
-  prometheus:
-    serviceMonitor:
-      enabled: false
+frrk8s:
+  enabled: false
