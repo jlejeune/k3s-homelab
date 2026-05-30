@@ -1,0 +1,15 @@
+---
+# Restrict frr-k8s to amd64 nodes only.
+# frr-k8s manages the metallb-frr-startup ConfigMap required by all speaker
+# pods. On arm64 (RPi4) nodes the frr container crashes; running frr-k8s
+# only on x86 nodes is sufficient since the ConfigMap is cluster-scoped.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: metallb-frr-k8s-daemon
+  namespace: networking
+spec:
+  template:
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
