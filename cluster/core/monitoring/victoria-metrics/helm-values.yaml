@@ -16,3 +16,5 @@ server:
     envflag.enable: "true"
     envflag.prefix: VM_
     loggerFormat: json
+    search.maxConcurrentRequests: "8"
+    search.maxQueueDuration: "30s"
