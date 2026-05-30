@@ -59,14 +59,14 @@ spec:
     spec:
       initContainers:
         - name: agent-src-init
-          image: nousresearch/hermes-agent:v2026.5.16
+          image: nousresearch/hermes-agent:v2026.5.29
           command: ["sh", "-c", "cp -a /opt/hermes/. /agent-src/"]
           volumeMounts:
             - name: agent-src
               mountPath: /agent-src
       containers:
         - name: hermes-agent
-          image: nousresearch/hermes-agent:v2026.5.16
+          image: nousresearch/hermes-agent:v2026.5.29
           args: ["gateway", "run"]
           volumeMounts:
             - name: data
