@@ -43,7 +43,7 @@ spec:
             - name: HOME
               value: /home/ollama
             - name: HSA_OVERRIDE_GFX_VERSION
-              value: "11.0.0"
+              value: "11.0.1"
             - name: HIP_VISIBLE_DEVICES
               value: "0"
             - name: OLLAMA_NO_CLOUD
