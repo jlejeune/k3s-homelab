@@ -21,10 +21,14 @@ data:
   config.yaml: |
     model:
       provider: custom
-      default: llama3.2:1b
+      default: qwen2.5:3b
       base_url: http://192.168.1.205:11434/v1
       api_key: "none"
       context_length: 65536
+
+    auxiliary:
+      compression:
+        context_length: 65536
 
     agent:
       max_turns: 5
