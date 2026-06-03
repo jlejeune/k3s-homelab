@@ -17,5 +17,4 @@ deployments:
   - path: open-webui
   - include: openwakeword
   - include: ollama
-  - include: hermes-agent
   - path: esphome
