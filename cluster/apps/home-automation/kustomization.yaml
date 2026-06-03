@@ -4,7 +4,6 @@ kind: Kustomization
 resources:
   - code-server
   - go2rtc
-  - hermes-agent
   - home-assistant
   - mosquitto
   - namespace.yaml
