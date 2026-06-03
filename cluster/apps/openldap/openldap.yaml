@@ -18,6 +18,18 @@ spec:
       labels:
         app.kubernetes.io/instance: openldap
     spec:
+      initContainers:
+        - name: slapindex
+          image: osixia/openldap:1.5.0
+          command:
+            - sh
+            - -c
+            - slapindex -F /etc/ldap/slapd.d 2>/dev/null; chown -R 911:911 /var/lib/ldap 2>/dev/null; true
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/ldap
+            - name: config
+              mountPath: /etc/ldap/slapd.d
       containers:
         - name: openldap
           image: osixia/openldap:1.5.0
@@ -40,11 +52,21 @@ spec:
             - name: ldap
               containerPort: 389
           readinessProbe:
-            tcpSocket:
-              port: 389
-            initialDelaySeconds: 10
-            periodSeconds: 10
+            exec:
+              command:
+                - sh
+                - -c
+                - |
+                  ldapsearch -x -H ldap://localhost:389 \
+                    -D "cn=admin,dc=jlejeune,dc=home" \
+                    -w "$LDAP_ADMIN_PASSWORD" \
+                    -b "ou=people,dc=jlejeune,dc=home" \
+                    "(&(uid=jlejeune)(objectClass=inetOrgPerson))" uid \
+                    2>/dev/null | grep -q "^dn:"
+            initialDelaySeconds: 15
+            periodSeconds: 30
             failureThreshold: 3
+            timeoutSeconds: 10
           livenessProbe:
             tcpSocket:
               port: 389
