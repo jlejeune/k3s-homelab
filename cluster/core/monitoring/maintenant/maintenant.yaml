@@ -26,7 +26,7 @@ spec:
         runAsUser: 65534
       containers:
         - name: maintenant
-          image: ghcr.io/kolapsis/maintenant:1.2.13
+          image: ghcr.io/kolapsis/maintenant:1.2.15
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
@@ -47,6 +47,12 @@ spec:
           ports:
             - containerPort: 8080
               name: http
+          startupProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            failureThreshold: 90
+            periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /api/v1/health
@@ -108,7 +114,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 2Gi
+      storage: 3Gi
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -120,7 +126,7 @@ spec:
   storageClassName: longhorn
   persistentVolumeReclaimPolicy: Retain
   capacity:
-    storage: 2Gi
+    storage: 3Gi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
