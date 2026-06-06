@@ -26,7 +26,7 @@ spec:
         runAsUser: 65534
       containers:
         - name: maintenant
-          image: ghcr.io/kolapsis/maintenant:1.2.13
+          image: ghcr.io/kolapsis/maintenant:1.2.15
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
