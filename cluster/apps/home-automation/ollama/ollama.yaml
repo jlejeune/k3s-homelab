@@ -38,7 +38,7 @@ spec:
         supplementalGroups: [44, 992]  # video and render groups
       containers:
         - name: ollama
-          image: ollama/ollama:0.24.0-rocm
+          image: ollama/ollama:0.30.6-rocm
           env:
             - name: HOME
               value: /home/ollama
@@ -46,6 +46,8 @@ spec:
               value: "11.0.1"
             - name: HIP_VISIBLE_DEVICES
               value: "0"
+            - name: OLLAMA_IGPU_ENABLE
+              value: "1"
             - name: OLLAMA_NO_CLOUD
               value: "1"
             - name: OLLAMA_CONTEXT_LENGTH
