@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:16.13
+          image: postgres:16.14
           imagePullPolicy: IfNotPresent
           env:
             - name: POSTGRES_DB

@@ -32,7 +32,7 @@ spec:
                       - amd64
       initContainers:
         - name: wait-for-postgres
-          image: postgres:16.13
+          image: postgres:16.14
           command:
             - sh
             - -c
