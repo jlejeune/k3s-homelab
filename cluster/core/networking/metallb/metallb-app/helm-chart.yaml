@@ -2,6 +2,6 @@
 helmChart:
   repo: https://metallb.github.io/metallb
   chartName: metallb
-  chartVersion: 0.16.0
+  chartVersion: 0.16.1
   releaseName: metallb
   namespace: networking
