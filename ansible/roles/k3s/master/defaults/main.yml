@@ -42,7 +42,7 @@ k3s_master_extra_args: >-
   --kube-apiserver-arg audit-log-maxsize=100
 
 # k9s
-k9s_version: v0.50.9
+k9s_version: v0.51.0
 
 # helm
 helm_version: v3.9.3
