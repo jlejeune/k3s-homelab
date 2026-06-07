@@ -87,7 +87,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: authelia-db
-          image: postgres:15.17
+          image: postgres:15.18
           imagePullPolicy: IfNotPresent
           envFrom:
             - secretRef:
