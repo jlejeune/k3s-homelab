@@ -3,7 +3,7 @@ helmChart:
   git:
     url: https://github.com/traefik/traefik-helm-chart
     ref:
-      tag: v40.2.0
+      tag: v40.3.0
     subDir: traefik
   releaseName: traefik
   namespace: networking
