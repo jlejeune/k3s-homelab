@@ -10,5 +10,4 @@ resources:
   - kube-state-metrics
   - grafana
   - uptime-kuma
-  - maintenant
   - namespace.yaml

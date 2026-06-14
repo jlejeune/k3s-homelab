@@ -393,9 +393,6 @@ data:
         - domain: status.{{SECRET_DOMAIN}}
           policy: one_factor
 
-        - domain: maintenant.{{SECRET_DOMAIN}}
-          policy: one_factor
-
         - domain: sonarr.{{SECRET_DOMAIN}}
           policy: one_factor
 

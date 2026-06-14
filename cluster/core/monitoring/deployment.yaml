@@ -20,4 +20,3 @@ deployments:
   - path: kube-state-metrics
   - path: grafana
   - path: uptime-kuma
-  - path: maintenant
