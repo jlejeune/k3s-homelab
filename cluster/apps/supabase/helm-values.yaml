@@ -161,6 +161,9 @@ deployment:
         memory: 512Mi
         cpu: 400m
   imgproxy:
+    # imgproxy v3.30.1 crashes with SIGILL on ARM (Pi 4 = ARMv8.0, image requires ARMv8.2+)
+    nodeSelector:
+      kubernetes.io/arch: amd64
     resources:
       requests:
         memory: 64Mi
