@@ -140,6 +140,27 @@ spec:
     spec:
       restartPolicy: Always
       enableServiceLinks: false
+      initContainers:
+        - name: meilisearch-migration-guard
+          image: getmeili/meilisearch:v1.47.0
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              if [ ! -f /meili_data/VERSION ]; then
+                echo "Fresh install, no action needed"
+                exit 0
+              fi
+              STORED=$(cat /meili_data/VERSION)
+              EXPECTED=$(meilisearch --version | awk '{print $2}')
+              if [ "$STORED" != "$EXPECTED" ]; then
+                echo "Version mismatch (stored=$STORED engine=$EXPECTED), wiping /meili_data"
+                rm -rf /meili_data/*
+              else
+                echo "Version OK ($STORED), no action needed"
+              fi
+          volumeMounts:
+            - mountPath: /meili_data
+              name: meilisearch-vol
       containers:
         - name: meilisearch
           image: getmeili/meilisearch:v1.47.0
