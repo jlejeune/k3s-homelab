@@ -11,11 +11,10 @@ service:
   annotations:
     metallb.io/allow-shared-ip: "traefik"
     metallb.io/loadBalancerIP: "{{LB_TRAEFIK_ADDRESS}}"
-logs:
-  general:
-    level: INFO
-  access:
-    enabled: true
+log:
+  level: INFO
+accessLog:
+  enabled: true
 api:
   dashboard: true
 additionalArguments:
