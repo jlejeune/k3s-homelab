@@ -2,6 +2,6 @@
 helmChart:
   repo: https://victoriametrics.github.io/helm-charts/
   chartName: victoria-metrics-single
-  chartVersion: "0.40.1"
+  chartVersion: "0.41.0"
   releaseName: victoria-metrics-single
   namespace: monitoring
