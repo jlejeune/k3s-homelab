@@ -885,3 +885,28 @@ spec:
           scheme: http
   tls:
     secretName: "{{SECRET_DOMAIN}}-tls"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: thelounge
+  namespace: networking
+  annotations:
+    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`irc.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: security-header
+          namespace: networking
+      services:
+        - kind: Service
+          name: thelounge
+          namespace: thelounge
+          port: 9000
+          scheme: http
+  tls:
+    secretName: "{{SECRET_DOMAIN}}-tls"

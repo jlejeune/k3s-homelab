@@ -1,0 +1,133 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: thelounge-config
+  namespace: thelounge
+data:
+  config.js: |
+    "use strict";
+
+    module.exports = {
+      public: false,
+      reverseProxy: true,
+      port: 9000,
+      theme: "default",
+      prefetch: false,
+      fileUpload: {
+        enable: false,
+      },
+      messageStorage: ["sqlite", "text"],
+      ldap: {
+        enable: true,
+        url: "ldap://openldap.openldap.svc.cluster.local:389",
+        tlsOptions: {},
+        primaryKey: "uid",
+        baseDN: "ou=people,dc=jlejeune,dc=home",
+        searchDN: {
+          rootDN: process.env.THELOUNGE_LDAP_BIND_DN,
+          rootPassword: process.env.THELOUNGE_LDAP_BIND_PASSWORD,
+          filter: "(objectClass=inetOrgPerson)",
+          base: "ou=people,dc=jlejeune,dc=home",
+          scope: "sub",
+        },
+      },
+      debug: {
+        ircFramework: false,
+        raw: false,
+      },
+    };
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: thelounge-pvc
+  namespace: thelounge
+spec:
+  storageClassName: longhorn
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thelounge
+  namespace: thelounge
+  labels:
+    app.kubernetes.io/instance: thelounge
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: thelounge
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: thelounge
+    spec:
+      restartPolicy: Always
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: thelounge
+          image: ghcr.io/thelounge/thelounge:4
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TZ
+              value: "{{TZ}}"
+            - name: THELOUNGE_LDAP_BIND_DN
+              value: "{{SECRET_LDAP_ADMIN_BIND_DN}}"
+            - name: THELOUNGE_LDAP_BIND_PASSWORD
+              value: "{{SECRET_LDAP_ADMIN_QUERY_PASSWORD}}"
+          ports:
+            - containerPort: 9000
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 9000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 9000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
+          volumeMounts:
+            - mountPath: /var/opt/thelounge
+              name: thelounge-data
+            - mountPath: /var/opt/thelounge/config.js
+              subPath: config.js
+              name: thelounge-config
+              readOnly: true
+      volumes:
+        - name: thelounge-data
+          persistentVolumeClaim:
+            claimName: thelounge-pvc
+        - name: thelounge-config
+          configMap:
+            name: thelounge-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: thelounge
+  namespace: thelounge
+spec:
+  ports:
+    - name: http
+      port: 9000
+      targetPort: http
+  selector:
+    app.kubernetes.io/instance: thelounge
