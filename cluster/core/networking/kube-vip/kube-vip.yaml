@@ -50,7 +50,7 @@ spec:
               value: "1"
             - name: address
               value: {{K3S_MASTER_VIP}}
-          image: ghcr.io/kube-vip/kube-vip:v1.2.0
+          image: ghcr.io/kube-vip/kube-vip:v1.2.1
           imagePullPolicy: Always
           name: kube-vip
           resources: {}
