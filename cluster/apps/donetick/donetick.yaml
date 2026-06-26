@@ -1,0 +1,179 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: donetick-config
+  namespace: donetick
+data:
+  selfhosted.yaml: |
+    name: "selfhosted"
+    is_done_tick_dot_com: false
+    is_user_creation_disabled: true
+    database:
+      type: "sqlite"
+      migration: true
+    jwt:
+      session_time: 168h
+      max_refresh: 1440h
+    server:
+      port: 2021
+      read_timeout: 10s
+      write_timeout: 10s
+      rate_period: 60s
+      rate_limit: 300
+      cors_allow_origins:
+        - "http://localhost:5173"
+        - "http://localhost:7926"
+        - "https://localhost"
+        - "http://localhost"
+        - "capacitor://localhost"
+      serve_frontend: true
+      serve_swagger: false
+    logging:
+      level: "info"
+      encoding: "json"
+      development: false
+    scheduler_jobs:
+      due_job: 30m
+      overdue_job: 3h
+      pre_due_job: 3h
+    realtime:
+      enabled: true
+      sse_enabled: true
+      heartbeat_interval: 60s
+      connection_timeout: 120s
+      max_connections: 1000
+      max_connections_per_user: 5
+      event_queue_size: 2048
+      cleanup_interval: 2m
+      stale_threshold: 5m
+      enable_compression: true
+      enable_stats: true
+      allowed_origins:
+        - "*"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: donetick
+  namespace: donetick
+  labels:
+    app.kubernetes.io/instance: donetick
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: donetick
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: donetick
+    spec:
+      restartPolicy: Always
+      initContainers:
+        - name: init-db
+          image: busybox
+          command: ["sh", "-c", "touch /data/donetick.db"]
+          volumeMounts:
+            - name: donetick-data
+              mountPath: /data
+      containers:
+        - name: donetick
+          image: donetick/donetick:v0.1.75
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DT_ENV
+              value: "selfhosted"
+            - name: TZ
+              value: "{{TZ}}"
+          envFrom:
+            - secretRef:
+                name: donetick
+          ports:
+            - containerPort: 2021
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 2021
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 2021
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
+          volumeMounts:
+            - name: donetick-data
+              mountPath: /donetick.db
+              subPath: donetick.db
+            - name: donetick-config
+              mountPath: /config/selfhosted.yaml
+              subPath: selfhosted.yaml
+      volumes:
+        - name: donetick-data
+          persistentVolumeClaim:
+            claimName: donetick-data-pvc
+        - name: donetick-config
+          configMap:
+            name: donetick-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: donetick
+  name: donetick
+  namespace: donetick
+spec:
+  selector:
+    app.kubernetes.io/instance: donetick
+  ports:
+    - name: http
+      port: 2021
+      targetPort: http
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app.kubernetes.io/instance: donetick
+  name: donetick-data-pvc
+  namespace: donetick
+spec:
+  storageClassName: longhorn
+  volumeName: donetick-data-pv
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: donetick-data-pv
+  namespace: donetick
+spec:
+  storageClassName: longhorn
+  persistentVolumeReclaimPolicy: Retain
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  csi:
+    driver: driver.longhorn.io
+    fsType: ext4
+    volumeAttributes:
+      numberOfReplicas: '2'
+      staleReplicaTimeout: '2880'
+    volumeHandle: donetick-data-pv  # must match the volume name created in Longhorn UI

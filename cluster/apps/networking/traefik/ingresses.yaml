@@ -910,3 +910,28 @@ spec:
           scheme: http
   tls:
     secretName: "{{SECRET_DOMAIN}}-tls"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: donetick
+  namespace: networking
+  annotations:
+    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`donetick.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: security-header
+          namespace: networking
+      services:
+        - kind: Service
+          name: donetick
+          namespace: donetick
+          port: 2021
+          scheme: http
+  tls:
+    secretName: "{{SECRET_DOMAIN}}-tls"

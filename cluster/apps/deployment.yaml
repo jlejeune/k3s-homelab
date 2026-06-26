@@ -40,6 +40,7 @@ deployments:
   - path: smtp-relay
   - include: mealie
   - path: dashy
+  - path: donetick
   - include: authelia
   - include: networking
   - path: freshrss
