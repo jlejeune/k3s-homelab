@@ -1,10 +1,10 @@
 ---
 vars:
-  - clusterConfigMap:
+  - targetPath: LB_OPENWAKEWORD_ADDRESS
+    clusterConfigMap:
       name: cluster-settings
       namespace: default
       key: LB_OPENWAKEWORD_ADDRESS
-      targetPath: LB_OPENWAKEWORD_ADDRESS
 
 deployments:
   - path: .

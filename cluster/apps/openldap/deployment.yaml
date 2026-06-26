@@ -1,15 +1,15 @@
 ---
 vars:
-  - clusterConfigMap:
+  - targetPath: LB_OPENLDAP_ADDRESS
+    clusterConfigMap:
       name: cluster-settings
       namespace: default
       key: LB_OPENLDAP_ADDRESS
-      targetPath: LB_OPENLDAP_ADDRESS
-  - clusterSecret:
+  - targetPath: SECRET_DOMAIN
+    clusterSecret:
       name: cluster-secrets
       namespace: default
       key: SECRET_DOMAIN
-      targetPath: SECRET_DOMAIN
 
 deployments:
   - path: .

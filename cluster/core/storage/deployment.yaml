@@ -1,10 +1,10 @@
 ---
 vars:
-  - clusterConfigMap:
+  - targetPath: NAS_ADDRESS
+    clusterConfigMap:
       name: cluster-settings
       namespace: default
       key: NAS_ADDRESS
-      targetPath: NAS_ADDRESS
 
 deployments:
   - path: snapshot-controller

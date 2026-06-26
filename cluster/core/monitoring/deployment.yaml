@@ -1,15 +1,15 @@
 ---
 vars:
-  - clusterSecret:
+  - targetPath: SECRET_DOMAIN
+    clusterSecret:
       name: cluster-secrets
       namespace: default
       key: SECRET_DOMAIN
-      targetPath: SECRET_DOMAIN
-  - clusterSecret:
+  - targetPath: DISCORD_WEBHOOK_URL
+    clusterSecret:
       name: cluster-secrets
       namespace: default
       key: DISCORD_WEBHOOK_URL
-      targetPath: DISCORD_WEBHOOK_URL
 
 deployments:
   - path: victoria-metrics

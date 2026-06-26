@@ -1,15 +1,15 @@
 ---
 vars:
-  - clusterSecret:
+  - targetPath: SECRET_DYNAMIC_DOMAIN
+    clusterSecret:
       name: cluster-secrets
       namespace: default
       key: SECRET_DYNAMIC_DOMAIN
-      targetPath: SECRET_DYNAMIC_DOMAIN
-  - clusterConfigMap:
+  - targetPath: LB_TRAEFIK_ADDRESS
+    clusterConfigMap:
       name: cluster-settings
       namespace: default
       key: LB_TRAEFIK_ADDRESS
-      targetPath: LB_TRAEFIK_ADDRESS
 
 deployments:
   - path: .

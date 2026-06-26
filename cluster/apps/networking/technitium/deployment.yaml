@@ -1,20 +1,20 @@
 ---
 vars:
-  - clusterConfigMap:
+  - targetPath: LB_DNS_ADDRESS
+    clusterConfigMap:
       name: cluster-settings
       namespace: default
       key: LB_DNS_ADDRESS
-      targetPath: LB_DNS_ADDRESS
-  - clusterConfigMap:
+  - targetPath: LB_TRAEFIK_ADDRESS
+    clusterConfigMap:
       name: cluster-settings
       namespace: default
       key: LB_TRAEFIK_ADDRESS
-      targetPath: LB_TRAEFIK_ADDRESS
-  - clusterSecret:
+  - targetPath: SECRET_DOMAIN
+    clusterSecret:
       name: cluster-secrets
       namespace: default
       key: SECRET_DOMAIN
-      targetPath: SECRET_DOMAIN
 
 deployments:
   - path: .
