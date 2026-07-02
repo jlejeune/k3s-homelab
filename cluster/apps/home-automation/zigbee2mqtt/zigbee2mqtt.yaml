@@ -56,7 +56,7 @@ spec:
     spec:
       containers:
         - name: zigbee2mqtt
-          image: koenkk/zigbee2mqtt:2.12.0
+          image: koenkk/zigbee2mqtt:2.12.1
           imagePullPolicy: IfNotPresent
           env:
             - name: TZ
