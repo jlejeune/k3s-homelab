@@ -22,7 +22,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
         - name: esphome
-          image: ghcr.io/esphome/esphome:2026.6.3
+          image: ghcr.io/esphome/esphome:2026.6.4
           ports:
             - name: http
               containerPort: 6052
