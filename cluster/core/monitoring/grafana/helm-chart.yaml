@@ -2,6 +2,6 @@
 helmChart:
   repo: https://grafana-community.github.io/helm-charts
   chartName: grafana
-  chartVersion: 12.7.1
+  chartVersion: 12.7.2
   releaseName: grafana
   namespace: monitoring
