@@ -47,7 +47,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: technitium
-          image: technitium/dns-server:15.2.0
+          image: technitium/dns-server:15.4.0
           envFrom:
             - configMapRef:
                 name: technitium
