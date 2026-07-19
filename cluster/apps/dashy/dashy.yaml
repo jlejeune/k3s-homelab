@@ -45,6 +45,20 @@ data:
             icon: hl-jellyfin
             url: https://videos.{{SECRET_DOMAIN}}
             statusCheckUrl: http://jellyfin.jellyfin.svc.cluster.local:8096
+          - title: Nextcloud
+            icon: hl-nextcloud
+            url: https://nextcloud.{{SECRET_DOMAIN}}
+            statusCheckUrl: https://nextcloud.{{SECRET_DOMAIN}}/status.php
+          - title: Synology
+            icon: far fa-hdd
+            url: https://nas.{{SECRET_DOMAIN}}
+            displayData:
+              showForKeycloakUsers:
+                groups: ["internal users", administrators]
+
+      - name: Productivity
+        icon: fas fa-list-check
+        items:
           - title: Joplin
             icon: hl-joplin
             url: https://joplin.{{SECRET_DOMAIN}}
@@ -56,13 +70,10 @@ data:
             icon: hl-mealie
             url: https://mealie.{{SECRET_DOMAIN}}
             statusCheckUrl: http://mealie.mealie.svc.cluster.local:9000
-          - title: Nextcloud
-            icon: hl-nextcloud
-            url: https://nextcloud.{{SECRET_DOMAIN}}
-            statusCheckUrl: https://nextcloud.{{SECRET_DOMAIN}}/status.php
-          - title: Synology
-            icon: far fa-hdd
-            url: https://nas.{{SECRET_DOMAIN}}
+          - title: Donetick
+            icon: fas fa-list-check
+            url: https://donetick.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://donetick.donetick.svc.cluster.local:2021
             displayData:
               showForKeycloakUsers:
                 groups: ["internal users", administrators]
@@ -85,6 +96,10 @@ data:
             icon: hl-prowlarr
             url: https://prowlarr.{{SECRET_DOMAIN}}
             statusCheckUrl: http://prowlarr.media-automation.svc.cluster.local:9696
+          - title: Calibre-Web-Automated
+            icon: hl-calibre-web
+            url: https://calibre.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://calibre-web-automated.media-automation.svc.cluster.local:8083
 
       - name: Home Automation
         icon: fas fa-house
