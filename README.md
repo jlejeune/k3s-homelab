@@ -45,15 +45,14 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 │   ├── core/                   # Infrastructure services
 │   │   ├── cert-manager/       # TLS certificates (Let's Encrypt + local CA)
 │   │   ├── networking/         # Traefik, MetalLB, kube-vip, External DNS
-│   │   ├── monitoring/         # Grafana, kube-prometheus-stack, Uptime Kuma
+│   │   ├── monitoring/         # VictoriaMetrics, vmagent, vmalert, Grafana, Alertmanager, Uptime Kuma
 │   │   ├── storage/            # Longhorn + NFS provisioner
 │   │   ├── kube-system/        # k8s device plugin
-│   │   ├── kubernetes-dashboard/
 │   │   ├── node-feature-discovery/
 │   │   ├── reloader/           # Auto-restart pods on ConfigMap/Secret changes
 │   │   └── system-upgrade/     # Automated K3s upgrades
 │   └── apps/                   # User-facing applications
-│       ├── home-automation/    # Home Assistant, Zigbee2MQTT, Mosquitto, ESPHome, Go2RTC
+│       ├── home-automation/    # Home Assistant, Zigbee2MQTT, Mosquitto, ESPHome, Go2RTC, Code Server
 │       │   ├── ollama/         # Local LLM inference
 │       │   ├── open-webui/     # Web UI for Ollama
 │       │   ├── whisper/        # Speech-to-text
@@ -63,13 +62,20 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 │       ├── jellyfin/           # Media server
 │       ├── freshrss/           # RSS reader
 │       ├── joplin/             # Note-taking (with PostgreSQL)
+│       ├── karakeep/           # Bookmark manager (+ Meilisearch)
 │       ├── mealie/             # Recipe manager
+│       ├── donetick/           # Chore/task tracker
 │       ├── dashy/              # Dashboard
-│       ├── networking/         # Pi-hole, WireGuard, Traefik ingresses, certificates
+│       ├── media-automation/   # Prowlarr, Radarr, Sonarr, Plundrio, Shelfmark, Calibre-Web-Automated
+│       ├── nextcloud/          # File sync (PostgreSQL + Redis + Collabora)
+│       ├── networking/         # Technitium DNS, WireGuard, Traefik ingresses, certificates
 │       ├── authelia/           # SSO / authentication (with Redis + PostgreSQL)
 │       ├── openldap/           # LDAP directory + LDAP Account Manager
 │       ├── plik/               # File sharing
-│       └── smtp-relay/         # Postfix SMTP relay
+│       ├── smtp-relay/         # Postfix SMTP relay
+│       ├── stirling-pdf/       # PDF tools with Authelia SSO
+│       ├── supabase/           # Postgres/BaaS platform (Edge Functions)
+│       └── thelounge/          # Web IRC client
 │
 ├── .sops.yaml                  # SOPS encryption rules (Age key)
 ├── .pre-commit-config.yaml     # Pre-commit hooks (yamllint, sops, formatting)
@@ -86,8 +92,8 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 | **Networking** | Traefik (reverse proxy, `192.168.1.200`), MetalLB (load balancer), kube-vip, External DNS |
 | **Storage** | Longhorn (distributed block storage on USB drives), NFS provisioner (NAS at `192.168.1.50`) |
 | **Certificates** | cert-manager with Let's Encrypt (production + staging), OVH DNS challenge webhook, local CA (`jlejeune.home`) |
-| **Monitoring** | Grafana, kube-prometheus-stack, Uptime Kuma, ServiceMonitors |
-| **Other** | Kubernetes Dashboard, Node Feature Discovery, Reloader, System Upgrade Controller |
+| **Monitoring** | VictoriaMetrics (TSDB), vmagent, vmalert, Grafana, Alertmanager, node-exporter, kube-state-metrics, Uptime Kuma |
+| **Other** | Node Feature Discovery, Reloader, System Upgrade Controller |
 
 ## Applications
 
@@ -96,10 +102,11 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 | **Home automation** | Home Assistant, Zigbee2MQTT, Mosquitto (MQTT broker), ESPHome, Go2RTC |
 | **AI / Voice** | Ollama (LLM), Open WebUI, Whisper (STT), Piper (TTS), OpenWakeWord |
 | **Media** | Jellyfin (video), Immich (photos with machine learning) |
-| **Productivity** | Joplin (notes), Mealie (recipes), FreshRSS (feeds), Code Server (VS Code) |
-| **Networking** | Pi-hole (DNS ad-blocking), WireGuard (VPN), Traefik ingress routes |
+| **Media automation** | Prowlarr, Radarr, Sonarr, Plundrio, Shelfmark, Calibre-Web-Automated |
+| **Productivity** | Joplin (notes), Mealie (recipes), Donetick (chores), Karakeep (bookmarks), FreshRSS (feeds), Nextcloud (files), Code Server (VS Code) |
+| **Networking** | Technitium (DNS), WireGuard (VPN), Traefik ingress routes |
 | **Auth / Identity** | Authelia (SSO with forward auth), OpenLDAP + LDAP Account Manager |
-| **Utilities** | Plik (file sharing), SMTP Relay (Postfix), Dashy (dashboard) |
+| **Utilities** | Plik (file sharing), Stirling PDF, Supabase (BaaS), The Lounge (IRC), SMTP Relay (Postfix), Dashy (dashboard) |
 
 ## Security
 
