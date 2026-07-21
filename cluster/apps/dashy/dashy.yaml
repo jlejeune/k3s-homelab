@@ -77,6 +77,15 @@ data:
             displayData:
               showForKeycloakUsers:
                 groups: ["internal users", administrators]
+          - title: Dawarich
+            icon: hl-dawarich
+            url: https://dawarich.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://dawarich.dawarich.svc.cluster.local:3000
+            statusCheckHeaders:
+              X-Forwarded-Proto: https
+            displayData:
+              showForKeycloakUsers:
+                groups: [administrators]
 
       - name: Media Automation
         icon: fas fa-clapperboard

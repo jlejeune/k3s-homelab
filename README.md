@@ -64,6 +64,7 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 │       ├── joplin/             # Note-taking (with PostgreSQL)
 │       ├── karakeep/           # Bookmark manager (+ Meilisearch)
 │       ├── mealie/             # Recipe manager
+│       ├── dawarich/           # Location history tracking (PostGIS + Sidekiq)
 │       ├── donetick/           # Chore/task tracker
 │       ├── dashy/              # Dashboard
 │       ├── media-automation/   # Prowlarr, Radarr, Sonarr, Plundrio, Shelfmark, Calibre-Web-Automated
@@ -103,7 +104,7 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 | **AI / Voice** | Ollama (LLM), Open WebUI, Whisper (STT), Piper (TTS), OpenWakeWord |
 | **Media** | Jellyfin (video), Immich (photos with machine learning) |
 | **Media automation** | Prowlarr, Radarr, Sonarr, Plundrio, Shelfmark, Calibre-Web-Automated |
-| **Productivity** | Joplin (notes), Mealie (recipes), Donetick (chores), Karakeep (bookmarks), FreshRSS (feeds), Nextcloud (files), Code Server (VS Code) |
+| **Productivity** | Joplin (notes), Mealie (recipes), Donetick (chores), Karakeep (bookmarks), FreshRSS (feeds), Nextcloud (files), Code Server (VS Code), Dawarich (location history) |
 | **Networking** | Technitium (DNS), WireGuard (VPN), Traefik ingress routes |
 | **Auth / Identity** | Authelia (SSO with forward auth), OpenLDAP + LDAP Account Manager |
 | **Utilities** | Plik (file sharing), Stirling PDF, Supabase (BaaS), The Lounge (IRC), SMTP Relay (Postfix), Dashy (dashboard) |

@@ -15,6 +15,11 @@ vars:
       name: cluster-secrets
       namespace: default
       key: SECRET_KARAKEEP_OAUTH_CLIENT_SECRET
+  - targetPath: SECRET_DAWARICH_OAUTH_CLIENT_SECRET
+    clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_DAWARICH_OAUTH_CLIENT_SECRET
   - targetPath: SECRET_SMTP_HOST
     clusterSecret:
       name: cluster-secrets
