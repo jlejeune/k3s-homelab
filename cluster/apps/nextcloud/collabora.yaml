@@ -28,7 +28,7 @@ spec:
                       - amd64
       containers:
         - name: collabora
-          image: collabora/code:26.04.2.1.1
+          image: collabora/code:26.04.2.4.1
           imagePullPolicy: IfNotPresent
           env:
             - name: aliasgroup1
