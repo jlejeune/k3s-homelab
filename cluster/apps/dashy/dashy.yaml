@@ -71,7 +71,7 @@ data:
             url: https://mealie.{{SECRET_DOMAIN}}
             statusCheckUrl: http://mealie.mealie.svc.cluster.local:9000
           - title: Donetick
-            icon: fas fa-list-check
+            icon: hl-donetick
             url: https://donetick.{{SECRET_DOMAIN}}
             statusCheckUrl: http://donetick.donetick.svc.cluster.local:2021
             displayData:
