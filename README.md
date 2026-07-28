@@ -67,7 +67,7 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 │       ├── dawarich/           # Location history tracking (PostGIS + Sidekiq)
 │       ├── donetick/           # Chore/task tracker
 │       ├── dashy/              # Dashboard
-│       ├── media-automation/   # Prowlarr, Radarr, Sonarr, Plundrio, Shelfmark, Calibre-Web-Automated
+│       ├── media-automation/   # Prowlarr, Radarr, Sonarr, Seerr, Plundrio, Shelfmark, Calibre-Web-Automated
 │       ├── nextcloud/          # File sync (PostgreSQL + Redis + Collabora)
 │       ├── networking/         # Technitium DNS, WireGuard, Traefik ingresses, certificates
 │       ├── authelia/           # SSO / authentication (with Redis + PostgreSQL)
@@ -103,7 +103,7 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 | **Home automation** | Home Assistant, Zigbee2MQTT, Mosquitto (MQTT broker), ESPHome, Go2RTC |
 | **AI / Voice** | Ollama (LLM), Open WebUI, Whisper (STT), Piper (TTS), OpenWakeWord |
 | **Media** | Jellyfin (video), Immich (photos with machine learning) |
-| **Media automation** | Prowlarr, Radarr, Sonarr, Plundrio, Shelfmark, Calibre-Web-Automated |
+| **Media automation** | Prowlarr, Radarr, Sonarr, Seerr, Plundrio, Shelfmark, Calibre-Web-Automated |
 | **Productivity** | Joplin (notes), Mealie (recipes), Donetick (chores), Karakeep (bookmarks), FreshRSS (feeds), Nextcloud (files), Code Server (VS Code), Dawarich (location history) |
 | **Networking** | Technitium (DNS), WireGuard (VPN), Traefik ingress routes |
 | **Auth / Identity** | Authelia (SSO with forward auth), OpenLDAP + LDAP Account Manager |

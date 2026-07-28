@@ -45,6 +45,10 @@ data:
             icon: hl-jellyfin
             url: https://videos.{{SECRET_DOMAIN}}
             statusCheckUrl: http://jellyfin.jellyfin.svc.cluster.local:8096
+          - title: Seerr
+            icon: hl-jellyseerr
+            url: https://seerr.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://seerr.media-automation.svc.cluster.local:5055
           - title: Nextcloud
             icon: hl-nextcloud
             url: https://nextcloud.{{SECRET_DOMAIN}}
