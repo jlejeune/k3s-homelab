@@ -146,17 +146,6 @@ data:
               showForKeycloakUsers:
                 groups: [administrators]
 
-      - name: AI
-        icon: fas fa-brain
-        displayData:
-          showForKeycloakUsers:
-            groups: ["internal users", administrators]
-        items:
-          - title: Open WebUI
-            icon: hl-ollama
-            url: https://chat.{{SECRET_DOMAIN}}
-            statusCheckUrl: http://open-webui.home-automation.svc.cluster.local:8080
-
       - name: Kubernetes
         icon: hl-kubernetes
         displayData:

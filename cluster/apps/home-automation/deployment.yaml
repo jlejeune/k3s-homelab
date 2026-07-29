@@ -14,7 +14,5 @@ deployments:
   - path: home-assistant
   - path: mosquitto
   - include: zigbee2mqtt
-  - path: open-webui
   - include: openwakeword
-  - include: ollama
   - path: esphome

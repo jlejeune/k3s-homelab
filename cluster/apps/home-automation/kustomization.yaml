@@ -7,8 +7,6 @@ resources:
   - home-assistant
   - mosquitto
   - namespace.yaml
-  - ollama
-  - open-webui
   - openwakeword
   - piper
   - whisper
