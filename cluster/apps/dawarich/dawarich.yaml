@@ -85,7 +85,7 @@ spec:
             - "::"
           env:
             - name: WEB_CONCURRENCY
-              value: "1"
+              value: "0"
           envFrom:
             - configMapRef:
                 name: dawarich
