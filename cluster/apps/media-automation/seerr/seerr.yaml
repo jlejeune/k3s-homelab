@@ -36,7 +36,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: seerr
-          image: ghcr.io/seerr-team/seerr:v3.4.0
+          image: ghcr.io/seerr-team/seerr:v3.4.1
           securityContext:
             runAsUser: 1000
           ports:
