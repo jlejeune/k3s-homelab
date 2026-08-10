@@ -138,7 +138,7 @@ spec:
       enableServiceLinks: false
       initContainers:
         - name: meilisearch-migration-guard
-          image: getmeili/meilisearch:v1.51.0
+          image: getmeili/meilisearch:v1.53.0
           command: ["/bin/sh", "-c"]
           args:
             - |
@@ -164,7 +164,7 @@ spec:
               name: meilisearch-vol
       containers:
         - name: meilisearch
-          image: getmeili/meilisearch:v1.51.0
+          image: getmeili/meilisearch:v1.53.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
