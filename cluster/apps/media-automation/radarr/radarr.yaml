@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
         - name: radarr
-          image: lscr.io/linuxserver/radarr:6.1.1.10360-ls300
+          image: docker.io/linuxserver/radarr:6.1.1.10360-ls300
           ports:
             - containerPort: 7878
               name: http
