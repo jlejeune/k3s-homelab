@@ -34,7 +34,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: dawarich-redis
-          image: redis:8.8-alpine
+          image: redis:8.10-alpine
           command:
             - redis-server
             - "--save"
