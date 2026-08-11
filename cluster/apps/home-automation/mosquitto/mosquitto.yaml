@@ -8,6 +8,7 @@ metadata:
     app.kubernetes.io/instance: mosquitto
   annotations:
     reloader.stakater.com/auto: "true"
+    secret.reloader.stakater.com/reload: "mosquitto-certs"
 spec:
   replicas: 1
   selector:
