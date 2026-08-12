@@ -47,6 +47,7 @@ deployments:
   - include: joplin
   - path: jellyfin
   - path: immich
+  - path: yamtrack
   - path: openldap
   - path: plik
   - path: stirling-pdf

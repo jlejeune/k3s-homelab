@@ -59,6 +59,13 @@ data:
             displayData:
               showForKeycloakUsers:
                 groups: ["internal users", administrators]
+          - title: Yamtrack
+            icon: hl-yamtrack
+            url: https://yamtrack.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://yamtrack.yamtrack.svc.cluster.local:8000
+            displayData:
+              showForKeycloakUsers:
+                groups: ["internal users", administrators]
 
       - name: Productivity
         icon: fas fa-list-check

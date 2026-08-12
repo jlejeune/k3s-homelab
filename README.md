@@ -60,6 +60,7 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 │       │   └── openwakeword/   # Wake word detection
 │       ├── immich/             # Self-hosted photo management (server + ML)
 │       ├── jellyfin/           # Media server
+│       ├── yamtrack/           # Movie/TV/anime/manga tracking
 │       ├── freshrss/           # RSS reader
 │       ├── joplin/             # Note-taking (with PostgreSQL)
 │       ├── karakeep/           # Bookmark manager (+ Meilisearch)
@@ -102,7 +103,7 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 |---|---|
 | **Home automation** | Home Assistant, Zigbee2MQTT, Mosquitto (MQTT broker), ESPHome, Go2RTC |
 | **AI / Voice** | Ollama (LLM), Open WebUI, Whisper (STT), Piper (TTS), OpenWakeWord |
-| **Media** | Jellyfin (video), Immich (photos with machine learning) |
+| **Media** | Jellyfin (video), Immich (photos with machine learning), Yamtrack (movie/TV/anime/manga tracking) |
 | **Media automation** | Prowlarr, Radarr, Sonarr, Seerr, Plundrio, Shelfmark, Calibre-Web-Automated |
 | **Productivity** | Joplin (notes), Mealie (recipes), Donetick (chores), Karakeep (bookmarks), FreshRSS (feeds), Nextcloud (files), Code Server (VS Code), Dawarich (location history) |
 | **Networking** | Technitium (DNS), WireGuard (VPN), Traefik ingress routes |
