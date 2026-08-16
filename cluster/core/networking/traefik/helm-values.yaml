@@ -24,6 +24,8 @@ additionalArguments:
   - "--providers.kubernetescrd.allowexternalnameservices=true"
   - "--providers.kubernetescrd.allowCrossNamespace=true"
   - "--entryPoints.wireguard.udp.timeout=300s"
+  - "--entryPoints.web.transport.respondingTimeouts.readTimeout=600s"
+  - "--entryPoints.websecure.transport.respondingTimeouts.readTimeout=600s"
 ports:
   traefik:
     expose:
