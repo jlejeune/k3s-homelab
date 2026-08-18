@@ -24,6 +24,7 @@ additionalArguments:
   - "--providers.kubernetescrd.allowexternalnameservices=true"
   - "--providers.kubernetescrd.allowCrossNamespace=true"
   - "--entryPoints.wireguard.udp.timeout=300s"
+  - "--entryPoints.rustdesk-id-udp.udp.timeout=300s"
   - "--entryPoints.web.transport.respondingTimeouts.readTimeout=600s"
   - "--entryPoints.websecure.transport.respondingTimeouts.readTimeout=600s"
 ports:
@@ -43,6 +44,26 @@ ports:
   wireguard:
     port: 51820
     protocol: UDP
+    expose:
+      default: true
+  rustdesk-nat:
+    port: 21115
+    protocol: TCP
+    expose:
+      default: true
+  rustdesk-id:
+    port: 21116
+    protocol: TCP
+    expose:
+      default: true
+  rustdesk-id-udp:
+    port: 21116
+    protocol: UDP
+    expose:
+      default: true
+  rustdesk-relay:
+    port: 21117
+    protocol: TCP
     expose:
       default: true
 tlsOptions:

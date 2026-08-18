@@ -25,6 +25,11 @@ vars:
       name: cluster-secrets
       namespace: default
       key: SECRET_DOMAIN
+  - targetPath: SECRET_DYNAMIC_DOMAIN
+    clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_DYNAMIC_DOMAIN
   - targetPath: SECRET_LDAP_ADMIN_BIND_DN
     clusterSecret:
       name: cluster-secrets
@@ -50,6 +55,7 @@ deployments:
   - path: yamtrack
   - path: openldap
   - path: plik
+  - path: rustdesk
   - path: stirling-pdf
   - path: thelounge
   - path: karakeep
