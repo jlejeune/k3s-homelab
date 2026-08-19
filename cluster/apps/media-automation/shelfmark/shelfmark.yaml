@@ -113,7 +113,7 @@ spec:
         fsGroup: 100
       containers:
         - name: shelfmark
-          image: ghcr.io/calibrain/shelfmark:v1.3.9
+          image: ghcr.io/calibrain/shelfmark:v1.3.10
           ports:
             - containerPort: 8084
               name: http
