@@ -66,6 +66,13 @@ data:
             displayData:
               showForKeycloakUsers:
                 groups: ["internal users", administrators]
+          - title: Floppy
+            icon: fas fa-clapperboard
+            url: https://floppy.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://floppy.floppy.svc.cluster.local:8000
+            displayData:
+              showForKeycloakUsers:
+                groups: ["internal users", administrators]
 
       - name: Productivity
         icon: fas fa-list-check

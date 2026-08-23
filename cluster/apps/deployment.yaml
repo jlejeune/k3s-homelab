@@ -53,6 +53,7 @@ deployments:
   - path: jellyfin
   - path: immich
   - path: yamtrack
+  - path: floppy
   - path: openldap
   - path: plik
   - path: rustdesk

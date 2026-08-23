@@ -25,6 +25,11 @@ vars:
       name: cluster-secrets
       namespace: default
       key: SECRET_YAMTRACK_OAUTH_CLIENT_SECRET
+  - targetPath: SECRET_FLOPPY_OAUTH_CLIENT_SECRET
+    clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_FLOPPY_OAUTH_CLIENT_SECRET
   - targetPath: SECRET_SMTP_HOST
     clusterSecret:
       name: cluster-secrets
