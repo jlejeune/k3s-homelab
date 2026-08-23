@@ -985,3 +985,28 @@ spec:
           scheme: http
   tls:
     secretName: "{{SECRET_DOMAIN}}-tls"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: floppy
+  namespace: networking
+  annotations:
+    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`floppy.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: security-header
+          namespace: networking
+      services:
+        - kind: Service
+          name: floppy
+          namespace: floppy
+          port: 8000
+          scheme: http
+  tls:
+    secretName: "{{SECRET_DOMAIN}}-tls"
