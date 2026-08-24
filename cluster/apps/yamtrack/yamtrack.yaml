@@ -92,7 +92,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: yamtrack
-          image: ghcr.io/fuzzygrim/yamtrack:0.26.1
+          image: ghcr.io/fuzzygrim/yamtrack:0.26.3
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
