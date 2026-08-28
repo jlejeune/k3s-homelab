@@ -59,7 +59,7 @@ deployments:
   - path: rustdesk
   - path: stirling-pdf
   - path: thelounge
-  - path: karakeep
+  - path: linkding
   - path: dawarich
   - path: supabase
   - include: home-automation

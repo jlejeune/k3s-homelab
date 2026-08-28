@@ -10,11 +10,11 @@ vars:
       name: cluster-secrets
       namespace: default
       key: SECRET_SHELFMARK_OAUTH_CLIENT_SECRET
-  - targetPath: SECRET_KARAKEEP_OAUTH_CLIENT_SECRET
+  - targetPath: SECRET_LINKDING_OAUTH_CLIENT_SECRET
     clusterSecret:
       name: cluster-secrets
       namespace: default
-      key: SECRET_KARAKEEP_OAUTH_CLIENT_SECRET
+      key: SECRET_LINKDING_OAUTH_CLIENT_SECRET
   - targetPath: SECRET_DAWARICH_OAUTH_CLIENT_SECRET
     clusterSecret:
       name: cluster-secrets
