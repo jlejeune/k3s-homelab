@@ -104,6 +104,10 @@ data:
             displayData:
               showForKeycloakUsers:
                 groups: [administrators]
+          - title: Linkding
+            icon: hl-linkding
+            url: https://bookmarks.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://linkding.linkding.svc.cluster.local:9090
 
       - name: Media Automation
         icon: fas fa-clapperboard

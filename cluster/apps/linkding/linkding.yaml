@@ -1,0 +1,102 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: linkding-pvc
+  namespace: linkding
+spec:
+  storageClassName: longhorn
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: linkding
+  namespace: linkding
+  annotations:
+    reloader.stakater.com/match: "true"
+data:
+  LD_SUPERUSER_NAME: admin
+  LD_ENABLE_OIDC: "True"
+  LD_CSRF_TRUSTED_ORIGINS: "https://bookmarks.{{SECRET_DOMAIN}}"
+  OIDC_OP_AUTHORIZATION_ENDPOINT: "https://auth.{{SECRET_DOMAIN}}/api/oidc/authorization"
+  OIDC_OP_TOKEN_ENDPOINT: "https://auth.{{SECRET_DOMAIN}}/api/oidc/token"
+  OIDC_OP_USER_ENDPOINT: "https://auth.{{SECRET_DOMAIN}}/api/oidc/userinfo"
+  OIDC_OP_JWKS_ENDPOINT: "https://auth.{{SECRET_DOMAIN}}/jwks.json"
+  OIDC_RP_CLIENT_ID: linkding
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: linkding
+  namespace: linkding
+  labels:
+    app.kubernetes.io/instance: linkding
+  annotations:
+    reloader.stakater.com/search: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: linkding
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: linkding
+    spec:
+      restartPolicy: Always
+      enableServiceLinks: false
+      containers:
+        - name: linkding
+          image: ghcr.io/sissbruecker/linkding:1.46.2
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 9090
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: linkding
+            - secretRef:
+                name: linkding
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
+          volumeMounts:
+            - mountPath: /etc/linkding/data
+              name: linkding-vol
+      volumes:
+        - name: linkding-vol
+          persistentVolumeClaim:
+            claimName: linkding-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: linkding
+  namespace: linkding
+spec:
+  ports:
+    - name: http
+      port: 9090
+      targetPort: http
+  selector:
+    app.kubernetes.io/instance: linkding
