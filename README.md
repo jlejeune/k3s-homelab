@@ -52,12 +52,7 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 │   │   ├── reloader/           # Auto-restart pods on ConfigMap/Secret changes
 │   │   └── system-upgrade/     # Automated K3s upgrades
 │   └── apps/                   # User-facing applications
-│       ├── home-automation/    # Home Assistant, Zigbee2MQTT, Mosquitto, ESPHome, Go2RTC, Code Server
-│       │   ├── ollama/         # Local LLM inference
-│       │   ├── open-webui/     # Web UI for Ollama
-│       │   ├── whisper/        # Speech-to-text
-│       │   ├── piper/          # Text-to-speech
-│       │   └── openwakeword/   # Wake word detection
+│       ├── home-automation/    # Home Assistant, Zigbee2MQTT, Mosquitto, ESPHome, Go2RTC, Code Server, Whisper, Piper, OpenWakeWord
 │       ├── immich/             # Self-hosted photo management (server + ML)
 │       ├── jellyfin/           # Media server
 │       ├── yamtrack/           # Movie/TV/anime/manga tracking
@@ -103,7 +98,7 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 | Category | Applications |
 |---|---|
 | **Home automation** | Home Assistant, Zigbee2MQTT, Mosquitto (MQTT broker), ESPHome, Go2RTC |
-| **AI / Voice** | Ollama (LLM), Open WebUI, Whisper (STT), Piper (TTS), OpenWakeWord |
+| **AI / Voice** | Whisper (STT), Piper (TTS), OpenWakeWord |
 | **Media** | Jellyfin (video), Immich (photos with machine learning), Yamtrack (movie/TV/anime/manga tracking) |
 | **Media automation** | Prowlarr, Radarr, Sonarr, Seerr, Plundrio, Calibre-Web-Automated |
 | **Productivity** | Joplin (notes), Mealie (recipes), Donetick (chores), Karakeep (bookmarks), FreshRSS (feeds), Nextcloud (files), Code Server (VS Code), Dawarich (location history) |
