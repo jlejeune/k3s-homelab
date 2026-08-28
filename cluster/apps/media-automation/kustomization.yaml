@@ -10,5 +10,4 @@ resources:
   - seerr
   - prowlarr
   - calibre-web-automated
-  - shelfmark
   - downloads-cleanup
