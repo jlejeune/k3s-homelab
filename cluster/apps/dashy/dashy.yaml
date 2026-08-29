@@ -59,13 +59,6 @@ data:
             displayData:
               showForKeycloakUsers:
                 groups: ["internal users", administrators]
-          - title: Yamtrack
-            icon: hl-yamtrack
-            url: https://yamtrack.{{SECRET_DOMAIN}}
-            statusCheckUrl: http://yamtrack.yamtrack.svc.cluster.local:8000
-            displayData:
-              showForKeycloakUsers:
-                groups: ["internal users", administrators]
           - title: Floppy
             icon: fas fa-film
             url: https://floppy.{{SECRET_DOMAIN}}

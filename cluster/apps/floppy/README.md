@@ -1,8 +1,7 @@
 # Floppy
 
 Self-hosted all-in-one media tracker (movies, TV, anime, books, games, music, podcasts) and
-Trakt alternative. Fork of [Yamtrack](../yamtrack/README.md) — deployed side by side to trial
-as a potential replacement, in a separate namespace and with its own SQLite database.
+Trakt alternative. Fork of Yamtrack, which it replaced after a trial period.
 
 | | |
 |---|---|
@@ -17,7 +16,3 @@ Not configured yet. `TMDB_API`, `TVDB_API_KEY`/`TVDB_PIN`, `MAL_API`, `IGDB_ID`/
 `STEAM_API_KEY`, `BGG_API_TOKEN`, `HARDCOVER_API`, `GOOGLE_BOOKS_API_KEY`, `COMICVINE_API`,
 `LASTFM_API_KEY` can be added to the `floppy` ConfigMap/Secret as needed per source.
 
-## Migrating from Yamtrack
-
-Floppy's import format is identical to Yamtrack's CSV export (Settings → Import). Export from
-Yamtrack, import into Floppy under Settings → Import.
