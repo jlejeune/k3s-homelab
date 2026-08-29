@@ -92,9 +92,10 @@ spec:
         app.kubernetes.io/instance: floppy
     spec:
       restartPolicy: Always
+      enableServiceLinks: false
       containers:
         - name: floppy
-          image: ghcr.io/dannyvfilms/floppy:26.8.13
+          image: ghcr.io/dannyvfilms/floppy:26.8.27
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
