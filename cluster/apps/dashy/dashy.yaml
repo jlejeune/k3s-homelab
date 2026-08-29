@@ -259,7 +259,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: dashy
-          image: lissy93/dashy:4.6.4
+          image: lissy93/dashy:4.6.5
           imagePullPolicy: IfNotPresent
           env:
             - name: PORT
