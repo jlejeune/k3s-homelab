@@ -67,9 +67,6 @@ dashboards:
       gnetId: 10229
       revision: 22
       datasource: Prometheus
-    prometheus-exporter-summary:
-      url: https://raw.githubusercontent.com/billimek/k8s-gitops/master/monitoring/grafana/dashboards/prometheus_exporter_summary.json
-      datasource: Prometheus
 sidecar:
   datasources:
     enabled: true
