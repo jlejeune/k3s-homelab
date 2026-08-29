@@ -55,7 +55,7 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 │       ├── home-automation/    # Home Assistant, Zigbee2MQTT, Mosquitto, ESPHome, Go2RTC, Code Server, Whisper, Piper, OpenWakeWord
 │       ├── immich/             # Self-hosted photo management (server + ML)
 │       ├── jellyfin/           # Media server
-│       ├── yamtrack/           # Movie/TV/anime/manga tracking
+│       ├── floppy/             # Movie/TV/anime/manga tracking
 │       ├── freshrss/           # RSS reader
 │       ├── joplin/             # Note-taking (with PostgreSQL)
 │       ├── linkding/           # Bookmark manager
@@ -99,7 +99,7 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 |---|---|
 | **Home automation** | Home Assistant, Zigbee2MQTT, Mosquitto (MQTT broker), ESPHome, Go2RTC |
 | **AI / Voice** | Whisper (STT), Piper (TTS), OpenWakeWord |
-| **Media** | Jellyfin (video), Immich (photos with machine learning), Yamtrack (movie/TV/anime/manga tracking) |
+| **Media** | Jellyfin (video), Immich (photos with machine learning), Floppy (movie/TV/anime/manga tracking) |
 | **Media automation** | Prowlarr, Radarr, Sonarr, Seerr, Plundrio, Calibre-Web-Automated |
 | **Productivity** | Joplin (notes), Mealie (recipes), Donetick (chores), Linkding (bookmarks), FreshRSS (feeds), Nextcloud (files), Code Server (VS Code), Dawarich (location history) |
 | **Networking** | Technitium (DNS), WireGuard (VPN), Traefik ingress routes |
