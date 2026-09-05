@@ -95,7 +95,7 @@ spec:
       enableServiceLinks: false
       containers:
         - name: floppy
-          image: ghcr.io/dannyvfilms/floppy:26.8.27
+          image: ghcr.io/dannyvfilms/floppy:26.9.3
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
