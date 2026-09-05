@@ -34,12 +34,14 @@ k3s_master_extra_args: >-
   --kube-controller-arg leader-elect-retry-period=10s
   --etcd-arg heartbeat-interval=500
   --etcd-arg election-timeout=5000
+  --etcd-arg quota-backend-bytes=8589934592
   --secrets-encryption
   --kube-apiserver-arg audit-policy-file=/var/lib/rancher/k3s/server/audit-policy.yaml
   --kube-apiserver-arg audit-log-path=/var/lib/rancher/k3s/server/logs/audit.log
   --kube-apiserver-arg audit-log-maxage=30
   --kube-apiserver-arg audit-log-maxbackup=10
   --kube-apiserver-arg audit-log-maxsize=100
+  --embedded-registry
 
 # k9s
 k9s_version: v0.51.0
