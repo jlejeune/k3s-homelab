@@ -1,0 +1,114 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zerobyte-pvc
+  namespace: zerobyte
+spec:
+  storageClassName: longhorn
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zerobyte
+  namespace: zerobyte
+  annotations:
+    reloader.stakater.com/match: "true"
+data:
+  BASE_URL: "https://backup.{{SECRET_DOMAIN}}"
+  TZ: "{{TZ}}"
+  TRUST_PROXY: "true"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zerobyte
+  namespace: zerobyte
+  labels:
+    app.kubernetes.io/instance: zerobyte
+  annotations:
+    reloader.stakater.com/search: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: zerobyte
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: zerobyte
+    spec:
+      restartPolicy: Always
+      enableServiceLinks: false
+      containers:
+        - name: zerobyte
+          image: ghcr.io/nicotsx/zerobyte:v0.42
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            capabilities:
+              add:
+                - SYS_ADMIN
+          ports:
+            - name: http
+              containerPort: 4096
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: zerobyte
+            - secretRef:
+                name: zerobyte
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
+          volumeMounts:
+            - mountPath: /var/lib/zerobyte
+              name: zerobyte-vol
+            - mountPath: /dev/fuse
+              name: fuse
+            - mountPath: /mnt/nas
+              name: nas
+              readOnly: true
+      volumes:
+        - name: zerobyte-vol
+          persistentVolumeClaim:
+            claimName: zerobyte-pvc
+        - name: fuse
+          hostPath:
+            path: /dev/fuse
+            type: CharDevice
+        - name: nas
+          nfs:
+            server: {{NAS_ADDRESS}}
+            path: /volume1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zerobyte
+  namespace: zerobyte
+spec:
+  ports:
+    - name: http
+      port: 4096
+      targetPort: http
+  selector:
+    app.kubernetes.io/instance: zerobyte

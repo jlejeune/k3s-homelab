@@ -59,6 +59,7 @@ deployments:
   - path: stirling-pdf
   - path: thelounge
   - path: linkding
+  - path: zerobyte
   - path: dawarich
   - path: supabase
   - include: home-automation

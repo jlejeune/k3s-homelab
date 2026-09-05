@@ -219,6 +219,13 @@ data:
             displayData:
               showForKeycloakUsers:
                 groups: ["internal users", administrators]
+          - title: Zerobyte
+            icon: fas fa-database
+            url: https://backup.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://zerobyte.zerobyte.svc.cluster.local:4096
+            displayData:
+              showForKeycloakUsers:
+                groups: ["internal users", administrators]
 
       - name: Administration
         icon: fas fa-shield-halved

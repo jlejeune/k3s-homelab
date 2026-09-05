@@ -421,6 +421,11 @@ data:
         - domain: pdf.{{SECRET_DOMAIN}}
           policy: one_factor
 
+        - domain: backup.{{SECRET_DOMAIN}}
+          policy: one_factor
+          networks:
+            - home
+
         - domain: bookmarks.{{SECRET_DOMAIN}}
           policy: bypass
 

@@ -73,7 +73,8 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 │       ├── smtp-relay/         # Postfix SMTP relay
 │       ├── stirling-pdf/       # PDF tools with Authelia SSO
 │       ├── supabase/           # Postgres/BaaS platform (Edge Functions)
-│       └── thelounge/          # Web IRC client
+│       ├── thelounge/          # Web IRC client
+│       └── zerobyte/           # Encrypted backup automation (Restic-based)
 │
 ├── .sops.yaml                  # SOPS encryption rules (Age key)
 ├── .pre-commit-config.yaml     # Pre-commit hooks (yamllint, sops, formatting)
@@ -104,7 +105,7 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 | **Productivity** | Joplin (notes), Mealie (recipes), Donetick (chores), Linkding (bookmarks), FreshRSS (feeds), Nextcloud (files), Code Server (VS Code), Dawarich (location history) |
 | **Networking** | Technitium (DNS), WireGuard (VPN), Traefik ingress routes |
 | **Auth / Identity** | Authelia (SSO with forward auth), OpenLDAP + LDAP Account Manager |
-| **Utilities** | Plik (file sharing), Stirling PDF, Supabase (BaaS), The Lounge (IRC), SMTP Relay (Postfix), Dashy (dashboard), RustDesk (remote desktop) |
+| **Utilities** | Plik (file sharing), Stirling PDF, Supabase (BaaS), The Lounge (IRC), SMTP Relay (Postfix), Dashy (dashboard), RustDesk (remote desktop), Zerobyte (encrypted backups) |
 
 ## Security
 
