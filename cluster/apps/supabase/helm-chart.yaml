@@ -2,6 +2,6 @@
 helmChart:
   repo: https://supabase-community.github.io/supabase-kubernetes
   chartName: supabase
-  chartVersion: "0.7.2"
+  chartVersion: "0.8.0"
   releaseName: supabase
   namespace: supabase
