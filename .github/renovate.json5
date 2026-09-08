@@ -1,62 +1,78 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    "docker:enableMajor",
-    ":disableRateLimiting",
-    ":dependencyDashboard",
-    ":automergeDisabled",
-    ":semanticCommits",
-    "github>jlejeune/k3s-homelab//.github/renovate/labels.json5",
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:recommended',
+    'docker:enableMajor',
+    ':disableRateLimiting',
+    ':dependencyDashboard',
+    ':automergeDisabled',
+    ':semanticCommits',
+    'github>jlejeune/k3s-homelab//.github/renovate/labels.json5',
   ],
-  "dependencyDashboard": true,
-  "dependencyDashboardTitle": "Renovate Dashboard 🤖",
-  "suppressNotifications": ["prIgnoreNotification"],
-  "packageRules": [
+  dependencyDashboard: true,
+  dependencyDashboardTitle: 'Renovate Dashboard 🤖',
+  suppressNotifications: [
+    'prIgnoreNotification',
+  ],
+  packageRules: [
     {
-      "matchPackageNames": ["lldap/lldap"],
-      "versioning": "regex:^(?<major>\\d{4})-(?<minor>\\d{2})-(?<patch>\\d{2})$"
+      matchPackageNames: [
+        'lldap/lldap',
+      ],
+      versioning: 'regex:^(?<major>\\d{4})-(?<minor>\\d{2})-(?<patch>\\d{2})$',
     },
     {
-      "matchPackageNames": ["/^linuxserver//"],
-      "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(\\.(?<build>\\d+))?-ls(?<revision>\\d+)$"
-    }
+      matchPackageNames: [
+        '/^linuxserver//',
+      ],
+      versioning: 'regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(\\.(?<build>\\d+))?-ls(?<revision>\\d+)$',
+    },
   ],
-  "registryAliases": {
-    "lscr.io": "ghcr.io"
+  registryAliases: {
+    'lscr.io': 'ghcr.io',
   },
-  "rebaseWhen": "conflicted",
-  "schedule": ["every saturday"],
-  "flux": {
-    "fileMatch": ["cluster/.+\\.ya?ml$"]
+  rebaseWhen: 'conflicted',
+  schedule: [
+    'on saturday',
+  ],
+  flux: {
+    managerFilePatterns: [
+      '/cluster/.+\\.ya?ml$/',
+    ],
   },
-  "helm-values": {
-    "fileMatch": ["cluster/.+\\.ya?ml$"]
+  'helm-values': {
+    managerFilePatterns: [
+      '/cluster/.+\\.ya?ml$/',
+    ],
   },
-  "kubernetes": {
-    "fileMatch": [
-      "ansible/.+\\.(ya?ml(\\.j2)?|j2)$",
-      "cluster/.+\\.ya?ml$"
-    ]
+  kubernetes: {
+    managerFilePatterns: [
+      '/ansible/.+\\.(ya?ml(\\.j2)?|j2)$/',
+      '/cluster/.+\\.ya?ml$/',
+    ],
   },
-  "customManagers": [
+  customManagers: [
     {
       // Kluctl helmChart with Helm repo (repo: + chartName: + chartVersion:)
-      "customType": "regex",
-      "fileMatch": ["cluster/.+/helm-chart\\.ya?ml$"],
-      "matchStrings": [
-        "repo:\\s*(?<registryUrl>[^\\n]+)\\n\\s+chartName:\\s*(?<depName>[^\\n]+)\\n\\s+chartVersion:\\s*[\"']?(?<currentValue>[^\\n\"']+)"
+      customType: 'regex',
+      managerFilePatterns: [
+        '/cluster/.+/helm-chart\\.ya?ml$/',
       ],
-      "datasourceTemplate": "helm"
+      matchStrings: [
+        'repo:\\s*(?<registryUrl>[^\\n]+)\\n\\s+chartName:\\s*(?<depName>[^\\n]+)\\n\\s+chartVersion:\\s*["\']?(?<currentValue>[^\\n"\']+)',
+      ],
+      datasourceTemplate: 'helm',
     },
     {
       // Kluctl helmChart with Git tag (git.ref.tag:)
-      "customType": "regex",
-      "fileMatch": ["cluster/.+/helm-chart\\.ya?ml$"],
-      "matchStrings": [
-        "url:\\s*https://github\\.com/(?<depName>[^\\n]+)\\n[\\s\\S]+?tag:\\s*(?<currentValue>[^\\n]+)"
+      customType: 'regex',
+      managerFilePatterns: [
+        '/cluster/.+/helm-chart\\.ya?ml$/',
       ],
-      "datasourceTemplate": "github-releases"
-    }
-  ]
+      matchStrings: [
+        'url:\\s*https://github\\.com/(?<depName>[^\\n]+)\\n[\\s\\S]+?tag:\\s*(?<currentValue>[^\\n]+)',
+      ],
+      datasourceTemplate: 'github-releases',
+    },
+  ],
 }
