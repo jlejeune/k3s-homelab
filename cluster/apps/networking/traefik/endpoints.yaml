@@ -16,21 +16,3 @@ ports:
   - port: 5001
     appProtocol: http
     protocol: TCP
----
-apiVersion: discovery.k8s.io/v1
-kind: EndpointSlice
-metadata:
-  name: webdav
-  namespace: networking
-  labels:
-    kubernetes.io/service-name: webdav
-addressType: IPv4
-endpoints:
-  - addresses:
-      - {{NAS_ADDRESS}}
-    conditions:
-      ready: true
-ports:
-  - port: 5006
-    appProtocol: http
-    protocol: TCP
