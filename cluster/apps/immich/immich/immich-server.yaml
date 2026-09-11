@@ -142,7 +142,7 @@ spec:
               sleep 2 ; done
       containers:
         - name: immich
-          image: ghcr.io/immich-app/immich-server:v3.1.0
+          image: ghcr.io/immich-app/immich-server:v3.2.0
           imagePullPolicy: IfNotPresent
           env:
             - name: PUID
