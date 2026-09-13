@@ -13,7 +13,6 @@ Nodes are named after Lord of the Rings characters.
 | merry | Worker | Raspberry Pi 4 (4 GB) | aarch64 | 192.168.1.11 |
 | pippin | Worker | Raspberry Pi 4 (4 GB) | aarch64 | 192.168.1.12 |
 | gimli | Worker | Raspberry Pi 4 (4 GB) | aarch64 | 192.168.1.13 |
-| frodon | Worker | Raspberry Pi 4 (4 GB) | aarch64 | 192.168.1.15 |
 | galadriel | Worker | BMAX B8 A Pro (Mini PC) | x86_64 | 192.168.1.16 |
 
 The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mixed-architecture setup (x86_64 + aarch64).

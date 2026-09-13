@@ -11,7 +11,7 @@ Node-by-node upgrade guide for the k3s homelab cluster. **Upgrade workers first,
 ## Recommended upgrade order
 
 ```
-sam → merry → pippin → gimli → frodon → galadriel → theoden (master last)
+sam → merry → pippin → gimli → galadriel → theoden (master last)
 ```
 
 ---
