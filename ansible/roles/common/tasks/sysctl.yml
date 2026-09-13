@@ -1,0 +1,27 @@
+---
+# Turn a kernel hang/soft lockup into a panic, then reboot automatically.
+# Without this, a blocked thread (hung task) or a lockup just logs a warning
+# and the machine stays frozen indefinitely (theoden incident, 2026-09-12).
+- name: Panic on hung task
+  ansible.posix.sysctl:
+    name: kernel.hung_task_panic
+    value: "1"
+    sysctl_file: /etc/sysctl.d/99-hang-panic.conf
+    state: present
+  become: true
+
+- name: Panic on soft lockup
+  ansible.posix.sysctl:
+    name: kernel.softlockup_panic
+    value: "1"
+    sysctl_file: /etc/sysctl.d/99-hang-panic.conf
+    state: present
+  become: true
+
+- name: Reboot 10s after a kernel panic
+  ansible.posix.sysctl:
+    name: kernel.panic
+    value: "10"
+    sysctl_file: /etc/sysctl.d/99-hang-panic.conf
+    state: present
+  become: true

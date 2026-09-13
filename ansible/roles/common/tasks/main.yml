@@ -59,3 +59,10 @@
     apply:
       tags: journald
   tags: journald
+
+- include_tasks:
+    file: sysctl.yml
+    apply:
+      tags: sysctl
+  tags: sysctl
+  when: ansible_architecture == 'x86_64'

@@ -35,6 +35,7 @@
     - ntpsec-ntpdate
     - rsync
     - screen
+    - smartmontools
     - tmux
     - tree
     - tzdata
