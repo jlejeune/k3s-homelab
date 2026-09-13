@@ -1,4 +1,8 @@
 ---
+- name: Set k9s architecture
+  set_fact:
+    k9s_arch: "{{ 'arm64' if ansible_architecture == 'aarch64' else 'amd64' }}"
+
 - name: Delete k9s if already present
   ansible.builtin.file:
     path: /usr/local/bin/k9s
@@ -6,12 +10,12 @@
 
 - name: Download k9s archive
   ansible.builtin.get_url:
-    url: "https://github.com/derailed/k9s/releases/download/{{ k9s_version }}/k9s_Linux_arm64.tar.gz"
+    url: "https://github.com/derailed/k9s/releases/download/{{ k9s_version }}/k9s_Linux_{{ k9s_arch }}.tar.gz"
     dest: /tmp
 
 - name: Extract k9s archive
   ansible.builtin.unarchive:
-    src: "/tmp/k9s_Linux_arm64.tar.gz"
+    src: "/tmp/k9s_Linux_{{ k9s_arch }}.tar.gz"
     dest: /tmp
     remote_src: yes
 

@@ -1,4 +1,8 @@
 ---
+- name: Set helm architecture
+  set_fact:
+    helm_arch: "{{ 'arm64' if ansible_architecture == 'aarch64' else 'amd64' }}"
+
 - name: Delete helm if already present
   ansible.builtin.file:
     path: /usr/local/bin/helm
@@ -6,17 +10,17 @@
 
 - name: Download helm archive
   ansible.builtin.get_url:
-    url: "https://get.helm.sh/helm-{{ helm_version }}-linux-arm64.tar.gz"
+    url: "https://get.helm.sh/helm-{{ helm_version }}-linux-{{ helm_arch }}.tar.gz"
     dest: /tmp
 
 - name: Extract helm archive
   ansible.builtin.unarchive:
-    src: "/tmp/helm-{{ helm_version }}-linux-arm64.tar.gz"
+    src: "/tmp/helm-{{ helm_version }}-linux-{{ helm_arch }}.tar.gz"
     dest: /tmp
     remote_src: yes
 
 - name: Move helm binary to /usr/local/bin/ folder
-  command: mv /tmp/linux-arm64/helm /usr/local/bin/helm
+  command: "mv /tmp/linux-{{ helm_arch }}/helm /usr/local/bin/helm"
 
 - name: Change helm ownership, group and mode
   ansible.builtin.file:
