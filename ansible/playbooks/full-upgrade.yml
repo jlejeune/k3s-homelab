@@ -1,0 +1,22 @@
+---
+- name: Full upgrade with conditional reboot
+  hosts: k3s_cluster
+  become: yes
+  serial: 1
+  tasks:
+    - name: Update apt cache and full-upgrade packages
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: full
+        autoremove: yes
+
+    - name: Check if a reboot is required
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+      register: reboot_required_file
+
+    - name: Reboot if required
+      ansible.builtin.reboot:
+        msg: "Reboot triggered by Ansible after apt full-upgrade"
+        reboot_timeout: 300
+      when: reboot_required_file.stat.exists
