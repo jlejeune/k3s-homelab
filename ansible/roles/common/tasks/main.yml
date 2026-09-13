@@ -49,6 +49,12 @@
   tags: fail2ban
 
 - include_tasks:
+    file: mail_relay.yml
+    apply:
+      tags: mail_relay
+  tags: mail_relay
+
+- include_tasks:
     file: ssh.yml
     apply:
       tags: ssh

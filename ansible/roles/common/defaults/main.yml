@@ -13,3 +13,6 @@ boot_config:
   - "hdmi_drive=1"
   - "config_hdmi_boost=5"
 plik_version: "1.4.2"
+mail_relay_host: "192.168.1.203"
+mail_relay_port: 25
+mail_domain: "jlejeune.home"

@@ -15,6 +15,11 @@
     name: ssh
     state: restarted
 
+- name: restart postfix
+  service:
+    name: postfix
+    state: restarted
+
 - name: reconfigure locales
   command: dpkg-reconfigure -f noninteractive locales
 
