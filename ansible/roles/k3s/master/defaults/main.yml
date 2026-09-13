@@ -24,7 +24,6 @@ k3s_master_extra_args: >-
   {{ '--node-taint node-role.kubernetes.io/control-plane=true:PreferNoSchedule' if k3s_master_taint else '' | trim }}
   --disable servicelb
   --disable traefik
-  --write-kubeconfig-mode 644
   --kube-apiserver-arg default-not-ready-toleration-seconds=30
   --kube-apiserver-arg default-unreachable-toleration-seconds=30
   --kube-controller-arg node-monitor-period=20s
