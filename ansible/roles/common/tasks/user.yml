@@ -106,6 +106,7 @@
   become_user: jlejeune
   environment:
     HOME: /home/jlejeune
+  no_log: true
 
 - name: Update and apply chezmoi dotfiles
   ansible.builtin.command:
