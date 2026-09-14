@@ -55,7 +55,7 @@ spec:
       enableServiceLinks: false
       containers:
         - name: linkding
-          image: ghcr.io/sissbruecker/linkding:1.46.2
+          image: ghcr.io/sissbruecker/linkding:1.47.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
