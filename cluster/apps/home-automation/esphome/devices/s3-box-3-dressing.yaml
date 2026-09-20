@@ -1,0 +1,19 @@
+---
+substitutions:
+  name: voice-assistant-dressing
+  friendly_name: "Assistant vocal Dressing"
+
+packages:
+  esp32-s3-box-3: github://esphome/wake-word-voice-assistants/esp32-s3-box-3/esp32-s3-box-3.yaml@main
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+api:
+  encryption:
+    key: !secret voice_assistant_dressing_api_key
+
+ota:
+  - id: !extend ota_esphome
+    password: !secret voice_assistant_dressing_ota_password
