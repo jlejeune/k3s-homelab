@@ -50,7 +50,7 @@ spec:
       enableServiceLinks: false
       containers:
         - name: zerobyte
-          image: ghcr.io/nicotsx/zerobyte:v0.42
+          image: ghcr.io/nicotsx/zerobyte:v0.43
           imagePullPolicy: IfNotPresent
           securityContext:
             capabilities:
