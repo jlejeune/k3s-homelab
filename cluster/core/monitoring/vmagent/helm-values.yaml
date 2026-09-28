@@ -14,7 +14,23 @@ resources:
     cpu: 500m
     memory: 512Mi
 
+extraVolumes:
+  - name: home-assistant-prometheus
+    secret:
+      secretName: home-assistant-prometheus
+
+extraVolumeMounts:
+  - name: home-assistant-prometheus
+    mountPath: /etc/secrets/home-assistant
+    readOnly: true
+
 extraScrapeConfigs:
+  - job_name: home-assistant
+    bearer_token_file: /etc/secrets/home-assistant/TOKEN
+    static_configs:
+      - targets:
+          - home-assistant.home-automation.svc.cluster.local
+    metrics_path: /api/prometheus
   - job_name: node-exporter
     kubernetes_sd_configs:
       - role: endpoints

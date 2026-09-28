@@ -1,0 +1,147 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-ruben
+  namespace: home-automation
+  labels:
+    grafana_dashboard: "1"
+data:
+  ruben.json: |
+    {
+      "title": "Poêle Ruben",
+      "uid": "ruben-pellet-stove",
+      "timezone": "browser",
+      "schemaVersion": 39,
+      "version": 1,
+      "refresh": "30s",
+      "time": { "from": "now-24h", "to": "now" },
+      "panels": [
+        {
+          "type": "stat",
+          "title": "État",
+          "gridPos": { "h": 4, "w": 4, "x": 0, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "targets": [
+            {
+              "expr": "ha_climate_action{entity=\"climate.ruben\"} == 1",
+              "legendFormat": "{{ '{{action}}' }}",
+              "refId": "A"
+            }
+          ],
+          "options": {
+            "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+            "textMode": "name",
+            "colorMode": "background",
+            "graphMode": "none"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "mappings": [
+                { "type": "value", "options": { "heating": { "color": "orange", "index": 0 } } },
+                { "type": "value", "options": { "idle": { "color": "green", "index": 1 } } },
+                { "type": "value", "options": { "off": { "color": "dark-gray", "index": 2 } } }
+              ]
+            }
+          }
+        },
+        {
+          "type": "stat",
+          "title": "Consigne",
+          "gridPos": { "h": 4, "w": 4, "x": 4, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "targets": [
+            { "expr": "ha_climate_target_temperature_celsius{entity=\"climate.ruben\"}", "refId": "A" }
+          ],
+          "fieldConfig": { "defaults": { "unit": "celsius", "decimals": 1 } }
+        },
+        {
+          "type": "stat",
+          "title": "Température ambiante",
+          "gridPos": { "h": 4, "w": 4, "x": 8, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "targets": [
+            { "expr": "ha_climate_current_temperature_celsius{entity=\"climate.ruben\"}", "refId": "A" }
+          ],
+          "fieldConfig": { "defaults": { "unit": "celsius", "decimals": 1 } }
+        },
+        {
+          "type": "stat",
+          "title": "Niveau pellets",
+          "gridPos": { "h": 4, "w": 4, "x": 12, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "targets": [
+            { "expr": "ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}", "refId": "A" }
+          ],
+          "fieldConfig": { "defaults": { "unit": "kg", "decimals": 1, "thresholds": { "steps": [
+            { "color": "red", "value": null },
+            { "color": "orange", "value": 3 },
+            { "color": "green", "value": 8 }
+          ] } } }
+        },
+        {
+          "type": "stat",
+          "title": "Puissance de combustion",
+          "gridPos": { "h": 4, "w": 4, "x": 16, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "targets": [
+            { "expr": "ha_number_state{entity=\"number.ruben_puissance_de_combustion\"}", "refId": "A" }
+          ],
+          "fieldConfig": { "defaults": { "unit": "short", "decimals": 0, "max": 5, "min": 0 } }
+        },
+        {
+          "type": "stat",
+          "title": "Disponibilité",
+          "gridPos": { "h": 4, "w": 4, "x": 20, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "targets": [
+            { "expr": "ha_entity_available{entity=\"climate.ruben\"}", "refId": "A" }
+          ],
+          "options": { "textMode": "value", "colorMode": "background" },
+          "fieldConfig": { "defaults": { "mappings": [
+            { "type": "value", "options": { "1": { "text": "OK", "color": "green" } } },
+            { "type": "value", "options": { "0": { "text": "KO", "color": "red" } } }
+          ] } }
+        },
+        {
+          "type": "timeseries",
+          "title": "Températures",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "targets": [
+            { "expr": "ha_climate_current_temperature_celsius{entity=\"climate.ruben\"}", "legendFormat": "Ambiante", "refId": "A" },
+            { "expr": "ha_climate_target_temperature_celsius{entity=\"climate.ruben\"}", "legendFormat": "Consigne", "refId": "B" }
+          ],
+          "fieldConfig": { "defaults": { "unit": "celsius" } }
+        },
+        {
+          "type": "timeseries",
+          "title": "Température de combustion du bois",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "targets": [
+            { "expr": "ha_sensor_temperature_celsius{entity=\"sensor.ruben_temperature_de_combustion_du_bois\"}", "legendFormat": "Combustion", "refId": "A" }
+          ],
+          "fieldConfig": { "defaults": { "unit": "celsius" } }
+        },
+        {
+          "type": "state-timeline",
+          "title": "Historique état",
+          "gridPos": { "h": 6, "w": 24, "x": 0, "y": 12 },
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "targets": [
+            { "expr": "ha_climate_action{entity=\"climate.ruben\"} == 1", "legendFormat": "{{ '{{action}}' }}", "refId": "A" }
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "Niveau pellets (kg)",
+          "gridPos": { "h": 6, "w": 24, "x": 0, "y": 18 },
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "targets": [
+            { "expr": "ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}", "legendFormat": "Pellets", "refId": "A" }
+          ],
+          "fieldConfig": { "defaults": { "unit": "kg" } }
+        }
+      ]
+    }
