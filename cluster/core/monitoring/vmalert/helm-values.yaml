@@ -60,7 +60,7 @@ server:
 
             - alert: NodeFilesystemReadOnly
               expr: >
-                node_filesystem_readonly{fstype!~"tmpfs|overlay|squashfs"} == 1
+                node_filesystem_readonly{fstype!~"tmpfs|ramfs|overlay|squashfs", mountpoint!~"/run/credentials/.*"} == 1
               for: 1m
               labels:
                 severity: critical
