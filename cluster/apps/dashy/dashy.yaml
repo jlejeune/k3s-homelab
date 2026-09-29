@@ -190,6 +190,14 @@ data:
             icon: hl-victoriametrics
             url: https://victoria-metrics.{{SECRET_DOMAIN}}
             statusCheckUrl: http://victoria-metrics-single-server.monitoring.svc.cluster.local:8428
+          - title: vmalert
+            icon: hl-victoriametrics
+            url: https://vmalert.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://vmalert-victoria-metrics-alert-server.monitoring.svc.cluster.local:8880
+          - title: Alertmanager
+            icon: hl-alertmanager
+            url: https://alertmanager.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://alertmanager.monitoring.svc.cluster.local:9093
 
       - name: Networking
         icon: fas fa-network-wired

@@ -363,6 +363,18 @@ data:
 
         - domain: victoria-metrics.{{SECRET_DOMAIN}}
           policy: one_factor
+          networks:
+            - home
+
+        - domain: vmalert.{{SECRET_DOMAIN}}
+          policy: one_factor
+          networks:
+            - home
+
+        - domain: alertmanager.{{SECRET_DOMAIN}}
+          policy: one_factor
+          networks:
+            - home
 
         - domain: traefik.{{SECRET_DOMAIN}}
           policy: bypass
@@ -371,6 +383,8 @@ data:
 
         - domain: grafana.{{SECRET_DOMAIN}}
           policy: bypass
+          networks:
+            - home
 
         - domain: technitium.{{SECRET_DOMAIN}}
           policy: bypass
