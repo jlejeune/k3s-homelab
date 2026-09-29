@@ -39,6 +39,16 @@ server:
                 summary: {% raw %}"RAM élevée sur {{ $labels.instance }}"{% endraw %}
                 description: {% raw %}"Utilisation mémoire: {{ $value | humanize }}% depuis 10 minutes."{% endraw %}
 
+            - alert: NodeDiskFillingUp
+              expr: >
+                (node_filesystem_avail_bytes{fstype!~"tmpfs|ramfs|overlay|squashfs", mountpoint!~"/var/lib/kubelet/.*|/run/credentials/.*"} / node_filesystem_size_bytes{fstype!~"tmpfs|ramfs|overlay|squashfs", mountpoint!~"/var/lib/kubelet/.*|/run/credentials/.*"}) * 100 < 20
+              for: 30m
+              labels:
+                severity: warning
+              annotations:
+                summary: {% raw %}"Espace disque bas sur {{ $labels.instance }}"{% endraw %}
+                description: {% raw %}"Il reste {{ $value | humanize }}% d'espace libre sur {{ $labels.mountpoint }} depuis 30 minutes. Vérifier les images containerd inutilisées (crictl rmi --prune) et les replicas Longhorn."{% endraw %}
+
             - alert: NodeDiskLow
               expr: >
                 (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"}) * 100 < 10
