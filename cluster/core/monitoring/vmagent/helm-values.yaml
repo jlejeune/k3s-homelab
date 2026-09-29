@@ -58,9 +58,20 @@ extraScrapeConfigs:
           - kube-state-metrics.monitoring.svc.cluster.local:8080
     metrics_path: /metrics
   - job_name: longhorn
-    static_configs:
-      - targets:
-          - longhorn-backend.storage.svc.cluster.local:9500
+    kubernetes_sd_configs:
+      - role: endpoints
+        namespaces:
+          names:
+            - storage
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_endpoints_name]
+        regex: longhorn-backend
+        action: keep
+      - source_labels: [__address__]
+        regex: ".+:9500"
+        action: keep
+      - source_labels: [__meta_kubernetes_pod_node_name]
+        target_label: nodename
     metrics_path: /metrics
     scrape_timeout: 30s
     max_scrape_size: 100MiB
