@@ -72,3 +72,9 @@
       tags: sysctl
   tags: sysctl
   when: ansible_architecture == 'x86_64'
+
+- include_tasks:
+    file: inotify.yml
+    apply:
+      tags: inotify
+  tags: inotify

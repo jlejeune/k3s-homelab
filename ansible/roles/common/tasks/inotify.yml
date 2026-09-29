@@ -1,0 +1,21 @@
+---
+# Raise inotify limits. The Ubuntu default of 128 instances per user is
+# exhausted when many pods land on one node (e.g. after another node was
+# down): .NET/Go apps then crash with "The configured user limit (128) on
+# the number of inotify instances has been reached" (technitium incident,
+# 2026-09-29).
+- name: Raise inotify max user instances
+  ansible.posix.sysctl:
+    name: fs.inotify.max_user_instances
+    value: "1024"
+    sysctl_file: /etc/sysctl.d/99-inotify.conf
+    state: present
+  become: true
+
+- name: Raise inotify max user watches
+  ansible.posix.sysctl:
+    name: fs.inotify.max_user_watches
+    value: "524288"
+    sysctl_file: /etc/sysctl.d/99-inotify.conf
+    state: present
+  become: true
