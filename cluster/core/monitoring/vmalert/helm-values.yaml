@@ -134,7 +134,7 @@ server:
           rules:
             - alert: LonghornVolumeRobustnessDegraded
               expr: >
-                longhorn_volume_robustness == 2
+                longhorn_volume_robustness{state="degraded"} == 1
               for: 5m
               labels:
                 severity: warning
@@ -144,7 +144,7 @@ server:
 
             - alert: LonghornVolumeRobustnessFaulted
               expr: >
-                longhorn_volume_robustness == 3
+                longhorn_volume_robustness{state="faulted"} == 1
               for: 0m
               labels:
                 severity: critical
