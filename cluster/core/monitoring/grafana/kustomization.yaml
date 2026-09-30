@@ -4,3 +4,15 @@ kind: Kustomization
 resources:
   - secret.sops.yaml
   - helm-rendered.yaml
+# Longhorn 1.13 turned longhorn_volume_state/robustness into one series per
+# state (state="attached", value 0/1). Dashboard 13032 rev 6 still compares
+# numeric values, so a patched copy is loaded by the Grafana sidecar instead.
+configMapGenerator:
+  - name: grafana-dashboard-longhorn
+    namespace: monitoring
+    files:
+      - longhorn.json=dashboards/longhorn.json
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1"
