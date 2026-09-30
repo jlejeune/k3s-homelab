@@ -2,6 +2,12 @@
 metrics:
   serviceMonitor:
     enabled: false
+networkPolicies:
+  # 1.12.1 enables internal NetworkPolicies by default, which block
+  # vmagent scraping and can break CSI attach/detach on k3s
+  # (longhorn/longhorn#13740, #13947).
+  # Revisit with 1.12.2+ (metricsScrapeSources).
+  restrictInternalTraffic: false
 persistence:
   defaultClass: false
   defaultClassReplicaCount: "2"
