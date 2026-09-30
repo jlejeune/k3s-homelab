@@ -130,6 +130,62 @@ server:
                 summary: {% raw %}"Deployment {{ $labels.namespace }}/{{ $labels.deployment }} dégradé"{% endraw %}
                 description: {% raw %}"{{ $value }} replica(s) indisponible(s) depuis 15 minutes."{% endraw %}
 
+        - name: control-plane.rules
+          rules:
+            - alert: KubeAPIServerDown
+              expr: >
+                up{job="kubernetes-apiservers"} == 0
+              for: 3m
+              labels:
+                severity: critical
+              annotations:
+                summary: {% raw %}"API server injoignable ({{ $labels.instance }})"{% endraw %}
+                description: {% raw %}"Le scrape de l'API server échoue depuis 3 minutes."{% endraw %}
+
+            - alert: KubeAPIServerLatencyHigh
+              expr: >
+                histogram_quantile(0.99, sum by (le, verb) (rate(apiserver_request_duration_seconds_bucket{job="kubernetes-apiservers", verb!~"LIST|WATCH|CONNECT"}[5m])))
+                > 1
+                and
+                sum by (verb) (rate(apiserver_request_duration_seconds_count{job="kubernetes-apiservers", verb!~"LIST|WATCH|CONNECT"}[5m])) > 0.1
+              for: 10m
+              labels:
+                severity: warning
+              annotations:
+                summary: {% raw %}"Latence élevée de l'API server ({{ $labels.verb }})"{% endraw %}
+                description: {% raw %}"Le p99 des requêtes {{ $labels.verb }} est de {{ $value | humanizeDuration }} depuis 10 minutes."{% endraw %}
+
+            - alert: KubeAPIServerListLatencyHigh
+              expr: >
+                histogram_quantile(0.99, sum by (le) (rate(apiserver_request_duration_seconds_bucket{job="kubernetes-apiservers", verb="LIST"}[5m]))) > 5
+              for: 10m
+              labels:
+                severity: warning
+              annotations:
+                summary: {% raw %}"Latence élevée des LIST de l'API server"{% endraw %}
+                description: {% raw %}"Le p99 des requêtes LIST est de {{ $value | humanizeDuration }} depuis 10 minutes."{% endraw %}
+
+            - alert: KubeAPIServerErrors
+              expr: >
+                sum(rate(apiserver_request_total{job="kubernetes-apiservers", code=~"5.."}[5m]))
+                / sum(rate(apiserver_request_total{job="kubernetes-apiservers"}[5m])) * 100 > 5
+              for: 10m
+              labels:
+                severity: warning
+              annotations:
+                summary: {% raw %}"Erreurs 5xx sur l'API server"{% endraw %}
+                description: {% raw %}"{{ $value | humanize }}% des requêtes de l'API server échouent en 5xx depuis 10 minutes."{% endraw %}
+
+            - alert: KubeEtcdRequestsSlow
+              expr: >
+                histogram_quantile(0.99, sum by (le, operation) (rate(etcd_request_duration_seconds_bucket{job="kubernetes-apiservers"}[5m]))) > 0.5
+              for: 10m
+              labels:
+                severity: warning
+              annotations:
+                summary: {% raw %}"etcd lent vu depuis l'API server ({{ $labels.operation }})"{% endraw %}
+                description: {% raw %}"Le p99 des opérations etcd {{ $labels.operation }} est de {{ $value | humanizeDuration }} depuis 10 minutes."{% endraw %}
+
         - name: longhorn.rules
           rules:
             - alert: LonghornVolumeRobustnessDegraded
