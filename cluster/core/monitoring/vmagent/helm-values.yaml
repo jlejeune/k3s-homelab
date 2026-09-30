@@ -1,6 +1,16 @@
 ---
 remoteWrite:
   - url: http://victoria-metrics-single-server.monitoring.svc.cluster.local:8428/api/v1/write
+    urlRelabelConfig:
+      # K3s also serves the control-plane metrics on the server node's kubelet
+      # endpoint: keep only the copy scraped from the apiserver itself
+      - source_labels: [job, __name__]
+        regex: "kubernetes-nodes;(apiserver|etcd)_.*"
+        action: drop
+      # Redundant with apiserver_request_duration_seconds_bucket
+      - source_labels: [__name__]
+        regex: apiserver_request_sli_duration_seconds_bucket
+        action: drop
 
 rbac:
   create: true
