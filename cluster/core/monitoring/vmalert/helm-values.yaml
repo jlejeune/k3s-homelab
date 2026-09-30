@@ -78,6 +78,26 @@ server:
                 summary: {% raw %}"Filesystem en lecture seule sur {{ $labels.instance }}"{% endraw %}
                 description: {% raw %}"{{ $labels.mountpoint }} est monté en read-only sur {{ $labels.instance }}."{% endraw %}
 
+            - alert: NodeContainerMetricsMissing
+              expr: >
+                (
+                  count by (instance) (container_fs_usage_bytes{job="kubernetes-nodes-cadvisor"})
+                  / on (instance)
+                  label_replace(count by (node) ((kube_pod_status_phase{phase="Running"} == 1) * on (namespace, pod) group_left (node) kube_pod_info), "instance", "$1", "node", "(.+)")
+                ) < 2
+                or
+                (
+                  label_replace(count by (node) ((kube_pod_status_phase{phase="Running"} == 1) * on (namespace, pod) group_left (node) kube_pod_info), "instance", "$1", "node", "(.+)")
+                  unless on (instance)
+                  count by (instance) (container_fs_usage_bytes{job="kubernetes-nodes-cadvisor"})
+                ) * 0
+              for: 30m
+              labels:
+                severity: warning
+              annotations:
+                summary: {% raw %}"Métriques conteneurs incomplètes sur {{ $labels.instance }}"{% endraw %}
+                description: {% raw %}"cAdvisor ne remonte presque plus de séries de filesystem par conteneur sur {{ $labels.instance }} ({{ $value | humanize }} par pod, normal: 4 à 6) depuis 30 minutes. Redémarrer k3s-node sur ce nœud rétablit les métriques."{% endraw %}
+
         - name: kubernetes.rules
           rules:
             - alert: KubePodCrashLooping
