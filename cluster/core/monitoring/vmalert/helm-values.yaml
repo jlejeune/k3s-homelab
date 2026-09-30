@@ -186,6 +186,78 @@ server:
                 summary: {% raw %}"etcd lent vu depuis l'API server ({{ $labels.operation }})"{% endraw %}
                 description: {% raw %}"Le p99 des opérations etcd {{ $labels.operation }} est de {{ $value | humanizeDuration }} depuis 10 minutes."{% endraw %}
 
+        - name: etcd.rules
+          rules:
+            - alert: EtcdDown
+              expr: >
+                up{job="etcd"} == 0
+              for: 5m
+              labels:
+                severity: critical
+              annotations:
+                summary: {% raw %}"etcd injoignable ({{ $labels.instance }})"{% endraw %}
+                description: {% raw %}"Le scrape des métriques etcd échoue depuis 5 minutes (k3s lancé sans --etcd-expose-metrics, ou etcd arrêté)."{% endraw %}
+
+            - alert: EtcdTargetMissing
+              expr: >
+                absent(up{job="etcd"})
+              for: 15m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Aucune cible etcd découverte"
+                description: "Le job etcd ne trouve aucun nœud membre etcd depuis 15 minutes : les autres alertes etcd ne peuvent pas se déclencher."
+
+            - alert: EtcdNoLeader
+              expr: >
+                etcd_server_has_leader == 0
+              for: 1m
+              labels:
+                severity: critical
+              annotations:
+                summary: {% raw %}"etcd sans leader ({{ $labels.instance }})"{% endraw %}
+                description: {% raw %}"Le membre etcd {{ $labels.instance }} ne voit aucun leader depuis 1 minute."{% endraw %}
+
+            - alert: EtcdWALFsyncSlow
+              expr: >
+                histogram_quantile(0.99, sum by (le, instance) (rate(etcd_disk_wal_fsync_duration_seconds_bucket{job="etcd"}[5m]))) > 0.5
+              for: 10m
+              labels:
+                severity: warning
+              annotations:
+                summary: {% raw %}"Disque lent pour etcd ({{ $labels.instance }})"{% endraw %}
+                description: {% raw %}"Le p99 des fsync du WAL etcd est de {{ $value | humanizeDuration }} depuis 10 minutes (normal: quelques ms)."{% endraw %}
+
+            - alert: EtcdBackendCommitSlow
+              expr: >
+                histogram_quantile(0.99, sum by (le, instance) (rate(etcd_disk_backend_commit_duration_seconds_bucket{job="etcd"}[5m]))) > 0.25
+              for: 10m
+              labels:
+                severity: warning
+              annotations:
+                summary: {% raw %}"Commits etcd lents ({{ $labels.instance }})"{% endraw %}
+                description: {% raw %}"Le p99 des commits de la base etcd est de {{ $value | humanizeDuration }} depuis 10 minutes."{% endraw %}
+
+            - alert: EtcdDatabaseQuotaHigh
+              expr: >
+                etcd_mvcc_db_total_size_in_bytes{job="etcd"} / etcd_server_quota_backend_bytes{job="etcd"} * 100 > 80
+              for: 10m
+              labels:
+                severity: warning
+              annotations:
+                summary: {% raw %}"Base etcd proche du quota ({{ $labels.instance }})"{% endraw %}
+                description: {% raw %}"La base etcd occupe {{ $value | humanize }}% de son quota. À 100% etcd passe en lecture seule."{% endraw %}
+
+            - alert: EtcdProposalsFailing
+              expr: >
+                increase(etcd_server_proposals_failed_total{job="etcd"}[15m]) > 5
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                summary: {% raw %}"Propositions etcd en échec ({{ $labels.instance }})"{% endraw %}
+                description: {% raw %}"{{ $value | humanize }} propositions etcd ont échoué sur les 15 dernières minutes."{% endraw %}
+
         - name: longhorn.rules
           rules:
             - alert: LonghornVolumeRobustnessDegraded
