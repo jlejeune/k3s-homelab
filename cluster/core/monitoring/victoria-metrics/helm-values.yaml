@@ -8,10 +8,10 @@ server:
   resources:
     requests:
       cpu: 600m
-      memory: 640Mi
+      memory: 1Gi
     limits:
       cpu: 1000m
-      memory: 1Gi
+      memory: 1536Mi
   extraArgs:
     envflag.enable: "true"
     envflag.prefix: VM_
