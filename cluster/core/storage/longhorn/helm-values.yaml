@@ -14,6 +14,7 @@ persistence:
 defaultSettings:
   defaultReplicaCount: "2"
   concurrentAutomaticEngineUpgradePerNodeLimit: "1"
+  orphanResourceAutoDeletion: "replica-data"
   defaultDataPath: "/storage"
   backupTarget: "nfs://{{NAS_ADDRESS}}:/volume1/k3s/longhorn_backup"
   replicaSoftAntiAffinity: true
