@@ -58,12 +58,14 @@ spec:
       serviceAccountName: external-dns-viewer
       containers:
         - name: external-dns
-          image: registry.k8s.io/external-dns/external-dns:v0.21.0
+          image: registry.k8s.io/external-dns/external-dns:v0.23.0
           args:
             - --source=traefik-proxy
             - --source=ingress
             - --domain-filter={{SECRET_DOMAIN}}
             - --provider=ovh
+            - --policy=sync
+            - --annotation-prefix=external-dns.alpha.kubernetes.io/
             - --log-level=debug
             - --log-format=text
           envFrom:
