@@ -6,3 +6,28 @@ resources:
   limits:
     cpu: 100m
     memory: 128Mi
+rbac:
+  extraRules:
+    - apiGroups: ["longhorn.io"]
+      resources: ["replicas"]
+      verbs: ["list", "watch"]
+customResourceState:
+  enabled: true
+  config:
+    kind: CustomResourceStateMetrics
+    spec:
+      resources:
+        - groupVersionKind:
+            group: longhorn.io
+            version: v1beta2
+            kind: Replica
+          metricNamePrefix: longhorn_cr
+          metrics:
+            - name: replica_info
+              help: Longhorn replica placement (volume -> node)
+              each:
+                type: Info
+                info:
+                  labelsFromPath:
+                    volume: [spec, volumeName]
+                    node: [spec, nodeID]
