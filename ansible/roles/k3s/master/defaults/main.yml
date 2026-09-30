@@ -34,6 +34,7 @@ k3s_master_extra_args: >-
   --etcd-arg heartbeat-interval=500
   --etcd-arg election-timeout=5000
   --etcd-arg quota-backend-bytes=8589934592
+  --etcd-expose-metrics
   --secrets-encryption
   --kube-apiserver-arg audit-policy-file=/var/lib/rancher/k3s/server/audit-policy.yaml
   --kube-apiserver-arg audit-log-path=/var/lib/rancher/k3s/server/logs/audit.log
