@@ -43,6 +43,7 @@ vars:
 
 deployments:
   - path: smtp-relay
+  - path: apprise
   - include: mealie
   - path: dashy
   - path: donetick
