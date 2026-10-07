@@ -10,6 +10,14 @@ Trakt alternative. Fork of Yamtrack, which it replaced after a trial period.
 | Storage | SQLite on Longhorn PVC (`floppy-data-pvc`) |
 | Cache/queue | Redis (`floppy-redis`) |
 
+## Audiobookshelf import
+
+Configured per user in the UI, not in git: **Import Data** page → Audiobookshelf card (not
+Settings → Integrations, despite what the upstream wiki says). Enter the Audiobookshelf base URL
+and an API token created in Audiobookshelf. Imports book and podcast episode progress (read-only,
+polled every 15 min); each user needs their own token. The card is hidden unless the page's
+media-type filter includes Books or Podcasts.
+
 ## Metadata API keys
 
 Not configured yet. `TMDB_API`, `TVDB_API_KEY`/`TVDB_PIN`, `MAL_API`, `IGDB_ID`/`IGDB_SECRET`,
