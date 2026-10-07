@@ -124,6 +124,10 @@ data:
             icon: hl-calibre-web
             url: https://calibre.{{SECRET_DOMAIN}}
             statusCheckUrl: http://calibre-web-automated.media-automation.svc.cluster.local:8083
+          - title: Audiobookshelf
+            icon: hl-audiobookshelf
+            url: https://podcasts.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://audiobookshelf.media-automation.svc.cluster.local:13378/healthcheck
 
       - name: Home Automation
         icon: fas fa-house

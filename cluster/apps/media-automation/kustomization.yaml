@@ -10,4 +10,5 @@ resources:
   - seerr
   - prowlarr
   - calibre-web-automated
+  - audiobookshelf
   - downloads-cleanup
