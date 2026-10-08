@@ -12,3 +12,4 @@ resources:
   - calibre-web-automated
   - audiobookshelf
   - downloads-cleanup
+  - missing-media-check

@@ -319,3 +319,27 @@ server:
               annotations:
                 summary: {% raw %}"Replicas Longhorn colocalisées: {{ $labels.volume }}"{% endraw %}
                 description: {% raw %}"Le volume {{ $labels.volume }} a {{ $value }} replicas sur le même nœud {{ $labels.node }} depuis 30 minutes — aucune redondance en cas de perte du nœud."{% endraw %}
+
+        - name: media.rules
+          rules:
+            - alert: MediaNotImported
+              # Samples are pushed twice a day by the missing-media-check CronJob:
+              # keep the last one alive for 13h so the alert survives until the next push
+              expr: >
+                last_over_time(media_missing_days[13h]) > 2
+              for: 0m
+              labels:
+                severity: warning
+              annotations:
+                summary: {% raw %}"Média non importé: {{ $labels.title }}"{% endraw %}
+                description: {% raw %}"{{ $labels.title }} ({{ $labels.app }}) est sorti il y a {{ $value | humanize }} jours et n'est toujours pas dans la bibliothèque."{% endraw %}
+
+            - alert: MediaMissingCheckStale
+              expr: >
+                time() - last_over_time(media_missing_check_last_success_timestamp_seconds[3d]) > 26 * 3600
+              for: 0m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Vérification des médias manquants en échec"
+                description: "Le CronJob missing-media-check n'a pas poussé de métriques depuis plus de 26 heures."

@@ -12,7 +12,7 @@ config:
             {% raw %}{{ range .Alerts -}}
             **{{ .Annotations.summary }}**
             {{ .Annotations.description }}
-            {{ if .Labels.pod }}Pod: `{{ .Labels.namespace }}/{{ .Labels.pod }}`{{ else if .Labels.volume }}Volume: `{{ .Labels.volume }}`{{ else if .Labels.node }}Nœud: `{{ .Labels.node }}`{{ else }}Nœud: `{{ .Labels.instance }}`{{ end }}
+            {{ if .Labels.pod }}Pod: `{{ .Labels.namespace }}/{{ .Labels.pod }}`{{ else if .Labels.volume }}Volume: `{{ .Labels.volume }}`{{ else if .Labels.node }}Nœud: `{{ .Labels.node }}`{{ else if .Labels.app }}App: `{{ .Labels.app }}`{{ else }}Nœud: `{{ .Labels.instance }}`{{ end }}
             Sévérité: `{{ .Labels.severity }}`
             {{ end }}{% endraw %}
   route:
@@ -21,6 +21,11 @@ config:
     group_interval: 5m
     repeat_interval: 4h
     receiver: discord
+    routes:
+      # Not-yet-imported media is not urgent: remind once a day instead of every 4h
+      - matchers:
+          - alertname = "MediaNotImported"
+        repeat_interval: 24h
 
 persistence:
   enabled: true

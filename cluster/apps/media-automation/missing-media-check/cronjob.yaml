@@ -1,0 +1,159 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: missing-media-check-script
+  namespace: media-automation
+data:
+  check.py: |
+    {% raw %}
+    """Push the age of released-but-not-imported media to VictoriaMetrics.
+
+    Radarr: monitored movies without a file, aged from their earliest
+    digital/physical release. Sonarr: monitored missing episodes, aggregated
+    per series and aged from the oldest missing air date. Items currently in
+    the download queue are ignored. The alert threshold lives in vmalert.
+    """
+    import json
+    import os
+    import sys
+    import time
+    import urllib.parse
+    import urllib.request
+    from datetime import datetime, timezone
+
+    VM_IMPORT_URL = os.environ["VM_IMPORT_URL"]
+    DRY_RUN = os.environ.get("DRY_RUN") == "1"
+    NOW = datetime.now(timezone.utc)
+
+
+    def api(base, key, path, **params):
+        url = f"{base}/api/v3/{path}?{urllib.parse.urlencode(params)}"
+        req = urllib.request.Request(url, headers={"X-Api-Key": key})
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            return json.load(resp)
+
+
+    def records(base, key, path, **params):
+        data = api(base, key, path, page=1, pageSize=1000, **params)
+        if data["totalRecords"] > len(data["records"]):
+            raise RuntimeError(f"{path}: {data['totalRecords']} records exceed one page")
+        return data["records"]
+
+
+    def age_days(iso):
+        released = datetime.fromisoformat(iso)
+        return (NOW - released).total_seconds() / 86400
+
+
+    def radarr_missing():
+        base, key = os.environ["RADARR_URL"], os.environ["RADARR_API_KEY"]
+        queued = {r["movieId"] for r in records(base, key, "queue") if "movieId" in r}
+        out = {}
+        for movie in records(base, key, "wanted/missing", monitored="true"):
+            dates = [movie[k] for k in ("digitalRelease", "physicalRelease") if movie.get(k)]
+            if not dates or movie["id"] in queued:
+                continue
+            age = age_days(min(dates))
+            if age > 0:
+                out[f"{movie['title']} ({movie['year']})"] = age
+        return out
+
+
+    def sonarr_missing():
+        base, key = os.environ["SONARR_URL"], os.environ["SONARR_API_KEY"]
+        queued = {r["episodeId"] for r in records(base, key, "queue") if "episodeId" in r}
+        out = {}
+        for ep in records(base, key, "wanted/missing", monitored="true", includeSeries="true"):
+            if not ep.get("airDateUtc") or ep["id"] in queued:
+                continue
+            age = age_days(ep["airDateUtc"])
+            title = ep["series"]["title"]
+            if age > 0 and age > out.get(title, 0):
+                out[title] = age
+        return out
+
+
+    def escape(value):
+        return value.replace("\\", "\\\\").replace('"', '\\"').replace("\n", " ")
+
+
+    def main():
+        lines = []
+        for app, items in (("radarr", radarr_missing()), ("sonarr", sonarr_missing())):
+            for title, age in sorted(items.items()):
+                print(f"{app}: {title} missing for {age:.1f} days")
+                lines.append(f'media_missing_days{{app="{app}",title="{escape(title)}"}} {age:.2f}')
+        lines.append(f"media_missing_check_last_success_timestamp_seconds {int(time.time())}")
+        body = "\n".join(lines) + "\n"
+        if DRY_RUN:
+            print(body)
+            return
+        req = urllib.request.Request(VM_IMPORT_URL, data=body.encode(), method="POST")
+        urllib.request.urlopen(req, timeout=30).close()
+        print(f"Pushed {len(lines) - 1} missing item(s)")
+
+
+    if __name__ == "__main__":
+        try:
+            main()
+        except Exception as exc:  # noqa: BLE001
+            print(f"check failed: {exc!r}", file=sys.stderr)
+            sys.exit(1)
+    {% endraw %}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: missing-media-check
+  namespace: media-automation
+spec:
+  schedule: "0 8,20 * * *"
+  timeZone: {{TZ}}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsUser: 1026
+            runAsGroup: 100
+          containers:
+            - name: check
+              image: python:3.14-alpine
+              command: ["python3", "-I", "/scripts/check.py"]
+              env:
+                - name: RADARR_URL
+                  value: http://radarr.media-automation.svc.cluster.local:7878
+                - name: SONARR_URL
+                  value: http://sonarr.media-automation.svc.cluster.local:8989
+                - name: VM_IMPORT_URL
+                  value: http://victoria-metrics-single-server.monitoring.svc.cluster.local:8428/api/v1/import/prometheus
+                - name: RADARR_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: media-automation-secrets
+                      key: RADARR_API_KEY
+                - name: SONARR_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: media-automation-secrets
+                      key: SONARR_API_KEY
+              resources:
+                requests:
+                  cpu: 20m
+                  memory: 32Mi
+                limits:
+                  memory: 128Mi
+              volumeMounts:
+                - name: script
+                  mountPath: /scripts
+                  readOnly: true
+          volumes:
+            - name: script
+              configMap:
+                name: missing-media-check-script
