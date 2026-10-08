@@ -7,5 +7,6 @@ resources:
   - dawarich-db.secret.sops.yaml
   - dawarich-db.yaml
   - dawarich-redis.yaml
+  - dawarich-photon.yaml
   - dawarich.secret.sops.yaml
   - dawarich.yaml

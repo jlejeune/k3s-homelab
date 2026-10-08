@@ -40,6 +40,11 @@ vars:
       name: cluster-secrets
       namespace: default
       key: SECRET_LDAP_ADMIN_QUERY_PASSWORD
+  - targetPath: DISCORD_WEBHOOK_URL
+    clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: DISCORD_WEBHOOK_URL
 
 deployments:
   - path: smtp-relay

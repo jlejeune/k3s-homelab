@@ -1,0 +1,127 @@
+---
+# Rebuildable search index (re-downloaded when empty), so no replication or
+# backup needed: node-local storage on galadriel instead of Longhorn/NFS.
+# OpenSearch needs a real local disk (spinning NFS leads to cryptic errors).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dawarich-photon-pvc
+  namespace: dawarich
+  labels:
+    app.kubernetes.io/instance: dawarich-photon
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 40Gi
+  storageClassName: local-path
+---
+# Index update notifications (Apprise) sent to the same Discord channel as
+# Alertmanager. Photon notifies on update failure, and also on success.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dawarich-photon
+  namespace: dawarich
+stringData:
+  APPRISE_URLS: "{{DISCORD_WEBHOOK_URL}}"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dawarich-photon
+  namespace: dawarich
+spec:
+  ports:
+    - name: http
+      port: 2322
+      targetPort: http
+  selector:
+    app.kubernetes.io/instance: dawarich-photon
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dawarich-photon
+  namespace: dawarich
+  labels:
+    app.kubernetes.io/instance: dawarich-photon
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: dawarich-photon
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: dawarich-photon
+    spec:
+      restartPolicy: Always
+      # Node-local PVC: the pod must always land on the node holding the index.
+      nodeSelector:
+        kubernetes.io/hostname: galadriel
+      containers:
+        - name: dawarich-photon
+          image: rtuszik/photon-docker:2.4.0
+          imagePullPolicy: IfNotPresent
+          env:
+            # Self-hosted reverse geocoder for Dawarich: location data never
+            # leaves the cluster. Only the index (OpenStreetMap data) is
+            # downloaded, from the official GraphHopper export server.
+            - name: BASE_URL
+              value: https://download1.graphhopper.com/public
+            - name: REGION
+              value: france
+            # Monthly refresh; PARALLEL keeps serving while the new index is
+            # downloaded (needs 2x the disk space).
+            - name: UPDATE_STRATEGY
+              value: PARALLEL
+            - name: UPDATE_INTERVAL
+              value: 30d
+            - name: JAVA_PARAMS
+              value: -Xmx3g
+          envFrom:
+            - secretRef:
+                name: dawarich-photon
+                optional: false
+          ports:
+            - name: http
+              containerPort: 2322
+              protocol: TCP
+          # First start downloads and unpacks ~5 GB: allow up to ~1h.
+          startupProbe:
+            httpGet:
+              path: /status
+              port: http
+            periodSeconds: 30
+            failureThreshold: 120
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: http
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: http
+            periodSeconds: 30
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 2Gi
+            limits:
+              memory: 5Gi
+          volumeMounts:
+            - mountPath: /photon/data
+              name: data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: dawarich-photon-pvc
