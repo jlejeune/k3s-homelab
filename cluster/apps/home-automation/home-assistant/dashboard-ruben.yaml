@@ -67,17 +67,13 @@ data:
         },
         {
           "type": "stat",
-          "title": "Niveau pellets",
+          "title": "Pellets consommés (24 h)",
           "gridPos": { "h": 4, "w": 4, "x": 12, "y": 0 },
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "targets": [
-            { "expr": "ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}", "refId": "A" }
+            { "expr": "increase(ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}[24h])", "refId": "A" }
           ],
-          "fieldConfig": { "defaults": { "unit": "kg", "decimals": 1, "thresholds": { "steps": [
-            { "color": "red", "value": null },
-            { "color": "orange", "value": 3 },
-            { "color": "green", "value": 8 }
-          ] } } }
+          "fieldConfig": { "defaults": { "unit": "kg", "decimals": 1 } }
         },
         {
           "type": "stat",
@@ -135,13 +131,23 @@ data:
         },
         {
           "type": "timeseries",
-          "title": "Niveau pellets (kg)",
-          "gridPos": { "h": 6, "w": 24, "x": 0, "y": 18 },
+          "title": "Pellets consommés, cumul du compteur (kg)",
+          "gridPos": { "h": 6, "w": 12, "x": 0, "y": 18 },
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "targets": [
-            { "expr": "ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}", "legendFormat": "Pellets", "refId": "A" }
+            { "expr": "ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}", "legendFormat": "Cumul", "refId": "A" }
           ],
           "fieldConfig": { "defaults": { "unit": "kg" } }
+        },
+        {
+          "type": "timeseries",
+          "title": "Consommation de pellets sur 24 h glissantes (kg)",
+          "gridPos": { "h": 6, "w": 12, "x": 12, "y": 18 },
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "targets": [
+            { "expr": "increase(ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}[24h])", "legendFormat": "24 h", "refId": "A" }
+          ],
+          "fieldConfig": { "defaults": { "unit": "kg", "decimals": 1 } }
         }
       ]
     }
