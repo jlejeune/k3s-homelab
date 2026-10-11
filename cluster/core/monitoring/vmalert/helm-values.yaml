@@ -343,3 +343,20 @@ server:
               annotations:
                 summary: "Vérification des médias manquants en échec"
                 description: "Le CronJob missing-media-check n'a pas poussé de métriques depuis plus de 26 heures."
+
+        - name: home.rules
+          rules:
+            - alert: RubenPelletsLow
+              # sensor.ruben_quantite_de_granules is a cumulative consumption counter, not a
+              # hopper level. Remaining = capacity (15 kg) - consumption since the last refill.
+              # 26 is the counter value at the last refill (2026-10-11): update it here AND in
+              # the "Pellets restants" panels of dashboard-ruben.yaml at every refill.
+              # 3 kg is about 4 h of heating at ~0.8 kg/h.
+              expr: >
+                clamp_min(15 - (ha_sensor_weight_kg{entity="sensor.ruben_quantite_de_granules"} - 26), 0) < 3
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Réservoir de pellets du Ruben bientôt vide"
+                description: {% raw %}"Il reste environ {{ $value | humanize }} kg de pellets dans le réservoir du Ruben (estimation depuis le dernier plein, environ 4 h de chauffe)."{% endraw %}
