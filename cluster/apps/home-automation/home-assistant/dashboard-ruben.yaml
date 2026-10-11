@@ -100,9 +100,49 @@ data:
           ] } }
         },
         {
+          "type": "gauge",
+          "title": "Pellets restants (estimation, kg)",
+          "description": "Capacité du réservoir (15 kg) moins la consommation depuis le dernier plein. Le compteur valait 25 kg au plein du 2026-10-11 : à mettre à jour à chaque remplissage.",
+          "gridPos": { "h": 5, "w": 8, "x": 0, "y": 4 },
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "targets": [
+            { "expr": "clamp_min(15 - (ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"} - 25), 0)", "refId": "A" }
+          ],
+          "fieldConfig": { "defaults": { "unit": "kg", "decimals": 1, "min": 0, "max": 15, "thresholds": { "mode": "absolute", "steps": [
+            { "color": "red", "value": null },
+            { "color": "orange", "value": 3 },
+            { "color": "green", "value": 6 }
+          ] } } }
+        },
+        {
+          "type": "stat",
+          "title": "Autonomie estimée (h de chauffe)",
+          "description": "Pellets restants divisés par le rythme moyen de consommation sur 7 jours. Estimation grossière : le compteur est en kg entiers.",
+          "gridPos": { "h": 5, "w": 8, "x": 8, "y": 4 },
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "targets": [
+            { "expr": "clamp_min(15 - (ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"} - 25), 0) / on() ((max_over_time(ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}[7d]) - min_over_time(ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}[7d])) / on() (count_over_time((ha_climate_action{entity=\"climate.ruben\",action=\"heating\"} == 1)[7d:1m]) / 60))", "refId": "A" }
+          ],
+          "fieldConfig": { "defaults": { "unit": "h", "decimals": 0, "thresholds": { "mode": "absolute", "steps": [
+            { "color": "red", "value": null },
+            { "color": "orange", "value": 4 },
+            { "color": "green", "value": 8 }
+          ] } } }
+        },
+        {
+          "type": "stat",
+          "title": "Rythme de consommation (kg/h de chauffe, 7 j)",
+          "gridPos": { "h": 5, "w": 8, "x": 16, "y": 4 },
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "targets": [
+            { "expr": "(max_over_time(ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}[7d]) - min_over_time(ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}[7d])) / on() (count_over_time((ha_climate_action{entity=\"climate.ruben\",action=\"heating\"} == 1)[7d:1m]) / 60)", "refId": "A" }
+          ],
+          "fieldConfig": { "defaults": { "unit": "suffix: kg/h", "decimals": 2 } }
+        },
+        {
           "type": "timeseries",
           "title": "Températures",
-          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 9 },
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "targets": [
             { "expr": "ha_climate_current_temperature_celsius{entity=\"climate.ruben\"}", "legendFormat": "Ambiante", "refId": "A" },
@@ -113,7 +153,7 @@ data:
         {
           "type": "timeseries",
           "title": "Température de combustion du bois",
-          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 9 },
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "targets": [
             { "expr": "ha_sensor_temperature_celsius{entity=\"sensor.ruben_temperature_de_combustion_du_bois\"}", "legendFormat": "Combustion", "refId": "A" }
@@ -123,7 +163,7 @@ data:
         {
           "type": "state-timeline",
           "title": "Historique état",
-          "gridPos": { "h": 6, "w": 24, "x": 0, "y": 12 },
+          "gridPos": { "h": 6, "w": 24, "x": 0, "y": 17 },
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "targets": [
             { "expr": "ha_climate_action{entity=\"climate.ruben\"} == 1", "legendFormat": "{{ '{{action}}' }}", "refId": "A" }
@@ -132,7 +172,7 @@ data:
         {
           "type": "timeseries",
           "title": "Pellets consommés, cumul du compteur (kg)",
-          "gridPos": { "h": 6, "w": 12, "x": 0, "y": 18 },
+          "gridPos": { "h": 6, "w": 12, "x": 0, "y": 23 },
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "targets": [
             { "expr": "ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}", "legendFormat": "Cumul", "refId": "A" }
@@ -142,7 +182,7 @@ data:
         {
           "type": "timeseries",
           "title": "Consommation de pellets sur 24 h glissantes (kg)",
-          "gridPos": { "h": 6, "w": 12, "x": 12, "y": 18 },
+          "gridPos": { "h": 6, "w": 12, "x": 12, "y": 23 },
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "targets": [
             { "expr": "increase(ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}[24h])", "legendFormat": "24 h", "refId": "A" }
