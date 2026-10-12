@@ -171,7 +171,8 @@ data:
         },
         {
           "type": "timeseries",
-          "title": "Pellets consommés, cumul du compteur (kg)",
+          "title": "Pellets consommés, cumul du compteur (kg, 7 j)",
+          "timeFrom": "7d",
           "gridPos": { "h": 6, "w": 12, "x": 0, "y": 23 },
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "targets": [
@@ -181,13 +182,16 @@ data:
         },
         {
           "type": "timeseries",
-          "title": "Consommation de pellets sur 24 h glissantes (kg)",
+          "title": "Consommation de pellets par jour (kg, 14 j)",
+          "description": "Chaque barre = consommation des 24 h qui précèdent son horodatage. La journée en cours apparaît à la barre suivante ; le stat « Pellets consommés (24 h) » donne la valeur en direct.",
+          "timeFrom": "14d",
+          "interval": "1d",
           "gridPos": { "h": 6, "w": 12, "x": 12, "y": 23 },
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "targets": [
-            { "expr": "increase(ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}[24h])", "legendFormat": "24 h", "refId": "A" }
+            { "expr": "increase(ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}[1d])", "interval": "1d", "legendFormat": "Par jour", "refId": "A" }
           ],
-          "fieldConfig": { "defaults": { "unit": "kg", "decimals": 1 } }
+          "fieldConfig": { "defaults": { "unit": "kg", "decimals": 0, "min": 0, "custom": { "drawStyle": "bars", "fillOpacity": 70, "lineWidth": 1, "barAlignment": -1 } } }
         }
       ]
     }
