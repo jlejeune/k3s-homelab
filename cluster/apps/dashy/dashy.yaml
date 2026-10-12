@@ -128,6 +128,10 @@ data:
             icon: hl-audiobookshelf
             url: https://podcasts.{{SECRET_DOMAIN}}
             statusCheckUrl: http://audiobookshelf.media-automation.svc.cluster.local:13378/healthcheck
+          - title: Youtarr
+            icon: hl-youtube
+            url: https://youtarr.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://youtarr.media-automation.svc.cluster.local:3011/api/health
 
       - name: Home Automation
         icon: fas fa-house

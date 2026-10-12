@@ -757,6 +757,33 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
+  name: youtarr
+  namespace: networking
+  annotations:
+    external-dns.alpha.kubernetes.io/target: "{{LB_TRAEFIK_ADDRESS}}"
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`youtarr.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: forwardauth-authelia
+          namespace: networking
+        - name: security-header
+          namespace: networking
+      services:
+        - kind: Service
+          name: youtarr
+          namespace: media-automation
+          port: 3011
+          scheme: http
+  tls:
+    secretName: "{{SECRET_DOMAIN}}-tls"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
   name: radarr
   namespace: networking
   annotations:

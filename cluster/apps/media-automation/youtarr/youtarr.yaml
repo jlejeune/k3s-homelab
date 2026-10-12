@@ -1,0 +1,220 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: youtarr-db-pvc
+  namespace: media-automation
+spec:
+  storageClassName: longhorn
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: youtarr-db
+  namespace: media-automation
+  labels:
+    app.kubernetes.io/instance: youtarr-db
+  annotations:
+    reloader.stakater.com/auto: "true"
+    secret.reloader.stakater.com/reload: media-automation-secrets
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: youtarr-db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: youtarr-db
+    spec:
+      containers:
+        - name: mariadb
+          image: docker.io/library/mariadb:10.11.14
+          args:
+            - --character-set-server=utf8mb4
+            - --collation-server=utf8mb4_unicode_ci
+          ports:
+            - containerPort: 3306
+              name: mysql
+          env:
+            - name: TZ
+              value: {{TZ}}
+            - name: MARIADB_DATABASE
+              value: youtarr
+            - name: MARIADB_USER
+              value: youtarr
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: media-automation-secrets
+                  key: YOUTARR_DB_PASSWORD
+            - name: MARIADB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: media-automation-secrets
+                  key: YOUTARR_DB_ROOT_PASSWORD
+          readinessProbe:
+            exec:
+              command: ["healthcheck.sh", "--connect", "--innodb_initialized"]
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            exec:
+              command: ["healthcheck.sh", "--connect"]
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: youtarr-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: youtarr-db
+  namespace: media-automation
+spec:
+  ports:
+    - port: 3306
+      name: mysql
+  selector:
+    app.kubernetes.io/instance: youtarr-db
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: youtarr-state-pvc
+  namespace: media-automation
+spec:
+  storageClassName: longhorn
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: youtarr
+  namespace: media-automation
+  labels:
+    app.kubernetes.io/instance: youtarr
+  annotations:
+    reloader.stakater.com/auto: "true"
+    secret.reloader.stakater.com/reload: media-automation-secrets
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: youtarr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: youtarr
+    spec:
+      # yt-dlp + ffmpeg re-encoding is too heavy for the Raspberry Pis
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      securityContext:
+        runAsUser: 1026
+        runAsGroup: 100
+        fsGroup: 100
+      containers:
+        - name: youtarr
+          image: docker.io/dialmaster/youtarr:v1.87.1
+          ports:
+            - containerPort: 3011
+              name: http
+          env:
+            - name: TZ
+              value: {{TZ}}
+            - name: YOUTUBE_OUTPUT_DIR
+              value: /usr/src/app/data
+            - name: DB_HOST
+              value: youtarr-db
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: youtarr
+            - name: DB_USER
+              value: youtarr
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: media-automation-secrets
+                  key: YOUTARR_DB_PASSWORD
+            # Authentication is handled by Authelia forward-auth (internal access only)
+            - name: AUTH_ENABLED
+              value: "false"
+            # One trusted reverse proxy (Traefik)
+            - name: TRUST_PROXY
+              value: "1"
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3011
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3011
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          volumeMounts:
+            - name: state
+              mountPath: /app/config
+              subPath: config
+            - name: state
+              mountPath: /app/jobs
+              subPath: jobs
+            - name: state
+              mountPath: /app/server/images
+              subPath: images
+            - name: videos
+              mountPath: /usr/src/app/data
+      volumes:
+        - name: state
+          persistentVolumeClaim:
+            claimName: youtarr-state-pvc
+        - name: videos
+          nfs:
+            server: {{NAS_ADDRESS}}
+            path: /volume1/video/youtube
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: youtarr
+  namespace: media-automation
+spec:
+  ports:
+    - port: 3011
+      name: http
+  selector:
+    app.kubernetes.io/instance: youtarr

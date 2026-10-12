@@ -86,6 +86,9 @@ spec:
             - name: shows
               mountPath: /shows
               readOnly: True
+            - name: youtube
+              mountPath: /youtube
+              readOnly: True
             - name: transcode
               mountPath: /transcode
             - name: cache
@@ -101,6 +104,10 @@ spec:
           nfs:
             server: {{NAS_ADDRESS}}
             path: /volume1/video/series
+        - name: youtube
+          nfs:
+            server: {{NAS_ADDRESS}}
+            path: /volume1/video/youtube
         - name: transcode
           emptyDir: {}
         - name: cache
