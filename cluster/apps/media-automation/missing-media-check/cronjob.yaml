@@ -124,7 +124,7 @@ spec:
             runAsGroup: 100
           containers:
             - name: check
-              image: python:3.14-alpine
+              image: python:3.15-alpine
               command: ["python3", "-I", "/scripts/check.py"]
               env:
                 - name: RADARR_URL
