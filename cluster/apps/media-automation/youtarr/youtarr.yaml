@@ -36,7 +36,7 @@ spec:
     spec:
       containers:
         - name: mariadb
-          image: docker.io/library/mariadb:10.11.14
+          image: docker.io/library/mariadb:10.11.19
           args:
             - --character-set-server=utf8mb4
             - --collation-server=utf8mb4_unicode_ci
