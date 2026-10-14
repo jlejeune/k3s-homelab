@@ -27,7 +27,7 @@ spec:
                       - amd64
       containers:
         - name: lam
-          image: ldapaccountmanager/lam:stable
+          image: ldapaccountmanager/lam:8.3
           env:
             - name: LDAP_SERVER
               value: "ldap://openldap.openldap.svc.cluster.local"
