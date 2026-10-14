@@ -24,7 +24,8 @@ spec:
         fsGroup: 100
       containers:
         - name: plundrio
-          image: ghcr.io/elsbrock/plundrio:latest
+          # Fork build of elsbrock/plundrio with the keep-seeding options
+          image: ghcr.io/jlejeune/plundrio:v0.11.2-keepseeding.4
           ports:
             - containerPort: 9091
               name: http
@@ -38,6 +39,12 @@ spec:
               value: /media/downloads/radarr
             - name: PLDR_FOLDER
               value: "Radarr"
+            # Keep the file on put.io until seeding is done
+            - name: PLDR_KEEP_SEEDING
+              value: "true"
+            # Remove a transfer 72 h after it finished on put.io, even if put.io still seeds it
+            - name: PLDR_KEEP_SEEDING_TIMEOUT
+              value: "72h"
             - name: TZ
               value: {{TZ}}
           readinessProbe:
@@ -102,7 +109,8 @@ spec:
         fsGroup: 100
       containers:
         - name: plundrio
-          image: ghcr.io/elsbrock/plundrio:latest
+          # Fork build of elsbrock/plundrio with the keep-seeding options
+          image: ghcr.io/jlejeune/plundrio:v0.11.2-keepseeding.4
           ports:
             - containerPort: 9091
               name: http
@@ -116,6 +124,12 @@ spec:
               value: /media/downloads/sonarr
             - name: PLDR_FOLDER
               value: "Sonarr"
+            # Keep the file on put.io until seeding is done
+            - name: PLDR_KEEP_SEEDING
+              value: "true"
+            # Remove a transfer 72 h after it finished on put.io, even if put.io still seeds it
+            - name: PLDR_KEEP_SEEDING_TIMEOUT
+              value: "72h"
             - name: TZ
               value: {{TZ}}
           readinessProbe:
