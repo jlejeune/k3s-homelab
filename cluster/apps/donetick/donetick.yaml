@@ -76,7 +76,7 @@ spec:
       restartPolicy: Always
       initContainers:
         - name: init-db
-          image: busybox
+          image: busybox:1.38.0
           command: ["sh", "-c", "touch /data/donetick.db"]
           volumeMounts:
             - name: donetick-data
