@@ -29,5 +29,8 @@ customResourceState:
                 type: Info
                 info:
                   labelsFromPath:
+                    # Without a per-replica label, two replicas of one volume on
+                    # the same node make identical series and merge into one
+                    replica: [metadata, name]
                     volume: [spec, volumeName]
                     node: [spec, nodeID]
