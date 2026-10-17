@@ -37,9 +37,12 @@ data:
     // CSV parsing helpers
     // ---------------------------------------------------------------------------
 
-    /** Parse row[3] format: "J2R du 12 au 16/01" */
+    /**
+     * Parse row[3] format: "J2R du 12 au 16/01" or "J1A du 28/09 au 02/10".
+     * The letter after the number is A (first leg) or R (second leg).
+     */
     function parseMatchWeek(label: string): { matchDay: number; matchWeek: Date } | null {
-      const m = label.match(/J(\d+)R\s+du\s+(\d+)(?:\/(\d+))?\s+au\s+\d+\/(\d+)/);
+      const m = label.match(/J(\d+)[AR]\s+du\s+(\d+)(?:\/(\d+))?\s+au\s+\d+\/(\d+)/);
       if (!m) return null;
 
       const matchDay = parseInt(m[1], 10);
@@ -56,13 +59,41 @@ data:
       return { matchDay, matchWeek: new Date(year, month - 1, startDay) };
     }
 
-    /** Parse set details string "25/22-26/24-16/24-25/23" → [[25,22],[26,24],[16,24],[25,23]] */
+    /** A set is plausible when the winner has at least 15 points and leads by 2. */
+    function isPlausibleSet(home: number, away: number): boolean {
+      return Math.max(home, away) >= 15 && Math.abs(home - away) >= 2;
+    }
+
+    /** Split a details string into sets, or return null when any set looks wrong. */
+    function parseSets(text: string, setSeparator: string, pointSeparator: string): number[][] | null {
+      const sets = text.split(setSeparator).map((s) => s.trim()).filter((s) => s !== '');
+      const result: number[][] = [];
+      for (const set of sets) {
+        const parts = set.split(pointSeparator).map((p) => p.trim());
+        if (parts.length !== 2 || !parts.every((p) => /^\d+$/.test(p))) return null;
+        const home = parseInt(parts[0], 10);
+        const away = parseInt(parts[1], 10);
+        if (!isPlausibleSet(home, away)) return null;
+        result.push([home, away]);
+      }
+      return result.length > 0 ? result : null;
+    }
+
+    /**
+     * Parse the set details string. Two formats exist:
+     * - Current: "18-25/26-24/25-16" or "12-25 / 23-25" (sets split by "/", points by "-").
+     * - Older: "25/22-26/24-16/24" (sets split by "-", points by "/").
+     * Both give [[home, away], ...]. An unreadable string gives [].
+     */
     function parseSetScores(detail: string): number[][] {
-      if (!detail || detail.trim() === '') return [];
-      return detail.split('-').map((s) => {
-        const parts = s.split('/');
-        return [parseInt(parts[0], 10), parseInt(parts[1], 10)];
-      });
+      const text = detail?.trim() ?? '';
+      if (text === '') return [];
+      return parseSets(text, '/', '-') ?? parseSets(text, '-', '/') ?? [];
+    }
+
+    /** The site lists a rest week as a fake team named "Exempt 1". */
+    function isBye(teamName: string): boolean {
+      return /^exempt\b/i.test(teamName.trim());
     }
 
     /** Parse a valid CSV line into a ParsedRow, or return null if invalid */
@@ -172,10 +203,21 @@ data:
       if (!textareaMatch) {
         return new Response('No <textarea> found in the page', { status: 422 });
       }
-      const csvContent = textareaMatch[1].trim();;
+      const csvContent = textareaMatch[1].trim();
 
       // Service-role client for DB operations
       const admin = createClient(supabaseUrl, serviceRoleKey);
+
+      // Load participants for the group
+      const { data: participantRows, error: pError } = await admin
+        .from('championship_participants')
+        .select('id, display_name')
+        .eq('group_id', group_id);
+
+      if (pError) {
+        console.error('Participant fetch error:', pError);
+        return new Response('DB error fetching participants', { status: 500 });
+      }
 
       // Fetch championship_id from the group (required for participant inserts)
       const { data: groupRow, error: gError } = await admin
@@ -189,17 +231,6 @@ data:
         return new Response('DB error fetching group', { status: 500 });
       }
       const championship_id = groupRow.championship_id as string;
-
-      // Load participants for the group
-      const { data: participantRows, error: pError } = await admin
-        .from('championship_participants')
-        .select('id, display_name')
-        .eq('group_id', group_id);
-
-      if (pError) {
-        console.error('Participant fetch error:', pError);
-        return new Response('DB error fetching participants', { status: 500 });
-      }
 
       // Build display_name → participant_id map (case-insensitive)
       const participantMap = new Map<string, string>();
@@ -256,10 +287,12 @@ data:
       const result: ImportResponse = { created: 0, updated: 0, skipped: 0, participantsCreated: 0 };
 
       const lines = csvContent.split(/\r\n|\r|\n/).filter((l) => l.trim() !== '');
+
       for (const line of lines) {
         const columns = line.split(';');
         const parsed = parseRow(columns);
         if (!parsed) continue;
+        if (isBye(parsed.homeTeamName) || isBye(parsed.awayTeamName)) continue;
 
         const homeKey = parsed.homeTeamName.toUpperCase();
         const awayKey = parsed.awayTeamName.toUpperCase();
@@ -273,7 +306,9 @@ data:
         if (!awayParticipantId) {
           awayParticipantId = await ensureParticipant(parsed.awayTeamName) ?? undefined;
         }
-        if (!homeParticipantId || !awayParticipantId) continue;
+        if (!homeParticipantId || !awayParticipantId) {
+          continue;
+        }
 
         const existingKey = `${homeParticipantId}|${awayParticipantId}`;
         const existing = matchMap.get(existingKey);
