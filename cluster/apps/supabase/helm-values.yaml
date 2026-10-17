@@ -45,11 +45,26 @@ persistence:
 
 # Public URLs (Kluctl substitution {{SECRET_DOMAIN}})
 environment:
+  # This list replaces the whole default list of the chart, so every variable
+  # that GoTrue needs must be set here. GoTrue v2.189 has no default for the
+  # JWT audience and listens on port 8081 when no port is set.
   auth:
     - name: API_EXTERNAL_URL
       value: https://supabase.{{SECRET_DOMAIN}}
     - name: GOTRUE_SITE_URL
       value: https://supabase.{{SECRET_DOMAIN}}
+    - name: GOTRUE_API_HOST
+      value: "0.0.0.0"
+    - name: GOTRUE_API_PORT
+      value: "9999"
+    - name: GOTRUE_JWT_AUD
+      value: authenticated
+    - name: GOTRUE_JWT_DEFAULT_GROUP_NAME
+      value: authenticated
+    - name: GOTRUE_JWT_ADMIN_ROLES
+      value: service_role
+    - name: GOTRUE_JWT_EXP
+      value: "3600"
   studio:
     - name: SUPABASE_PUBLIC_URL
       value: https://supabase.{{SECRET_DOMAIN}}
