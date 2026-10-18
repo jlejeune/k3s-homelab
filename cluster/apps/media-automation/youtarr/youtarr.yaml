@@ -140,7 +140,7 @@ spec:
         fsGroup: 100
       containers:
         - name: youtarr
-          image: docker.io/dialmaster/youtarr:v1.88.0
+          image: docker.io/dialmaster/youtarr:v1.89.0
           ports:
             - containerPort: 3011
               name: http
