@@ -91,7 +91,7 @@ data:
           - title: Dawarich
             icon: hl-dawarich
             url: https://dawarich.{{SECRET_DOMAIN}}
-            statusCheckUrl: http://dawarich.dawarich.svc.cluster.local:3000
+            statusCheckUrl: http://dawarich.dawarich.svc.cluster.local:3000/api/v1/health
             statusCheckHeaders:
               X-Forwarded-Proto: https
             displayData:
