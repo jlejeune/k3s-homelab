@@ -450,6 +450,11 @@ data:
           networks:
             - home
 
+        - domain: budget.{{SECRET_DOMAIN}}
+          policy: one_factor
+          networks:
+            - home
+
         - domain: calibre.{{SECRET_DOMAIN}}
           policy: one_factor
 

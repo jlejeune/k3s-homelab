@@ -1,0 +1,84 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: actual-pvc
+  namespace: actual
+spec:
+  storageClassName: longhorn
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: actual
+  namespace: actual
+  labels:
+    app.kubernetes.io/instance: actual
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: actual
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: actual
+    spec:
+      restartPolicy: Always
+      enableServiceLinks: false
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      containers:
+        - name: actual
+          image: actualbudget/actual-server:26.10.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TZ
+              value: "{{TZ}}"
+          ports:
+            - containerPort: 5006
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
+          volumeMounts:
+            - mountPath: /data
+              name: actual-vol
+      volumes:
+        - name: actual-vol
+          persistentVolumeClaim:
+            claimName: actual-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: actual
+  namespace: actual
+spec:
+  ports:
+    - name: http
+      port: 5006
+      targetPort: http
+  selector:
+    app.kubernetes.io/instance: actual

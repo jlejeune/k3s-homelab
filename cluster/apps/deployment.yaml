@@ -52,6 +52,7 @@ deployments:
   - include: mealie
   - path: dashy
   - path: donetick
+  - path: actual
   - include: authelia
   - include: networking
   - path: freshrss

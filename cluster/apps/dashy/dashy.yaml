@@ -88,6 +88,13 @@ data:
             displayData:
               showForKeycloakUsers:
                 groups: ["internal users", administrators]
+          - title: Actual Budget
+            icon: hl-actual-budget
+            url: https://budget.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://actual.actual.svc.cluster.local:5006/health
+            displayData:
+              showForKeycloakUsers:
+                groups: ["internal users", administrators]
           - title: Dawarich
             icon: hl-dawarich
             url: https://dawarich.{{SECRET_DOMAIN}}
