@@ -182,14 +182,14 @@ data:
         },
         {
           "type": "timeseries",
-          "title": "Consommation de pellets par jour (kg, 14 j)",
-          "description": "Chaque barre = consommation des 24 h qui précèdent son horodatage. La journée en cours apparaît à la barre suivante ; le stat « Pellets consommés (24 h) » donne la valeur en direct.",
-          "timeFrom": "14d",
+          "title": "Consommation de pellets par jour (kg, 6 j)",
+          "description": "Chaque barre = consommation d'une journée locale, journée en cours comprise (l'horodatage de la barre est à 2 h du matin). La fenêtre est de 6 jours car VictoriaMetrics ne garde que 7 jours : une barre plus ancienne afficherait un faux 0. Le décalage de la requête (offset -22h) vaut pour l'heure d'été ; à l'heure d'hiver (UTC+1), passer à -23h.",
+          "timeFrom": "6d",
           "interval": "1d",
           "gridPos": { "h": 6, "w": 12, "x": 12, "y": 23 },
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "targets": [
-            { "expr": "increase(ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}[1d])", "interval": "1d", "legendFormat": "Par jour", "refId": "A" }
+            { "expr": "increase(ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}[1d] offset -22h)", "interval": "1d", "legendFormat": "Par jour", "refId": "A" }
           ],
           "fieldConfig": { "defaults": { "unit": "kg", "decimals": 0, "min": 0, "custom": { "drawStyle": "bars", "fillOpacity": 70, "lineWidth": 1, "barAlignment": -1 } } }
         }
