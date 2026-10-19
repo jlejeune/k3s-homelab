@@ -31,6 +31,12 @@
   tags: ip
 
 - include_tasks:
+    file: rtk.yml
+    apply:
+      tags: rtk
+  tags: rtk
+
+- include_tasks:
     file: user.yml
     apply:
       tags: user

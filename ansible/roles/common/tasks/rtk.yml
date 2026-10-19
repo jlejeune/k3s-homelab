@@ -1,0 +1,36 @@
+---
+- name: Get installed rtk version
+  ansible.builtin.command: /usr/local/bin/rtk --version
+  register: rtk_installed
+  changed_when: false
+  failed_when: false
+
+- name: Install rtk
+  when: rtk_installed.rc != 0 or rtk_version not in rtk_installed.stdout
+  vars:
+    rtk_target: "{{ 'aarch64-unknown-linux-gnu' if ansible_architecture == 'aarch64' else 'x86_64-unknown-linux-musl' }}"
+    rtk_release_url: "https://github.com/rtk-ai/rtk/releases/download/v{{ rtk_version }}"
+  block:
+    - name: Download rtk archive
+      ansible.builtin.get_url:
+        url: "{{ rtk_release_url }}/rtk-{{ rtk_target }}.tar.gz"
+        dest: "/tmp/rtk-{{ rtk_target }}.tar.gz"
+        checksum: "sha256:{{ rtk_release_url }}/checksums.txt"
+        mode: '0644'
+
+    - name: Extract rtk to /usr/local/bin
+      ansible.builtin.unarchive:
+        src: "/tmp/rtk-{{ rtk_target }}.tar.gz"
+        dest: /usr/local/bin
+        remote_src: true
+        owner: root
+        group: root
+        mode: '0755'
+        extra_opts:
+          - rtk
+
+  always:
+    - name: Remove rtk archive
+      ansible.builtin.file:
+        path: "/tmp/rtk-{{ rtk_target }}.tar.gz"
+        state: absent
