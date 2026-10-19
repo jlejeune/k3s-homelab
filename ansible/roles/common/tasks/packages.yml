@@ -20,7 +20,9 @@
     - apt-transport-https
     - ca-certificates
     - htop
+    - gh
     - git
+    - jq
     - lnav
     - manpages
     - mosh
