@@ -364,6 +364,8 @@ data:
       networks:
         - name: home
           networks: ["192.168.1.0/24"]
+        - name: cluster
+          networks: ["10.42.0.0/16"]
       rules:
         - domain: auth.{{SECRET_DOMAIN}}
           policy: bypass
@@ -468,5 +470,17 @@ data:
 
         - domain: bookmarks.{{SECRET_DOMAIN}}
           policy: bypass
+
+        - domain: nextcloud.{{SECRET_DOMAIN}}
+          policy: bypass
+          networks:
+            - home
+            - cluster
+
+        - domain: lam.{{SECRET_DOMAIN}}
+          policy: one_factor
+
+        - domain: rss.{{SECRET_DOMAIN}}
+          policy: one_factor
 
     ...

@@ -217,6 +217,8 @@ spec:
     - kind: Rule
       match: "Host(`rss.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
+        - name: forwardauth-authelia
+          namespace: networking
         - name: security-header
           namespace: networking
       services:
@@ -618,6 +620,8 @@ spec:
     - kind: Rule
       match: "Host(`nextcloud.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
       middlewares:
+        - name: forwardauth-authelia
+          namespace: networking
         - name: security-header
           namespace: networking
       services:
@@ -712,13 +716,18 @@ metadata:
   name: lam
   namespace: networking
   annotations:
-    external-dns.alpha.kubernetes.io/target: {{SECRET_DYNAMIC_DOMAIN}}
+    external-dns.alpha.kubernetes.io/target: "{{LB_TRAEFIK_ADDRESS}}"
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
       match: Host(`lam.{{SECRET_DOMAIN}}`)
+      middlewares:
+        - name: forwardauth-authelia
+          namespace: networking
+        - name: security-header
+          namespace: networking
       services:
         - kind: Service
           name: lam
