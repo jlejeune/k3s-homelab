@@ -139,6 +139,10 @@ data:
             icon: hl-youtube
             url: https://youtarr.{{SECRET_DOMAIN}}
             statusCheckUrl: http://youtarr.media-automation.svc.cluster.local:3011/api/health
+          - title: Tracearr
+            icon: hl-tracearr
+            url: https://tracearr.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://tracearr.media-automation.svc.cluster.local:3000/health
 
       - name: Home Automation
         icon: fas fa-house

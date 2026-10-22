@@ -1,0 +1,379 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tracearr-db-pvc
+  namespace: media-automation
+spec:
+  storageClassName: longhorn
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tracearr-db
+  namespace: media-automation
+  labels:
+    app.kubernetes.io/instance: tracearr-db
+  annotations:
+    reloader.stakater.com/auto: "true"
+    secret.reloader.stakater.com/reload: media-automation-secrets
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: tracearr-db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: tracearr-db
+    spec:
+      # TimescaleDB is too heavy for the Raspberry Pis
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: timescaledb
+          image: docker.io/timescale/timescaledb-ha:pg18.4-ts2.29.1
+          args:
+            - postgres
+            - -c
+            - timescaledb.license=timescale
+            - -c
+            - timescaledb.max_tuples_decompressed_per_dml_transaction=100000
+            - -c
+            - max_locks_per_transaction=4096
+            - -c
+            - timescaledb.telemetry_level=off
+            - -c
+            - max_connections=150
+            - -c
+            - shared_buffers=256MB
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: TZ
+              value: {{TZ}}
+            - name: POSTGRES_USER
+              value: tracearr
+            - name: POSTGRES_DB
+              value: tracearr
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: media-automation-secrets
+                  key: TRACEARR_DB_PASSWORD
+            # The PVC root holds lost+found, so PGDATA is a subdirectory
+            - name: PGDATA
+              value: /home/postgres/pgdata/data
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "tracearr", "-d", "tracearr"]
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", "tracearr", "-d", "tracearr"]
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+          volumeMounts:
+            - name: data
+              mountPath: /home/postgres/pgdata
+            - name: dshm
+              mountPath: /dev/shm
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: tracearr-db-pvc
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tracearr-db
+  namespace: media-automation
+spec:
+  ports:
+    - port: 5432
+      name: postgres
+  selector:
+    app.kubernetes.io/instance: tracearr-db
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tracearr-redis-pvc
+  namespace: media-automation
+spec:
+  storageClassName: longhorn
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tracearr-redis
+  namespace: media-automation
+  labels:
+    app.kubernetes.io/instance: tracearr-redis
+  annotations:
+    reloader.stakater.com/auto: "true"
+    secret.reloader.stakater.com/reload: media-automation-secrets
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: tracearr-redis
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: tracearr-redis
+    spec:
+      securityContext:
+        fsGroup: 999
+      containers:
+        - name: redis
+          image: docker.io/library/redis:8.10-alpine
+          # BullMQ needs noeviction, otherwise job queues can silently corrupt
+          args:
+            - redis-server
+            - --appendonly
+            - "yes"
+            - --maxmemory
+            - 384mb
+            - --maxmemory-policy
+            - noeviction
+            - --save
+            - ""
+            - --requirepass
+            - $(REDIS_PASSWORD)
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+          ports:
+            - containerPort: 6379
+              name: redis
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: media-automation-secrets
+                  key: TRACEARR_REDIS_PASSWORD
+            # redis-cli reads this variable, so the probes need no -a flag
+            - name: REDISCLI_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: media-automation-secrets
+                  key: TRACEARR_REDIS_PASSWORD
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: tracearr-redis-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tracearr-redis
+  namespace: media-automation
+spec:
+  ports:
+    - port: 6379
+      name: redis
+  selector:
+    app.kubernetes.io/instance: tracearr-redis
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tracearr-backups-pvc
+  namespace: media-automation
+spec:
+  storageClassName: longhorn
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tracearr-image-cache-pvc
+  namespace: media-automation
+spec:
+  storageClassName: longhorn
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tracearr
+  namespace: media-automation
+  labels:
+    app.kubernetes.io/instance: tracearr
+  annotations:
+    reloader.stakater.com/auto: "true"
+    secret.reloader.stakater.com/reload: media-automation-secrets
+spec:
+  # The session poller is a singleton: never run more than one replica
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: tracearr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: tracearr
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      securityContext:
+        fsGroup: 1001
+      containers:
+        - name: tracearr
+          image: ghcr.io/connorgallopo/tracearr:3.0.0
+          securityContext:
+            runAsUser: 1001
+            runAsGroup: 1001
+          ports:
+            - containerPort: 3000
+              name: http
+          env:
+            - name: TZ
+              value: {{TZ}}
+            - name: NODE_ENV
+              value: production
+            - name: HOST
+              value: 0.0.0.0
+            # DB_PASSWORD must come before DATABASE_URL so $(DB_PASSWORD) resolves
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: media-automation-secrets
+                  key: TRACEARR_DB_PASSWORD
+            - name: DATABASE_URL
+              value: postgres://tracearr:$(DB_PASSWORD)@tracearr-db:5432/tracearr
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: media-automation-secrets
+                  key: TRACEARR_REDIS_PASSWORD
+            - name: REDIS_URL
+              value: redis://:$(REDIS_PASSWORD)@tracearr-redis:6379
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: media-automation-secrets
+                  key: TRACEARR_JWT_SECRET
+            - name: COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: media-automation-secrets
+                  key: TRACEARR_COOKIE_SECRET
+            # One trusted reverse proxy (Traefik)
+            - name: TRUST_PROXY
+              value: "1"
+            - name: BACKUP_DIR
+              value: /data/backup
+            - name: IMAGE_CACHE_DIR
+              value: /data/tracearr/image-cache
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          volumeMounts:
+            - name: backups
+              mountPath: /data/backup
+            - name: image-cache
+              mountPath: /data/tracearr/image-cache
+      volumes:
+        - name: backups
+          persistentVolumeClaim:
+            claimName: tracearr-backups-pvc
+        - name: image-cache
+          persistentVolumeClaim:
+            claimName: tracearr-image-cache-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tracearr
+  namespace: media-automation
+spec:
+  ports:
+    - port: 3000
+      name: http
+  selector:
+    app.kubernetes.io/instance: tracearr

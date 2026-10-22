@@ -820,6 +820,33 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
+  name: tracearr
+  namespace: networking
+  annotations:
+    external-dns.alpha.kubernetes.io/target: "{{LB_TRAEFIK_ADDRESS}}"
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`tracearr.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: forwardauth-authelia
+          namespace: networking
+        - name: security-header
+          namespace: networking
+      services:
+        - kind: Service
+          name: tracearr
+          namespace: media-automation
+          port: 3000
+          scheme: http
+  tls:
+    secretName: "{{SECRET_DOMAIN}}-tls"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
   name: radarr
   namespace: networking
   annotations:

@@ -12,5 +12,6 @@ resources:
   - calibre-web-automated
   - audiobookshelf
   - youtarr
+  - tracearr
   - downloads-cleanup
   - missing-media-check
