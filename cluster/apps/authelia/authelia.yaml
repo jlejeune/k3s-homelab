@@ -410,7 +410,9 @@ data:
             - home
 
         - domain: nas.{{SECRET_DOMAIN}}
-          policy: bypass
+          policy: one_factor
+          networks:
+            - home
 
         - domain: ha.{{SECRET_DOMAIN}}
           policy: bypass
