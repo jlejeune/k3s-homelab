@@ -8,3 +8,4 @@ deployments:
   - include: system-upgrade
   - include: networking
   - include: monitoring
+  - include: crowdsec

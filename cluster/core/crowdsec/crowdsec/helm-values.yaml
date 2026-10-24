@@ -1,0 +1,31 @@
+---
+# k3s uses containerd, so the pod logs use the CRI format
+container_runtime: containerd
+
+agent:
+  acquisition:
+    - namespace: networking
+      podName: traefik-*
+      program: traefik
+  env:
+    - name: COLLECTIONS
+      value: crowdsecurity/traefik
+  # Traefik prefers the amd64 nodes, and the Raspberry Pis have 4 GB
+  nodeSelector:
+    kubernetes.io/arch: amd64
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
+lapi:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 200Mi
+    limits:
+      cpu: 500m
+      memory: 500Mi
