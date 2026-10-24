@@ -14,3 +14,4 @@ users:
     comment: Julien LE JEUNE
     shell: /bin/zsh
     uid: 1026
+k9s_version: v0.51.0

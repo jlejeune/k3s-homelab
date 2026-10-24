@@ -1,0 +1,55 @@
+---
+- name: Create kubectl symlink to the k3s binary
+  ansible.builtin.file:
+    src: /usr/local/bin/k3s
+    dest: /usr/local/bin/kubectl
+    state: link
+
+- name: Get installed k9s version
+  ansible.builtin.command: /usr/local/bin/k9s version --short
+  register: k9s_installed
+  changed_when: false
+  failed_when: false
+
+- name: Install k9s
+  when: k9s_installed.rc != 0 or k9s_version not in k9s_installed.stdout
+  vars:
+    k9s_arch: "{{ 'arm64' if ansible_architecture == 'aarch64' else 'amd64' }}"
+    k9s_release_url: "https://github.com/derailed/k9s/releases/download/{{ k9s_version }}"
+  block:
+    - name: Download k9s archive
+      ansible.builtin.get_url:
+        url: "{{ k9s_release_url }}/k9s_Linux_{{ k9s_arch }}.tar.gz"
+        dest: "/tmp/k9s_Linux_{{ k9s_arch }}.tar.gz"
+        checksum: "sha256:{{ k9s_release_url }}/checksums.sha256"
+        mode: '0644'
+
+    - name: Extract k9s to /usr/local/bin
+      ansible.builtin.unarchive:
+        src: "/tmp/k9s_Linux_{{ k9s_arch }}.tar.gz"
+        dest: /usr/local/bin
+        remote_src: true
+        owner: root
+        group: root
+        mode: '0755'
+        extra_opts:
+          - k9s
+
+  always:
+    - name: Remove k9s archive
+      ansible.builtin.file:
+        path: "/tmp/k9s_Linux_{{ k9s_arch }}.tar.gz"
+        state: absent
+
+- name: Look for the kubeconfig of the user
+  ansible.builtin.stat:
+    path: /home/jlejeune/.kube/config
+  register: user_kubeconfig
+
+- name: Restrict the kubeconfig of the user to its owner
+  ansible.builtin.file:
+    path: /home/jlejeune/.kube/config
+    owner: jlejeune
+    group: users
+    mode: '0600'
+  when: user_kubeconfig.stat.exists

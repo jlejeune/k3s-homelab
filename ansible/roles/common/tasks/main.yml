@@ -37,6 +37,13 @@
   tags: rtk
 
 - include_tasks:
+    file: kube-tools.yml
+    apply:
+      tags: kube-tools
+  tags: kube-tools
+  when: install_kube_tools | default(false) | bool
+
+- include_tasks:
     file: user.yml
     apply:
       tags: user
