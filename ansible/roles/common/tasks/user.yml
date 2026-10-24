@@ -65,30 +65,6 @@
     mode: '0600'
     content: "{{ chezmoi_age_key }}"
 
-- name: Install fzf
-  ansible.builtin.git:
-    repo: https://github.com/junegunn/fzf.git
-    dest: /home/jlejeune/.fzf
-    depth: 1
-    update: no
-  become: yes
-  become_user: jlejeune
-
-- name: Run fzf install script
-  ansible.builtin.command:
-    cmd: /home/jlejeune/.fzf/install --all --no-update-rc
-    creates: /home/jlejeune/.fzf/bin/fzf
-  become: yes
-  become_user: jlejeune
-  environment:
-    HOME: /home/jlejeune
-
-- name: Symlink fzf to /usr/local/bin
-  ansible.builtin.file:
-    src: /home/jlejeune/.fzf/bin/fzf
-    dest: /usr/local/bin/fzf
-    state: link
-
 - name: Install oh-my-zsh
   ansible.builtin.git:
     repo: https://github.com/ohmyzsh/ohmyzsh.git
