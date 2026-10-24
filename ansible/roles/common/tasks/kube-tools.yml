@@ -1,4 +1,9 @@
 ---
+- name: Install nodejs for the Claude Code plugin hooks
+  ansible.builtin.apt:
+    name: nodejs
+    state: present
+
 - name: Create kubectl symlink to the k3s binary
   ansible.builtin.file:
     src: /usr/local/bin/k3s
