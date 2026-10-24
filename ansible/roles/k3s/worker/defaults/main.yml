@@ -2,7 +2,6 @@
 systemd_dir: /etc/systemd/system
 
 # k3s
-k3s_master_vip: 192.168.1.9
 extra_args: "--node-ip={{ ansible_facts['eth0']['ipv4']['address'] }}"
 
 k3s_worker_extra_args: >-

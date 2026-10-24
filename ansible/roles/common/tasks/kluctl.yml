@@ -1,0 +1,66 @@
+---
+- name: Get installed kluctl version
+  ansible.builtin.command: /usr/local/bin/kluctl version
+  environment:
+    KLUCTL_NO_UPDATE_CHECK: "true"
+  register: kluctl_installed
+  changed_when: false
+  failed_when: false
+
+- name: Install kluctl
+  when: kluctl_installed.rc != 0 or kluctl_version not in kluctl_installed.stdout
+  vars:
+    kluctl_arch: "{{ 'arm64' if ansible_architecture == 'aarch64' else 'amd64' }}"
+    kluctl_release_url: "https://github.com/kluctl/kluctl/releases/download/v{{ kluctl_version }}"
+  block:
+    - name: Download kluctl archive
+      ansible.builtin.get_url:
+        url: "{{ kluctl_release_url }}/kluctl_v{{ kluctl_version }}_linux_{{ kluctl_arch }}.tar.gz"
+        dest: "/tmp/kluctl_v{{ kluctl_version }}_linux_{{ kluctl_arch }}.tar.gz"
+        checksum: "sha256:{{ kluctl_release_url }}/kluctl_v{{ kluctl_version }}_checksums.txt"
+        mode: '0644'
+
+    - name: Extract kluctl to /usr/local/bin
+      ansible.builtin.unarchive:
+        src: "/tmp/kluctl_v{{ kluctl_version }}_linux_{{ kluctl_arch }}.tar.gz"
+        dest: /usr/local/bin
+        remote_src: true
+        owner: root
+        group: root
+        mode: '0755'
+        extra_opts:
+          - kluctl
+
+  always:
+    - name: Remove kluctl archive
+      ansible.builtin.file:
+        path: "/tmp/kluctl_v{{ kluctl_version }}_linux_{{ kluctl_arch }}.tar.gz"
+        state: absent
+
+- name: Create the SOPS Age key directory
+  ansible.builtin.file:
+    path: /home/jlejeune/.config/sops/age
+    state: directory
+    owner: jlejeune
+    group: users
+    mode: '0700'
+
+- name: Copy the SOPS Age key from the Ansible controller
+  ansible.builtin.copy:
+    src: "{{ lookup('ansible.builtin.env', 'HOME') }}/.config/sops/age/keys.txt"
+    dest: /home/jlejeune/.config/sops/age/keys.txt
+    owner: jlejeune
+    group: users
+    mode: '0600'
+  no_log: true
+
+- name: Clone the homelab repository
+  ansible.builtin.git:
+    repo: https://github.com/jlejeune/k3s-homelab.git
+    dest: /home/jlejeune/dev/github.com/jlejeune/k3s-homelab
+    version: master
+    update: false
+  become: true
+  become_user: jlejeune
+  environment:
+    HOME: /home/jlejeune

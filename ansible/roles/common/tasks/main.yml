@@ -44,6 +44,13 @@
   when: install_kube_tools | default(false) | bool
 
 - include_tasks:
+    file: kluctl.yml
+    apply:
+      tags: kluctl
+  tags: kluctl
+  when: install_kube_tools | default(false) | bool
+
+- include_tasks:
     file: user.yml
     apply:
       tags: user

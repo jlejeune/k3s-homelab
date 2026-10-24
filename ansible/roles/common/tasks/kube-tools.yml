@@ -41,15 +41,26 @@
         path: "/tmp/k9s_Linux_{{ k9s_arch }}.tar.gz"
         state: absent
 
-- name: Look for the kubeconfig of the user
-  ansible.builtin.stat:
-    path: /home/jlejeune/.kube/config
-  register: user_kubeconfig
+- name: Read the kubeconfig of the first master
+  ansible.builtin.slurp:
+    src: /etc/rancher/k3s/k3s.yaml
+  delegate_to: "{{ groups['k3s_masters'][0] }}"
+  register: master_kubeconfig
+  no_log: true
 
-- name: Restrict the kubeconfig of the user to its owner
+- name: Create the .kube directory of the user
   ansible.builtin.file:
-    path: /home/jlejeune/.kube/config
+    path: /home/jlejeune/.kube
+    state: directory
+    owner: jlejeune
+    group: users
+    mode: '0700'
+
+- name: Write the kubeconfig of the user
+  ansible.builtin.copy:
+    content: "{{ master_kubeconfig.content | b64decode | replace('https://127.0.0.1:6443', 'https://' ~ k3s_master_vip ~ ':6443') }}"
+    dest: /home/jlejeune/.kube/config
     owner: jlejeune
     group: users
     mode: '0600'
-  when: user_kubeconfig.stat.exists
+  no_log: true
