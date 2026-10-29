@@ -1,0 +1,19 @@
+---
+- name: Get installed sops version
+  ansible.builtin.command: /usr/local/bin/sops --disable-version-check --version
+  register: sops_installed
+  changed_when: false
+  failed_when: false
+
+- name: Install sops
+  when: sops_installed.rc != 0 or sops_version not in sops_installed.stdout
+  vars:
+    sops_arch: "{{ 'arm64' if ansible_architecture == 'aarch64' else 'amd64' }}"
+    sops_release_url: "https://github.com/getsops/sops/releases/download/v{{ sops_version }}"
+  ansible.builtin.get_url:
+    url: "{{ sops_release_url }}/sops-v{{ sops_version }}.linux.{{ sops_arch }}"
+    dest: /usr/local/bin/sops
+    checksum: "sha256:{{ sops_release_url }}/sops-v{{ sops_version }}.checksums.txt"
+    owner: root
+    group: root
+    mode: '0755'
