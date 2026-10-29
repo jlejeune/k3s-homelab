@@ -47,6 +47,7 @@
     - unzip
     - util-linux
     - vim
+    - yamllint
     - zsh
 
 - name: Get latest neovim version
