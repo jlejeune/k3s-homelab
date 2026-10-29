@@ -1,0 +1,36 @@
+---
+- name: Get installed gpick version
+  ansible.builtin.command: /usr/local/bin/gpick --version
+  register: gpick_installed
+  changed_when: false
+  failed_when: false
+
+- name: Install gpick
+  when: gpick_installed.rc != 0 or gpick_version not in gpick_installed.stdout
+  vars:
+    gpick_target: x86_64-unknown-linux-musl
+    gpick_release_url: "https://github.com/jlejeune/gpick/releases/download/v{{ gpick_version }}"
+  block:
+    - name: Download gpick archive
+      ansible.builtin.get_url:
+        url: "{{ gpick_release_url }}/gpick-{{ gpick_target }}.tar.gz"
+        dest: "/tmp/gpick-{{ gpick_target }}.tar.gz"
+        checksum: "sha256:{{ gpick_release_url }}/checksums.txt"
+        mode: '0644'
+
+    - name: Extract gpick to /usr/local/bin
+      ansible.builtin.unarchive:
+        src: "/tmp/gpick-{{ gpick_target }}.tar.gz"
+        dest: /usr/local/bin
+        remote_src: true
+        owner: root
+        group: root
+        mode: '0755'
+        extra_opts:
+          - gpick
+
+  always:
+    - name: Remove gpick archive
+      ansible.builtin.file:
+        path: "/tmp/gpick-{{ gpick_target }}.tar.gz"
+        state: absent
