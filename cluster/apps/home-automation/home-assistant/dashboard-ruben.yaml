@@ -102,11 +102,11 @@ data:
         {
           "type": "gauge",
           "title": "Pellets restants (estimation, kg)",
-          "description": "Capacité utile du réservoir (13 kg) moins la consommation depuis le dernier plein. Le compteur valait 38 kg au plein du 2026-10-21 : à mettre à jour à chaque remplissage.",
+          "description": "Capacité utile du réservoir (13 kg) moins la consommation depuis le dernier plein. Le compteur valait 50 kg au plein du 2026-10-29 : à mettre à jour à chaque remplissage.",
           "gridPos": { "h": 5, "w": 8, "x": 0, "y": 4 },
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "targets": [
-            { "expr": "clamp_min(13 - (ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"} - 38), 0)", "refId": "A" }
+            { "expr": "clamp_min(13 - (ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"} - 50), 0)", "refId": "A" }
           ],
           "fieldConfig": { "defaults": { "unit": "kg", "decimals": 1, "min": 0, "max": 13, "thresholds": { "mode": "absolute", "steps": [
             { "color": "red", "value": null },
@@ -121,7 +121,7 @@ data:
           "gridPos": { "h": 5, "w": 8, "x": 8, "y": 4 },
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "targets": [
-            { "expr": "clamp_min(13 - (ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"} - 38), 0) / on() ((max_over_time(ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}[7d]) - min_over_time(ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}[7d])) / on() (count_over_time((ha_climate_action{entity=\"climate.ruben\",action=\"heating\"} == 1)[7d:1m]) / 60))", "refId": "A" }
+            { "expr": "clamp_min(13 - (ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"} - 50), 0) / on() ((max_over_time(ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}[7d]) - min_over_time(ha_sensor_weight_kg{entity=\"sensor.ruben_quantite_de_granules\"}[7d])) / on() (count_over_time((ha_climate_action{entity=\"climate.ruben\",action=\"heating\"} == 1)[7d:1m]) / 60))", "refId": "A" }
           ],
           "fieldConfig": { "defaults": { "unit": "h", "decimals": 0, "thresholds": { "mode": "absolute", "steps": [
             { "color": "red", "value": null },
