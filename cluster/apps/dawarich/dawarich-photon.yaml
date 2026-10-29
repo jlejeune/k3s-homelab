@@ -67,7 +67,7 @@ spec:
         kubernetes.io/hostname: galadriel
       containers:
         - name: dawarich-photon
-          image: rtuszik/photon-docker:2.4.0
+          image: rtuszik/photon-docker:2.5.0
           imagePullPolicy: IfNotPresent
           env:
             # Self-hosted reverse geocoder for Dawarich: location data never
