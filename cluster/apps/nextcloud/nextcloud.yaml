@@ -48,7 +48,9 @@ spec:
           command: ["/bin/bash", "-c"]
           args:
             - |
-              apt-get update -qq && apt-get install -y -qq smbclient
+              apt-get update -qq
+              apt-get install -y -qq smbclient libsmbclient-dev
+              pecl install smbclient && docker-php-ext-enable smbclient
               exec /entrypoint.sh apache2-foreground
           env:
             - name: POSTGRES_HOST
