@@ -51,7 +51,7 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 │   │   ├── reloader/           # Auto-restart pods on ConfigMap/Secret changes
 │   │   └── system-upgrade/     # Automated K3s upgrades
 │   └── apps/                   # User-facing applications
-│       ├── home-automation/    # Home Assistant, Zigbee2MQTT, Mosquitto, ESPHome, Go2RTC, Code Server, Whisper, Piper, OpenWakeWord
+│       ├── home-automation/    # Home Assistant, Zigbee2MQTT, Mosquitto, ESPHome, Go2RTC, Code Server, Whisper, Piper, OpenWakeWord, Music Assistant
 │       ├── immich/             # Self-hosted photo management (server + ML)
 │       ├── jellyfin/           # Media server
 │       ├── floppy/             # Movie/TV/anime/manga tracking
@@ -98,7 +98,7 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 
 | Category | Applications |
 |---|---|
-| **Home automation** | Home Assistant, Zigbee2MQTT, Mosquitto (MQTT broker), ESPHome, Go2RTC |
+| **Home automation** | Home Assistant, Zigbee2MQTT, Mosquitto (MQTT broker), ESPHome, Go2RTC, Music Assistant |
 | **AI / Voice** | Whisper (STT), Piper (TTS), OpenWakeWord |
 | **Media** | Jellyfin (video), Immich (photos with machine learning), Floppy (movie/TV/anime/manga tracking) |
 | **Media automation** | Prowlarr, Radarr, Sonarr, Seerr, Plundrio, Calibre-Web-Automated, Audiobookshelf (podcasts), Youtarr (YouTube channels), Tracearr (Jellyfin stream monitoring) |

@@ -1,0 +1,94 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: music-assistant-data-pvc
+  namespace: home-automation
+spec:
+  storageClassName: longhorn
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: music-assistant
+  namespace: home-automation
+  labels:
+    app.kubernetes.io/instance: music-assistant
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: music-assistant
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: music-assistant
+    spec:
+      # Host network lets Music Assistant discover players (mDNS, UPnP).
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: music-assistant
+          image: ghcr.io/music-assistant/server:2.10.9
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TZ
+              value: "{{TZ}}"
+          ports:
+            - name: http
+              containerPort: 8095
+              protocol: TCP
+            - name: stream
+              containerPort: 8097
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8095
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8095
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: music-assistant-data-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: music-assistant
+  namespace: home-automation
+  annotations:
+    metallb.io/loadBalancerIPs: {{LB_MUSIC_ASSISTANT_ADDRESS}}
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/instance: music-assistant
+  ports:
+    - name: http
+      port: 8095
+      targetPort: 8095
+      protocol: TCP
