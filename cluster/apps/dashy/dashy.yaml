@@ -154,6 +154,13 @@ data:
             displayData:
               showForKeycloakUsers:
                 groups: ["internal users", administrators]
+          - title: Music Assistant
+            icon: hl-music-assistant
+            url: https://music-assistant.{{SECRET_DOMAIN}}
+            statusCheckUrl: http://music-assistant.home-automation.svc.cluster.local:8095
+            displayData:
+              showForKeycloakUsers:
+                groups: ["internal users", administrators]
           - title: ESPHome
             icon: hl-esphome
             url: https://esphome.{{SECRET_DOMAIN}}

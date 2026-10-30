@@ -404,6 +404,32 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
+  name: music-assistant
+  namespace: networking
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: music-assistant.{{SECRET_DOMAIN}}
+    external-dns.alpha.kubernetes.io/target: {{LB_TRAEFIK_ADDRESS}}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`music-assistant.{{SECRET_DOMAIN}}`) && PathPrefix(`/`)"
+      middlewares:
+        - name: security-header
+          namespace: networking
+      services:
+        - kind: Service
+          name: music-assistant
+          namespace: home-automation
+          port: 8095
+          scheme: http
+  tls:
+    secretName: "{{SECRET_DOMAIN}}-tls"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
   name: grafana
   namespace: networking
   annotations:

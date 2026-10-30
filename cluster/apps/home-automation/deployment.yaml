@@ -5,6 +5,11 @@ vars:
       name: cluster-settings
       namespace: default
       key: LB_MQTT_ADDRESS
+  - targetPath: LB_MUSIC_ASSISTANT_ADDRESS
+    clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: LB_MUSIC_ASSISTANT_ADDRESS
 
 deployments:
   - include: piper
@@ -16,3 +21,4 @@ deployments:
   - include: zigbee2mqtt
   - include: openwakeword
   - path: esphome
+  - path: music-assistant
