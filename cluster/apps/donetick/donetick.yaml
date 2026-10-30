@@ -83,7 +83,7 @@ spec:
               mountPath: /data
       containers:
         - name: donetick
-          image: donetick/donetick:v0.1.83
+          image: donetick/donetick:v0.1.85
           imagePullPolicy: IfNotPresent
           env:
             - name: DT_ENV
