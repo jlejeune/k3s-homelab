@@ -74,7 +74,7 @@ spec:
               name: dawarich-data
       containers:
         - name: dawarich
-          image: freikin/dawarich:1.19.0
+          image: freikin/dawarich:1.20.0
           imagePullPolicy: IfNotPresent
           command:
             - web-entrypoint.sh
@@ -168,7 +168,7 @@ spec:
               name: dawarich-data
       containers:
         - name: dawarich-sidekiq
-          image: freikin/dawarich:1.19.0
+          image: freikin/dawarich:1.20.0
           imagePullPolicy: IfNotPresent
           command:
             - sidekiq-entrypoint.sh
