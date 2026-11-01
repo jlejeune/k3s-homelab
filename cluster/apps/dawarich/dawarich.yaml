@@ -99,6 +99,18 @@ spec:
             - name: http
               containerPort: 3000
               protocol: TCP
+          # Rails boots slowly on Raspberry Pi nodes: allow up to 5 min before
+          # liveness and readiness start.
+          startupProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+              httpHeaders:
+                - name: X-Forwarded-Proto
+                  value: https
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
           readinessProbe:
             httpGet:
               path: /api/v1/health
@@ -106,8 +118,8 @@ spec:
               httpHeaders:
                 - name: X-Forwarded-Proto
                   value: https
-            initialDelaySeconds: 20
             periodSeconds: 10
+            timeoutSeconds: 5
             failureThreshold: 6
           livenessProbe:
             httpGet:
@@ -116,8 +128,8 @@ spec:
               httpHeaders:
                 - name: X-Forwarded-Proto
                   value: https
-            initialDelaySeconds: 40
             periodSeconds: 30
+            timeoutSeconds: 5
             failureThreshold: 5
           volumeMounts:
             - mountPath: /var/app/public
