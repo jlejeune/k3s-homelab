@@ -26,6 +26,8 @@ data:
             {
               "expr": "ha_climate_action{entity=\"climate.ruben\"} == 1",
               "legendFormat": "{{ '{{action}}' }}",
+              "instant": true,
+              "range": false,
               "refId": "A"
             }
           ],
