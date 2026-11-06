@@ -2,6 +2,6 @@
 helmChart:
   repo: https://crowdsecurity.github.io/helm-charts
   chartName: crowdsec
-  chartVersion: 0.24.2
+  chartVersion: 0.24.3
   releaseName: crowdsec
   namespace: crowdsec
