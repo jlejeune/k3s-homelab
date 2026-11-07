@@ -4,7 +4,6 @@ deployment:
   replicas: 1
 service:
   enabled: true
-  type: LoadBalancer
   spec:
     loadBalancerIP: "{{LB_TRAEFIK_ADDRESS}}"
     externalTrafficPolicy: Local
