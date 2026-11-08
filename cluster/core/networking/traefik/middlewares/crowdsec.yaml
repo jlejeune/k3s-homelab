@@ -1,0 +1,27 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: crowdsec
+  namespace: networking
+spec:
+  plugin:
+    bouncer:
+      enabled: true
+      crowdsecMode: stream
+      updateIntervalSeconds: 60
+      # Let requests pass when the LAPI is unreachable (the default blocks them)
+      updateMaxFailure: -1
+      # Do not wait for the LAPI at start, so Traefik serves traffic if it is down
+      streamStartupBlock: false
+      crowdsecLapiScheme: http
+      crowdsecLapiHost: crowdsec-service.crowdsec.svc.cluster.local:8080
+      crowdsecLapiKey: "{{SECRET_CROWDSEC_BOUNCER_KEY}}"
+      # LAN, WireGuard clients and pods. The plugin takes the client address from
+      # X-Forwarded-For without checking who sent it. Traefik removes that header
+      # from untrusted clients, so do not add forwardedHeaders.trustedIPs to the
+      # entry points without also setting forwardedHeadersTrustedIPs here
+      clientTrustedIPs:
+        - 192.168.1.0/24
+        - 192.168.2.0/24
+        - 10.42.0.0/16

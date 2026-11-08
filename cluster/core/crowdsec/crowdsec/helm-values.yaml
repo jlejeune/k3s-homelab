@@ -22,6 +22,10 @@ agent:
       memory: 256Mi
 
 lapi:
+  env:
+    # Registers the bouncer of the Traefik plugin with a key from cluster-secrets
+    - name: BOUNCER_KEY_traefik
+      value: "{{SECRET_CROWDSEC_BOUNCER_KEY}}"
   resources:
     requests:
       cpu: 50m

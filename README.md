@@ -44,6 +44,7 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 │   ├── core/                   # Infrastructure services
 │   │   ├── cert-manager/       # TLS certificates (Let's Encrypt + local CA)
 │   │   ├── networking/         # Traefik, MetalLB, kube-vip, External DNS
+│   │   ├── crowdsec/           # CrowdSec agent and LAPI (the Traefik bouncer plugin is set up in networking/)
 │   │   ├── monitoring/         # VictoriaMetrics, vmagent, vmalert, Grafana, Alertmanager, Uptime Kuma
 │   │   ├── storage/            # Longhorn + NFS provisioner
 │   │   ├── kube-system/        # k8s device plugin
@@ -89,6 +90,7 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 | Category | Components |
 |---|---|
 | **Networking** | Traefik (reverse proxy, `192.168.1.200`), MetalLB (load balancer), kube-vip, External DNS |
+| **Intrusion protection** | CrowdSec (agent and LAPI) with the Traefik bouncer plugin, which bans hostile IP addresses |
 | **Storage** | Longhorn (distributed block storage on USB drives), NFS provisioner (NAS at `192.168.1.50`) |
 | **Certificates** | cert-manager with Let's Encrypt (production + staging), OVH DNS challenge webhook, local CA (`jlejeune.home`) |
 | **Monitoring** | VictoriaMetrics (TSDB), vmagent, vmalert, Grafana, Alertmanager, node-exporter, kube-state-metrics, Uptime Kuma |
@@ -113,6 +115,7 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 - Separate encryption rules for `cluster/` and `ansible/` directories (see `.sops.yaml`)
 - SSH hardening and **fail2ban** configured via the `common` Ansible role
 - **Authelia** provides SSO with forward authentication through Traefik middlewares
+- **CrowdSec** reads the Traefik access log and bans hostile IP addresses at the Traefik entry point
 - A **pre-commit hook** (`forbid-secrets`) prevents accidental commit of unencrypted secrets
 
 ## Prerequisites

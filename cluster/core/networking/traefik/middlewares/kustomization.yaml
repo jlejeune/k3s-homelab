@@ -7,3 +7,4 @@ resources:
   - redirect-https.yaml
   - private-network-access.yaml
   - security-header.yaml
+  - crowdsec.yaml

@@ -16,6 +16,11 @@ accessLog:
   enabled: true
 api:
   dashboard: true
+experimental:
+  plugins:
+    bouncer:
+      moduleName: github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin
+      version: v1.8.1
 additionalArguments:
   - "--providers.kubernetesingress.ingressclass=traefik"
   - "--providers.kubernetesingress.ingressendpoint.ip={{LB_TRAEFIK_ADDRESS}}"
@@ -33,6 +38,10 @@ ports:
   metrics:
     expose:
       default: true
+  websecure:
+    http:
+      middlewares:
+        - networking-crowdsec@kubernetescrd
   web:
     http:
       redirections:

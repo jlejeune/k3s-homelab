@@ -1,3 +1,10 @@
 ---
+vars:
+  - targetPath: SECRET_CROWDSEC_BOUNCER_KEY
+    clusterSecret:
+      name: cluster-secrets
+      namespace: default
+      key: SECRET_CROWDSEC_BOUNCER_KEY
+
 deployments:
   - path: crowdsec
