@@ -74,5 +74,16 @@
       ],
       datasourceTemplate: 'github-releases',
     },
+    {
+      // Raw GitHub file URL with a version tag in the path (kustomize resources)
+      customType: 'regex',
+      managerFilePatterns: [
+        '/cluster/.+/kustomization\\.ya?ml$/',
+      ],
+      matchStrings: [
+        'https://raw\\.githubusercontent\\.com/(?<depName>[^/]+/[^/]+)/(?<currentValue>v[^/]+)/',
+      ],
+      datasourceTemplate: 'github-releases',
+    },
   ],
 }
