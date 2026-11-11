@@ -20,6 +20,16 @@
     name: postfix
     state: restarted
 
+- name: reload systemd
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+
+- name: restart claude-remote
+  ansible.builtin.systemd_service:
+    name: claude-remote
+    state: restarted
+  when: claude_remote_credentials.stat.exists
+
 - name: reconfigure locales
   command: dpkg-reconfigure -f noninteractive locales
 

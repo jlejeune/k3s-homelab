@@ -1,0 +1,22 @@
+# {{ ansible_managed }}
+[Unit]
+Description=Claude Code Remote Control ({{ system_hostname }})
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User={{ claude_user }}
+Environment=HOME=/home/{{ claude_user }}
+Environment=PATH=/home/{{ claude_user }}/.local/bin:/usr/local/bin:/usr/bin:/bin
+Environment=KUBECONFIG=/home/{{ claude_user }}/.kube/config
+Environment=SOPS_AGE_KEY_FILE=/home/{{ claude_user }}/.config/sops/age/keys.txt
+WorkingDirectory={{ claude_workdir }}
+ExecStart=/home/{{ claude_user }}/.local/bin/claude remote-control --name {{ system_hostname }} --spawn {{ claude_remote_spawn }} --permission-mode {{ claude_remote_permission_mode }}
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

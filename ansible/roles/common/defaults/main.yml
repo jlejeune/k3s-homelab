@@ -20,3 +20,7 @@ sops_version: "3.13.3"
 mail_relay_host: "192.168.1.203"
 mail_relay_port: 25
 mail_domain: "jlejeune.home"
+claude_user: "jlejeune"
+claude_workdir: "/home/jlejeune/dev/github.com/jlejeune/k3s-homelab"
+claude_remote_spawn: "same-dir"
+claude_remote_permission_mode: "default"

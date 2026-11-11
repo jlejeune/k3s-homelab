@@ -1,0 +1,67 @@
+---
+# Install Claude Code for the user, then run Remote Control as a system
+# service, so that you can start sessions from the phone. The ~/.claude files
+# (CLAUDE.md, plugins) come from chezmoi, in the `user` tasks. You must log in
+# once by hand as the service user (run `claude` in the project directory and
+# accept the trust prompt). Until the login exists, this task enables the
+# service but does not start it. Claude Code updates itself after the install.
+- name: Check if Claude Code is installed
+  ansible.builtin.stat:
+    path: "/home/{{ claude_user }}/.local/bin/claude"
+  register: claude_binary
+
+- name: Install Claude Code
+  when: not claude_binary.stat.exists
+  block:
+    - name: Download the Claude Code installer
+      ansible.builtin.get_url:
+        url: https://claude.ai/install.sh
+        dest: /tmp/claude-install.sh
+        mode: '0755'
+
+    - name: Run the Claude Code installer as the user
+      ansible.builtin.command:
+        cmd: bash /tmp/claude-install.sh
+        creates: "/home/{{ claude_user }}/.local/bin/claude"
+      become: true
+      become_user: "{{ claude_user }}"
+      environment:
+        HOME: "/home/{{ claude_user }}"
+
+  always:
+    - name: Remove the Claude Code installer
+      ansible.builtin.file:
+        path: /tmp/claude-install.sh
+        state: absent
+
+- name: Check that Claude Code is logged in
+  ansible.builtin.stat:
+    path: "/home/{{ claude_user }}/.claude/.credentials.json"
+  register: claude_remote_credentials
+
+- name: Install the Claude Remote Control unit
+  ansible.builtin.template:
+    src: claude-remote.service.j2
+    dest: /etc/systemd/system/claude-remote.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - reload systemd
+    - restart claude-remote
+
+- name: Apply the unit change before the service starts
+  ansible.builtin.meta: flush_handlers
+
+- name: Enable the Claude Remote Control service
+  ansible.builtin.systemd_service:
+    name: claude-remote
+    enabled: true
+    state: "{{ 'started' if claude_remote_credentials.stat.exists else 'stopped' }}"
+
+- name: Warn when Claude Code is not logged in
+  ansible.builtin.debug:
+    msg: >-
+      Claude Code has no login for {{ claude_user }}. Log in by hand,
+      then run this playbook again with --tags claude.
+  when: not claude_remote_credentials.stat.exists

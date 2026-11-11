@@ -58,6 +58,13 @@
   when: install_kube_tools | default(false) | bool
 
 - include_tasks:
+    file: claude.yml
+    apply:
+      tags: claude
+  tags: claude
+  when: install_claude | default(false) | bool
+
+- include_tasks:
     file: gpick.yml
     apply:
       tags: gpick

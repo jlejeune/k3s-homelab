@@ -19,6 +19,19 @@ ansible-galaxy collection install -r requirements.yml
 - Configure `/boot/config.txt`
 - Run raspi-config
 - Install plik client
+- Install Claude Code and run Remote Control as a systemd service (`install_claude`, only on galadriel)
+
+#### Claude Code on galadriel
+
+The `claude` tag installs Claude Code for `jlejeune` with the official installer. It then installs `claude-remote.service`, which runs `claude remote-control` in the repository clone. The `~/.claude` files come from chezmoi, in the `user` tag.
+
+Before the service can start, log in once by hand on galadriel as `jlejeune`: run `claude` in the repository directory, log in with the claude.ai account and accept the trust prompt. Then apply the role:
+
+```sh
+ansible-playbook playbooks/bootstrap.yml -l galadriel --tags claude
+```
+
+Without the login, Ansible installs and enables the service but leaves it stopped. Claude Code updates itself, so Ansible does not install it again. Use `claude_remote_spawn` (`same-dir`, `worktree` or `session`) and `claude_remote_permission_mode` in `inventory/host_vars/galadriel.yml` to change the behavior.
 
 ### k3s
 
