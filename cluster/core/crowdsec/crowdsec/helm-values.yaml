@@ -2,6 +2,27 @@
 # k3s uses containerd, so the pod logs use the CRI format
 container_runtime: containerd
 
+config:
+  parsers:
+    s02-enrich:
+      # Jellyfin and Immich clients ask for images that do not exist. These 404
+      # answers look like probing to CrowdSec and banned a real user on 2026-11-11
+      missing-images.yaml: |
+        name: homelab/missing-images
+        description: "Ignore 404 answers for images that clients ask for but do not exist"
+        whitelist:
+          reason: "missing images are normal client behavior"
+          expression:
+            - >-
+              evt.Meta.http_status == '404'
+              && evt.Meta.traefik_router_name startsWith 'networking-jellyfin-'
+              && (evt.Meta.http_path matches '^/(Items|Users)/[0-9a-fA-F-]+/Images/'
+              || evt.Meta.http_path matches '^/UserImage')
+            - >-
+              evt.Meta.http_status == '404'
+              && evt.Meta.traefik_router_name startsWith 'networking-immich-'
+              && evt.Meta.http_path matches '^/api/users/[0-9a-fA-F-]+/profile-image'
+
 agent:
   acquisition:
     - namespace: networking
