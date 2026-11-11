@@ -58,7 +58,6 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 │       ├── floppy/             # Movie/TV/anime/manga tracking
 │       ├── freshrss/           # RSS reader
 │       ├── joplin/             # Note-taking (with PostgreSQL)
-│       ├── linkding/           # Bookmark manager
 │       ├── mealie/             # Recipe manager
 │       ├── dawarich/           # Location history tracking (PostGIS + Sidekiq)
 │       ├── donetick/           # Chore/task tracker
@@ -104,7 +103,7 @@ The master VIP is `192.168.1.9`, managed by **kube-vip**. The cluster runs a mix
 | **AI / Voice** | Whisper (STT), Piper (TTS), OpenWakeWord |
 | **Media** | Jellyfin (video), Immich (photos with machine learning), Floppy (movie/TV/anime/manga tracking) |
 | **Media automation** | Prowlarr, Radarr, Sonarr, Seerr, Plundrio, Calibre-Web-Automated, Audiobookshelf (podcasts), Youtarr (YouTube channels), Tracearr (Jellyfin stream monitoring) |
-| **Productivity** | Joplin (notes), Mealie (recipes), Donetick (chores), Actual Budget (budget), Linkding (bookmarks), FreshRSS (feeds), Nextcloud (files), Code Server (VS Code), Dawarich (location history) |
+| **Productivity** | Joplin (notes), Mealie (recipes), Donetick (chores), Actual Budget (budget), FreshRSS (feeds), Nextcloud (files), Code Server (VS Code), Dawarich (location history) |
 | **Networking** | Technitium (DNS), WireGuard (VPN), Traefik ingress routes |
 | **Auth / Identity** | Authelia (SSO with forward auth), OpenLDAP + LDAP Account Manager |
 | **Utilities** | Plik (file sharing), Stirling PDF, Supabase (BaaS), The Lounge (IRC), SMTP Relay (Postfix), Dashy (dashboard), RustDesk (remote desktop), Zerobyte (encrypted backups) |
