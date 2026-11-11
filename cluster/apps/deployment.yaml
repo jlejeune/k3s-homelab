@@ -65,7 +65,6 @@ deployments:
   - path: rustdesk
   - path: stirling-pdf
   - path: thelounge
-  - path: linkding
   - path: zerobyte
   - path: dawarich
   - path: supabase
