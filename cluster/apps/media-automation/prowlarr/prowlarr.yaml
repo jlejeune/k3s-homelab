@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
         - name: prowlarr
-          image: docker.io/linuxserver/prowlarr:2.7.0.5723-ls167
+          image: docker.io/linuxserver/prowlarr:2.7.0.5723-ls168
           ports:
             - containerPort: 9696
               name: http
