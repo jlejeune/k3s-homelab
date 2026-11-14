@@ -36,7 +36,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
         - name: music-assistant
-          image: ghcr.io/music-assistant/server:2.10.9
+          image: ghcr.io/music-assistant/server:2.10.12
           imagePullPolicy: IfNotPresent
           env:
             - name: TZ
