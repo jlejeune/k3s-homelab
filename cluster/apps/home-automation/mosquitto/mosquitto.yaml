@@ -158,6 +158,7 @@ data:
     homeassistant:$7$101$qhRjwnzNmRpTP54v$mMEma60H9AZtN9S0rUpuvfk54aj37BNw5aOI7snFqhg3MX8vypz3rq8+AcnOzikXw3GV7FYUdqmdXkl46U608g==
     zigbee2mqtt:$7$101$QKN5Ghmr4QaiXn5A$KB42itqcWqjjghNpkhlZLsEHRo5Yu28Z9HGmQNvu+dMs/Ra/e+zk3XwQyawsdthUYVFhdt29KnMRNMUGpwrXxA==
     uptime-kuma:$7$101$9HgozqY5HianOLvk$XUEseQw+Q13uwPEmKJMOL8h+AWnXbjDzUaJfo2Y5gqb0ReyHzNsVwKxgYGtOTcSZUEaQtvnMjFkmYFJXp6DsSA==
+    valetudo:$7$101$XhmR97kerXQUJCJ/$pncBdYh+zdwX1UqNHI1ec0KcZpSc64aZyi9k5f063h3n9ie5rwNjnlwhmJdN/WUh15FnGkgxa89Ck2GIWljlyA==
   mosquitto.acl: |
     user homeassistant
     topic readwrite #
@@ -167,6 +168,10 @@ data:
 
     user uptime-kuma
     topic readwrite uptime-kuma/#
+
+    user valetudo
+    topic readwrite valetudo/#
+    topic readwrite homeassistant/#
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
