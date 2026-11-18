@@ -62,6 +62,19 @@ extraScrapeConfigs:
       - targets:
           - traefik.networking.svc.cluster.local:9100
     metrics_path: /metrics
+  - job_name: crowdsec
+    kubernetes_sd_configs:
+      - role: endpoints
+        namespaces:
+          names:
+            - crowdsec
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_endpoint_port_name]
+        regex: metrics
+        action: keep
+      - source_labels: [__meta_kubernetes_pod_name]
+        target_label: instance
+    metrics_path: /metrics
   - job_name: kube-state-metrics
     static_configs:
       - targets:

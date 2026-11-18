@@ -63,6 +63,10 @@ dashboards:
       gnetId: 10229
       revision: 22
       datasource: Prometheus
+    crowdsec:
+      gnetId: 21419
+      revision: 6
+      datasource: Prometheus
 sidecar:
   datasources:
     enabled: true
