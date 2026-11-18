@@ -9,7 +9,7 @@ spec:
     bouncer:
       enabled: true
       crowdsecMode: stream
-      updateIntervalSeconds: 60
+      updateIntervalSeconds: 15
       # Let requests pass when the LAPI is unreachable (the default blocks them)
       updateMaxFailure: -1
       # Do not wait for the LAPI at start, so Traefik serves traffic if it is down
