@@ -3,6 +3,25 @@
 container_runtime: containerd
 
 config:
+  # A repeat offender gets a longer ban: 4 h, then 8 h, 12 h and so on, up to 24 h.
+  # The count comes from the decisions that the LAPI still keeps (about 7 days)
+  profiles.yaml: |
+    name: default_ip_remediation
+    filters:
+      - Alert.Remediation == true && Alert.GetScope() == "Ip"
+    decisions:
+      - type: ban
+        duration: 4h
+    duration_expr: Sprintf('%dh', min((GetDecisionsCount(Alert.GetValue()) + 1) * 4, 24))
+    on_success: break
+    ---
+    name: default_range_remediation
+    filters:
+      - Alert.Remediation == true && Alert.GetScope() == "Range"
+    decisions:
+      - type: ban
+        duration: 4h
+    on_success: break
   parsers:
     s02-enrich:
       # Jellyfin and Immich clients ask for images that do not exist. These 404
