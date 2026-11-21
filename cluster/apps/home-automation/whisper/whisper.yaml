@@ -36,7 +36,7 @@ spec:
           image: rhasspy/wyoming-whisper:3.9.1
           args:
             - --model
-            - tiny-int8
+            - base-int8
             - --language
             - fr
           env:
