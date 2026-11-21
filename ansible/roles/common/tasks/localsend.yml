@@ -4,23 +4,35 @@
 # no terminal, accepts paired devices and declines all other devices. You must
 # pair each device once by hand, see ansible/README.md. The binary is for
 # x86_64 only. To install a new build, publish a new release, then change
-# `localsend_cli_release`.
+# `localsend_cli_release` and `localsend_cli_sha256`. The sha256 value is the
+# hash of the x86-64 archive of that release.
 - name: Check that the host is x86_64
   ansible.builtin.assert:
     that: ansible_architecture == 'x86_64'
     fail_msg: The localsend-cli release has an x86_64 binary only.
     quiet: true
 
-- name: Install localsend-cli
+# The release tag is the upstream version plus a fork counter, for example
+# v1.18.2-fork.1. The archive name holds the upstream version only.
+- name: Download the localsend-cli archive
   vars:
-    localsend_release_url: "https://github.com/jlejeune/localsend/releases/download/{{ localsend_cli_release }}"
+    localsend_cli_version: "{{ localsend_cli_release | regex_replace('^v(.*)-fork\\.[0-9]+$', '\\1') }}"
   ansible.builtin.get_url:
-    url: "{{ localsend_release_url }}/localsend-cli-linux-x86-64"
-    dest: /usr/local/bin/localsend-cli
-    checksum: "sha256:{{ localsend_release_url }}/checksums.txt"
+    url: "https://github.com/jlejeune/localsend/releases/download/{{ localsend_cli_release }}/LocalSend-CLI-{{ localsend_cli_version }}-linux-x86-64.tar.gz"
+    dest: "/var/tmp/localsend-cli-{{ localsend_cli_release }}.tar.gz"
+    checksum: "sha256:{{ localsend_cli_sha256 }}"
+    mode: '0644'
+
+- name: Install localsend-cli
+  ansible.builtin.unarchive:
+    src: "/var/tmp/localsend-cli-{{ localsend_cli_release }}.tar.gz"
+    dest: /usr/local/bin
+    remote_src: true
     owner: root
     group: root
     mode: '0755'
+    extra_opts:
+      - localsend-cli
   notify: restart localsend-receive
 
 - name: Create the localsend-cli directories

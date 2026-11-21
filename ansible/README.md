@@ -44,7 +44,7 @@ To install or update the service, run this command from the `ansible` directory:
 ansible-playbook playbooks/bootstrap.yml -l galadriel --tags localsend
 ```
 
-To install a new build, publish a new release in the fork. Then change `localsend_cli_release` in `roles/common/defaults/main.yml`.
+To install a new build, publish a new release in the fork. Then change `localsend_cli_release` and `localsend_cli_sha256` in `roles/common/defaults/main.yml`. The value of `localsend_cli_sha256` is the SHA-256 hash of the `LocalSend-CLI-<version>-linux-x86-64.tar.gz` file of that release. To get the hash, download the file and run `sha256sum` on it.
 
 You must pair each device once by hand. The service reads the list of paired devices only at startup. Follow these steps on galadriel as `jlejeune`:
 
