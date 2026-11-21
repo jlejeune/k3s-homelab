@@ -22,3 +22,4 @@ deployments:
   - include: openwakeword
   - path: esphome
   - path: music-assistant
+  - include: wyoming-satellite-karotz

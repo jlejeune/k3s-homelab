@@ -1,0 +1,15 @@
+---
+vars:
+  - targetPath: KAROTZ_ADDRESS
+    clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: KAROTZ_ADDRESS
+  - targetPath: LB_WYOMING_SATELLITE_KAROTZ_ADDRESS
+    clusterConfigMap:
+      name: cluster-settings
+      namespace: default
+      key: LB_WYOMING_SATELLITE_KAROTZ_ADDRESS
+
+deployments:
+  - path: .

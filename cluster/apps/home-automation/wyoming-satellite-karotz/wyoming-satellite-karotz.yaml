@@ -1,0 +1,87 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wyoming-satellite-karotz
+  namespace: home-automation
+  labels:
+    app.kubernetes.io/instance: wyoming-satellite-karotz
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: wyoming-satellite-karotz
+  # The rabbit serves its microphone to one client at a time.
+  # Recreate stops the old pod before it starts the new one.
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: wyoming-satellite-karotz
+    spec:
+      containers:
+        - name: wyoming-satellite-karotz
+          # Built by https://github.com/jlejeune/wyoming-satellite-karotz
+          # yamllint disable-line rule:line-length
+          image: ghcr.io/jlejeune/wyoming-satellite-karotz:0.1.0@sha256:64a25d34639d0fea2b546009c2fb31ccb50e0c0ff0613dcdd05e51a96e9ff49d
+          env:
+            - name: TZ
+              value: {{TZ}}
+            - name: KAROTZ_HOST
+              value: "{{KAROTZ_ADDRESS}}"
+            - name: SATELLITE_NAME
+              value: karotz
+            - name: WAKE_URI
+              value: tcp://openwakeword:10400
+            - name: WAKE_WORD
+              value: ok_nabu
+          ports:
+            - name: wyoming
+              containerPort: 10700
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 10700
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 10700
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
+          resources:
+            requests:
+              memory: "64Mi"
+            limits:
+              memory: "256Mi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+---
+# Home Assistant uses host networking and the DNS of the nodes.
+# It cannot resolve the name of a cluster service.
+# It connects to the satellite on the address of this load balancer,
+# on port 10700, as it does for whisper, piper and openwakeword.
+apiVersion: v1
+kind: Service
+metadata:
+  name: wyoming-satellite-karotz
+  namespace: home-automation
+  annotations:
+    metallb.io/loadBalancerIPs: {{LB_WYOMING_SATELLITE_KAROTZ_ADDRESS}}
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/instance: wyoming-satellite-karotz
+  ports:
+    - name: wyoming
+      port: 10700
+      targetPort: 10700
+      protocol: TCP

@@ -12,3 +12,4 @@ resources:
   - whisper
   - zigbee2mqtt
   - esphome
+  - wyoming-satellite-karotz
