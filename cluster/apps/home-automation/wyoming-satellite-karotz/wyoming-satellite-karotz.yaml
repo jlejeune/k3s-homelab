@@ -26,7 +26,7 @@ spec:
         - name: wyoming-satellite-karotz
           # Built by https://github.com/jlejeune/wyoming-satellite-karotz
           # yamllint disable-line rule:line-length
-          image: ghcr.io/jlejeune/wyoming-satellite-karotz:0.1.0@sha256:64a25d34639d0fea2b546009c2fb31ccb50e0c0ff0613dcdd05e51a96e9ff49d
+          image: ghcr.io/jlejeune/wyoming-satellite-karotz:0.1.1@sha256:86ac4e7407cb4167b1d49329658c93c80daabc0d45981f782c0177c61ef02d67
           env:
             - name: TZ
               value: {{TZ}}
