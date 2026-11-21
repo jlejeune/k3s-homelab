@@ -1,0 +1,70 @@
+---
+# Install localsend-cli from a release of the jlejeune/localsend fork, then run
+# its `receive` command as a system service. The fork adds `receive`: it needs
+# no terminal, accepts paired devices and declines all other devices. You must
+# pair each device once by hand, see ansible/README.md. The binary is for
+# x86_64 only. To install a new build, publish a new release, then change
+# `localsend_cli_release`.
+- name: Check that the host is x86_64
+  ansible.builtin.assert:
+    that: ansible_architecture == 'x86_64'
+    fail_msg: The localsend-cli release has an x86_64 binary only.
+    quiet: true
+
+- name: Install localsend-cli
+  vars:
+    localsend_release_url: "https://github.com/jlejeune/localsend/releases/download/{{ localsend_cli_release }}"
+  ansible.builtin.get_url:
+    url: "{{ localsend_release_url }}/localsend-cli-linux-x86-64"
+    dest: /usr/local/bin/localsend-cli
+    checksum: "sha256:{{ localsend_release_url }}/checksums.txt"
+    owner: root
+    group: root
+    mode: '0755'
+  notify: restart localsend-receive
+
+- name: Create the localsend-cli directories
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ localsend_user }}"
+    group: "{{ localsend_group }}"
+    mode: "{{ item.mode | default(omit) }}"
+  loop:
+    - path: "/home/{{ localsend_user }}/.config/localsend-cli"
+      mode: '0700'
+    - path: "{{ localsend_destination }}"
+
+# The ufw firewall drops incoming traffic by default. These rules let the
+# local network reach LocalSend (discovery on UDP, transfers on TCP). They do
+# not turn ufw on or off.
+- name: Allow the local network to reach LocalSend
+  community.general.ufw:
+    rule: allow
+    from_ip: "{{ localsend_allowed_network }}"
+    port: '53317'
+    proto: "{{ item }}"
+    comment: LocalSend
+  loop:
+    - tcp
+    - udp
+
+- name: Install the localsend-receive unit
+  ansible.builtin.template:
+    src: localsend-receive.service.j2
+    dest: /etc/systemd/system/localsend-receive.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - reload systemd
+    - restart localsend-receive
+
+- name: Apply the unit change before the service starts
+  ansible.builtin.meta: flush_handlers
+
+- name: Enable the localsend-receive service
+  ansible.builtin.systemd_service:
+    name: localsend-receive
+    enabled: true
+    state: started

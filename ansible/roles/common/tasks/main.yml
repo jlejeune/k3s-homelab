@@ -72,6 +72,13 @@
   when: install_gpick | default(false) | bool
 
 - include_tasks:
+    file: localsend.yml
+    apply:
+      tags: localsend
+  tags: localsend
+  when: install_localsend | default(false) | bool
+
+- include_tasks:
     file: user.yml
     apply:
       tags: user

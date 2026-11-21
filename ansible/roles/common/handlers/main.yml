@@ -30,6 +30,11 @@
     state: restarted
   when: claude_remote_credentials.stat.exists
 
+- name: restart localsend-receive
+  ansible.builtin.systemd_service:
+    name: localsend-receive
+    state: restarted
+
 - name: reconfigure locales
   command: dpkg-reconfigure -f noninteractive locales
 

@@ -20,6 +20,7 @@ ansible-galaxy collection install -r requirements.yml
 - Run raspi-config
 - Install plik client
 - Install Claude Code and run Remote Control as a systemd service (`install_claude`, only on galadriel)
+- Install localsend-cli and run it as a systemd service (`install_localsend`, only on galadriel)
 
 #### Claude Code on galadriel
 
@@ -32,6 +33,28 @@ ansible-playbook playbooks/bootstrap.yml -l galadriel --tags claude
 ```
 
 Without the login, Ansible installs and enables the service but leaves it stopped. Claude Code updates itself, so Ansible does not install it again. Use `claude_remote_spawn` (`same-dir`, `worktree` or `session`) and `claude_remote_permission_mode` in `inventory/host_vars/galadriel.yml` to change the behavior.
+
+#### LocalSend on galadriel
+
+The `localsend` tag installs `localsend-cli` from a release of the `jlejeune/localsend` fork. The fork adds the `receive` command. The tag then installs `localsend-receive.service`, which runs `localsend-cli receive` as `jlejeune`. The service accepts files from paired devices and declines all other devices. It saves the files in `~/Downloads`. The tag also adds ufw rules that allow port 53317 (TCP and UDP) from the local network. It does not turn ufw on or off.
+
+To install or update the service, run this command from the `ansible` directory:
+
+```sh
+ansible-playbook playbooks/bootstrap.yml -l galadriel --tags localsend
+```
+
+To install a new build, publish a new release in the fork. Then change `localsend_cli_release` in `roles/common/defaults/main.yml`.
+
+You must pair each device once by hand. The service reads the list of paired devices only at startup. Follow these steps on galadriel as `jlejeune`:
+
+1. Stop the service with `sudo systemctl stop localsend-receive`.
+2. Run `localsend-cli` in a terminal.
+3. Send a file from the device that you want to pair.
+4. When the request appears, press `P`.
+5. Press Ctrl+C, then start the service with `sudo systemctl start localsend-receive`.
+
+To read the log of the service, run `journalctl -u localsend-receive`.
 
 ### k3s
 

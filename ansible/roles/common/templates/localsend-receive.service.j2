@@ -1,0 +1,24 @@
+# {{ ansible_managed }}
+[Unit]
+Description=LocalSend CLI receiver ({{ system_hostname }})
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User={{ localsend_user }}
+Group={{ localsend_group }}
+Environment=HOME=/home/{{ localsend_user }}
+Environment=LOCALSEND_DESTINATION={{ localsend_destination }}
+ExecStart=/usr/local/bin/localsend-cli receive
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ReadWritePaths=/home/{{ localsend_user }}/.config/localsend-cli {{ localsend_destination }}
+
+[Install]
+WantedBy=multi-user.target
