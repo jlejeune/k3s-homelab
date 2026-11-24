@@ -34,6 +34,10 @@
     name: networking
     enabled: no
     state: stopped
+  register: networking_service
+  failed_when:
+    - networking_service is failed
+    - "'Could not find the requested service' not in networking_service.msg"
   tags: ip
 
 - name: Enable and start systemd-networkd service
