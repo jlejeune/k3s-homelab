@@ -158,7 +158,7 @@ spec:
         fsGroup: 999
       containers:
         - name: redis
-          image: docker.io/library/redis:8.10-alpine
+          image: docker.io/library/redis:8.12-alpine
           # BullMQ needs noeviction, otherwise job queues can silently corrupt
           args:
             - redis-server
